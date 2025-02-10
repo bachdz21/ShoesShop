@@ -79,17 +79,6 @@ public class UserController extends HttpServlet {
 
     }
 
-    protected void getUsers(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        IUserDAO u = new UserDAO();
-        List<User> list = u.getAllUsers();
-        request.setAttribute("listUsers", list);
-        request.getRequestDispatcher("index.jsp").forward(request, response);
-//        HttpSession s1 = request.getSession();
-//        s1.setAttribute("listUsersSendedBySession", list);
-//        response.sendRedirect("index.jsp");
-    }
-
     protected void getLogin(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         IUserDAO userDAO = new UserDAO();
@@ -189,19 +178,7 @@ public class UserController extends HttpServlet {
 
     }
 
-    protected void getDelete(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String username = request.getParameter("username");
-        try {
-            UserDAO d = new UserDAO();
-//            d.deleteUserByUsername(username);
-            // Chuyển hướng đến danh sách người dùng sau khi xóa
-            response.sendRedirect("user");
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
-    }
-
+ 
     protected void forgotPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         IUserDAO u = new UserDAO();
         // Lấy email người dùng từ form quên mật khẩu
@@ -268,6 +245,7 @@ public class UserController extends HttpServlet {
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
+    //Hiển thị trang hồ sơ người dùng
     protected void userProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Lấy UserID từ session hoặc request
         IUserDAO userDAO = new UserDAO();
@@ -305,11 +283,13 @@ public class UserController extends HttpServlet {
         request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển hướng đến trang JSP
     }
 
+    // Cập nhật ảnh đại diện
     protected void updateAvatar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Lấy UserID từ session hoặc request
 
     }
 
+    //Chức năng cập nhật hồ sơ
     protected void updateProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Lấy UserID từ session hoặc request
         IUserDAO userDAO = new UserDAO();
@@ -374,6 +354,32 @@ public class UserController extends HttpServlet {
 
         request.setAttribute("message", message);
         request.getRequestDispatcher("userProfile").forward(request, response); // Chuyển về trang JSP với thông báo
+    }
+    
+    //lấy danh sách người dùng
+    protected void getUsers(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        IUserDAO u = new UserDAO();
+        List<User> list = u.getAllUsers();
+        request.setAttribute("listUsers", list);
+        request.getRequestDispatcher("index.jsp").forward(request, response);
+//        HttpSession s1 = request.getSession();
+//        s1.setAttribute("listUsersSendedBySession", list);
+//        response.sendRedirect("index.jsp");
+    }
+    
+    //Chức năng xóa người dùng
+    protected void getDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String username = request.getParameter("username");
+        try {
+            UserDAO d = new UserDAO();
+//            d.deleteUserByUsername(username);
+            // Chuyển hướng đến danh sách người dùng sau khi xóa
+            response.sendRedirect("user");
+        } catch (NumberFormatException e) {
+            System.out.println(e);
+        }
     }
 
     @Override
