@@ -232,11 +232,11 @@
                                 <label for="category">Danh Mục:</label>
                                 <select id="category" name="category" class="form-select mb-3" aria-label="Default select example" onchange="toggleOtherCategory()">
                                     <option value="">Chọn Danh Mục</option>
-                                    <option value="Laptop">Laptop</option>
-                                    <option value="Điện Thoại">Điện Thoại</option>
-                                    <option value="Máy Ảnh">Máy Ảnh</option>
-                                    <option value="Phụ Kiện">Phụ Kiện</option>
-                                    <option value="Khác">Khác</option>
+                                    <option value="Nike">Nike</option>
+                                    <option value="Adidas">Adidas</option>
+                                    <option value="Converse">Converse</option>
+                                    <option value="Puma">Puma</option>
+                                    <option value="Other">Khác</option>
                                 </select>
                             </div>
 

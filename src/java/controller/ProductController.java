@@ -435,7 +435,7 @@ public class ProductController extends HttpServlet {
         } else if (request.getServletPath().equals("/productAction")) {
             getAction(request, response);
         } else {
-            request.getRequestDispatcher("/home").forward(request, response);
+                request.getRequestDispatcher("/home").forward(request, response);
         }
 
     }

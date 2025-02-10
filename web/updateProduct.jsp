@@ -105,7 +105,7 @@
                         <ul class="header-links pull-left">
                             <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
                             <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
-                            <li><a href="#"><i class="fa fa-map-marker"></i> SE1881 - PRJ301</a></li>
+                            <li><a href="#"><i class="fa fa-map-marker"></i> SE1872 - SWP391</a></li>
                         </ul>
                         <ul class="header-links pull-right">
                             <% if (user == null) { %>
@@ -132,7 +132,7 @@
                         <!-- LOGO -->
                         <div class="col-md-3">
                             <div class="header-logo">
-                                <a href="/ProjectPRJ301/home" class="logo">
+                                <a href="/ProjectSWP391/home" class="logo">
                                     <img src="./img/logo.png" alt="">
                                 </a>
                             </div>
@@ -226,8 +226,8 @@
                 <div id="responsive-nav">
                     <!-- NAV -->
                     <ul class="main-nav nav navbar-nav">
-                        <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
-                        <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
+                        <li><a href="/ShoesStoreWed/home">Trang Chủ</a></li>
+                        <li><a href="/ShoesStoreWed/product">Danh Mục</a></li>
                         <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
                             <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                             <li class="active"><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
@@ -256,7 +256,7 @@
 
                 <div class="form-group">
                     <label for="description">Mô Tả:</label>
-                    <textarea id="description" name="description" class="form-control" required>${product.description}</textarea>
+                    <textarea id="description" name="description" class="form-control" >${product.description}</textarea>
                 </div>
 
                 <div class="form-group">
@@ -283,11 +283,11 @@
                     <label for="category">Danh Mục:</label>
                     <select id="category" name="category" class="form-control" onchange="toggleOtherCategory()">
                         <option value="">Chọn Danh Mục</option>
-                        <option value="Laptop" ${product.categoryName == 'Laptop' ? 'selected' : ''}>Laptop</option>
-                        <option value="Điện Thoại" ${product.categoryName == 'Điện Thoại' ? 'selected' : ''}>Điện Thoại</option>
-                        <option value="Máy Ảnh" ${product.categoryName == 'Máy Ảnh' ? 'selected' : ''}>Máy Ảnh</option>
-                        <option value="Phụ Kiện" ${product.categoryName == 'Phụ Kiện' ? 'selected' : ''}>Phụ Kiện</option>
-                        <option value="Khác" ${product.categoryName == 'Khác' ? 'selected' : ''}>Khác</option>
+                        <option value="Nike" ${product.categoryName == 'Nike' ? 'selected' : ''}>Nike</option>
+                        <option value="Adidas" ${product.categoryName == 'Adidas' ? 'selected' : ''}>Adidas</option>
+                        <option value="Converse" ${product.categoryName == 'Converse' ? 'selected' : ''}>Converse</option>
+                        <option value="Puma" ${product.categoryName == 'Puma' ? 'selected' : ''}>Puma</option>
+                        <option value="Other" ${product.categoryName == 'Other' ? 'selected' : ''}>Khác</option>
                     </select>
                 </div>
 
