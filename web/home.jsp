@@ -10,10 +10,10 @@
 
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
         <!-- Bootstrap -->
-        <link type="text/css" rel="stylesheet" href="<%= request.getContextPath() %>/css/bootstrap.min.css"/>
-
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="css/searchbar.css" />
 
         <!-- Slick -->
         <link type="text/css" rel="stylesheet" href="css/slick.css"/>
@@ -102,11 +102,11 @@
             <!-- container -->
             <div class="container">
                 <!-- row -->
-                <div class="row">
+                <div class="row" style="display: flex; align-items: center">
                     <!-- LOGO -->
                     <div class="col-md-3">
                         <div class="header-logo">
-                            <a href="/ProjectPRJ301/home" class="logo">
+                            <a href="./home" class="logo">
                                 <img src="./img/logo.png" alt="">
                             </a>
                         </div>
@@ -114,27 +114,68 @@
                     <!-- /LOGO -->
 
                     <!-- SEARCH BAR -->
+                    <!--                    <div class="col-md-6">
+                                            <div class="header-search">
+                                                <form action="search" method="get">
+                                                    <select class="input-select" name="category">
+                                                        <option value="">All</option>
+                                                        <option value="Laptop">Laptop</option>
+                                                        <option value="Smartphone">Smartphone</option>
+                                                        <option value="Camera">Camera</option>
+                                                        <option value="Accessory">Accessory</option>
+                                                         Thêm các loại sản phẩm khác nếu cần 
+                                                    </select>
+                                                    <input class="input" name="query" placeholder="Search here">
+                                                    <button type="submit" class="search-btn">Search</button>
+                                                </form>
+                                            </div>
+                                        </div>-->
+                    <!-- /SEARCH BAR -->
+
+                    <!-- Search Bar start -->
                     <div class="col-md-6">
-                        <div class="header-search">
-                            <form action="search" method="get">
-                                <select class="input-select" name="category">
-                                    <option value="">All</option>
-                                    <option value="Laptop">Laptop</option>
-                                    <option value="Smartphone">Smartphone</option>
-                                    <option value="Camera">Camera</option>
-                                    <option value="Accessory">Accessory</option>
-                                    <!-- Thêm các loại sản phẩm khác nếu cần -->
-                                </select>
-                                <input class="input" name="query" placeholder="Search here">
-                                <button type="submit" class="search-btn">Search</button>
+                        <div class="search-bar">
+                            <!-- Dropdown start -->
+                            <form style="display: flex; width: 100%" action="search" method="get">
+                                <div class="dropdown-searchbar">
+                                    <div id="drop-text" class="dropdown-text">
+                                        <span id="span">All</span>
+                                        <i id="icon" class="fa-solid fa-chevron-down"></i>
+                                    </div>
+                                    <ul id="list" class="dropdown-list">
+                                        <li class="dropdown-list-item" value="">All</li>
+                                        <li class="dropdown-list-item" value="Laptop">Laptop</li>
+                                        <li class="dropdown-list-item" value="Smartphone">Smartphone</li>
+                                        <li class="dropdown-list-item" value="Camera">Camera</li>
+                                        <li class="dropdown-list-item" value="Accessory">Accessory</li>
+                                    </ul>
+                                </div>
+                                <!-- Dropdown ends -->
+
+                                <!-- Search box input start -->
+                                <div class="search-box">
+                                    <input name="query" type="text" id="search-input" placeholder="Search anything..." />
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </div>
+                                <!-- Search box input ends -->
                             </form>
                         </div>
                     </div>
-                    <!-- /SEARCH BAR -->
+                    <!-- Search Bar ends -->
 
                     <!-- ACCOUNT -->
                     <div class="col-md-3 clearfix">
                         <div class="header-ctn">
+
+                            <!-- Wishlist -->
+                            <div>
+                                <a href="#">
+                                    <i class="fa fa-heart-o"></i>
+                                    <span>Your Wishlist</span>
+                                    <div class="qty">2</div>
+                                </a>
+                            </div>
+                            <!-- /Wishlist -->
 
                             <!-- Cart -->
                             <div class="dropdown">
@@ -200,8 +241,8 @@
             <div id="responsive-nav">
                 <!-- NAV -->
                 <ul class="main-nav nav navbar-nav">
-                    <li  class="active"><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
-                    <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
+                    <li  class="active"><a href="./home">Trang Chủ</a></li>
+                    <li><a href="./product">Danh Mục</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                         <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
                         <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
@@ -313,7 +354,12 @@
                                                     <i class="fa fa-star"></i>
                                                     <i class="fa fa-star"></i>
                                                 </div>
+                                                <div class="product-btns">
+                                                    <button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
+                                                    <button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
+                                                </div>
                                             </div>
+
                                             <form action="addCartQuick" method="GET">
                                                 <div class="add-to-cart">
                                                     <input type="hidden" name="quantity" value="1">
@@ -1043,6 +1089,6 @@
     <script src="js/nouislider.min.js"></script>
     <script src="js/jquery.zoom.min.js"></script>
     <script src="js/main.js"></script>
-
+    <script src="js/searchbar.js"></script>
 </body>
 </html>
