@@ -135,7 +135,7 @@ public class UserController extends HttpServlet {
         HttpSession session = request.getSession();
         session.invalidate(); // Xóa phiên
         // Chuyển hướng về trang đăng nhập
-        response.sendRedirect("/ProjectPRJ301/home");
+        response.sendRedirect("./home");
     }
 
     protected void getRegister(HttpServletRequest request, HttpServletResponse response)
