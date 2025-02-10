@@ -10,10 +10,10 @@
 
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"/>
+        
         <!-- Bootstrap -->
         <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
-        <link rel="stylesheet" href="css/searchbar.css" />
+        
 
         <!-- Slick -->
         <link type="text/css" rel="stylesheet" href="css/slick.css"/>
@@ -65,173 +65,8 @@
 
     <body>
         <!-- HEADER -->
-        <header>
-            <!-- TOP HEADER -->
-            <div id="top-header">
-                <div class="container">
-                    <ul class="header-links pull-left">
-                        <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
-                        <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
-                        <li><a href="#"><i class="fa fa-map-marker"></i> SE1881 - PRJ301</a></li>
-                    </ul>
-                    <ul class="header-links pull-right">
-                        <% if (user == null) { %>
-                        <!-- Đăng nhập nếu chưa có user -->
-                        <li><a href="login.jsp"><i class="fa fa-user-o"></i> Login</a></li>
-                            <% } else { %>
-                        <!-- Hiển thị Dashboard nếu role là admin -->
-                        <% if ("Admin".equals(user.getRole())) { %>
-                        <li>
-                            <a href="/ProjectPRJ301/revenue?year=<%= currentYear %>&month=<%= currentMonth %>">
-                                <i class="fa fa-dashboard"></i> Dashboard
-                            </a>
-                        </li>
-                        <% } %>
-                        <!-- Chào mừng và đăng xuất -->
-                        <li><a href="userProfile"><i class="fa fa-user"></i> Welcome, <%= user.getUsername() %></a></li>
-                        <li><a href="logout"><i class="fa fa-sign-out"></i> Logout</a></li>
-                            <% } %>
-                    </ul>
-                </div>
-            </div>
-            <!-- /TOP HEADER -->
-        </header>
-
-        <!-- MAIN HEADER -->
-        <div id="header">
-            <!-- container -->
-            <div class="container">
-                <!-- row -->
-                <div class="row" style="display: flex; align-items: center">
-                    <!-- LOGO -->
-                    <div class="col-md-3">
-                        <div class="header-logo">
-                            <a href="./home" class="logo">
-                                <img src="./img/logo.png" alt="">
-                            </a>
-                        </div>
-                    </div>
-                    <!-- /LOGO -->
-
-                    <!-- SEARCH BAR -->
-                    <!--                    <div class="col-md-6">
-                                            <div class="header-search">
-                                                <form action="search" method="get">
-                                                    <select class="input-select" name="category">
-                                                        <option value="">All</option>
-                                                        <option value="Laptop">Laptop</option>
-                                                        <option value="Smartphone">Smartphone</option>
-                                                        <option value="Camera">Camera</option>
-                                                        <option value="Accessory">Accessory</option>
-                                                         Thêm các loại sản phẩm khác nếu cần 
-                                                    </select>
-                                                    <input class="input" name="query" placeholder="Search here">
-                                                    <button type="submit" class="search-btn">Search</button>
-                                                </form>
-                                            </div>
-                                        </div>-->
-                    <!-- /SEARCH BAR -->
-
-                    <!-- Search Bar start -->
-                    <div class="col-md-6">
-                        <div class="search-bar">
-                            <!-- Dropdown start -->
-                            <form style="display: flex; width: 100%" action="search" method="get">
-                                <div class="dropdown-searchbar">
-                                    <div id="drop-text" class="dropdown-text">
-                                        <span id="span">All</span>
-                                        <i id="icon" class="fa-solid fa-chevron-down"></i>
-                                    </div>
-                                    <ul id="list" class="dropdown-list">
-                                        <li class="dropdown-list-item" value="">All</li>
-                                        <li class="dropdown-list-item" value="Laptop">Laptop</li>
-                                        <li class="dropdown-list-item" value="Smartphone">Smartphone</li>
-                                        <li class="dropdown-list-item" value="Camera">Camera</li>
-                                        <li class="dropdown-list-item" value="Accessory">Accessory</li>
-                                    </ul>
-                                </div>
-                                <!-- Dropdown ends -->
-
-                                <!-- Search box input start -->
-                                <div class="search-box">
-                                    <input name="query" type="text" id="search-input" placeholder="Search anything..." />
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                </div>
-                                <!-- Search box input ends -->
-                            </form>
-                        </div>
-                    </div>
-                    <!-- Search Bar ends -->
-
-                    <!-- ACCOUNT -->
-                    <div class="col-md-3 clearfix">
-                        <div class="header-ctn">
-
-                            <!-- Wishlist -->
-                            <div>
-                                <a href="#">
-                                    <i class="fa fa-heart-o"></i>
-                                    <span>Your Wishlist</span>
-                                    <div class="qty">2</div>
-                                </a>
-                            </div>
-                            <!-- /Wishlist -->
-
-                            <!-- Cart -->
-                            <div class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                                    <i class="fa fa-shopping-cart"></i>
-                                    <span>Giỏ Hàng</span>
-                                    <div class="qty"><%= totalQuantity %></div>
-                                </a>
-                                <div class="cart-dropdown">
-                                    <div class="cart-list">
-                                        <% if (cartItems != null && !cartItems.isEmpty()) { %>
-                                        <% for (CartItem item : cartItems) { %>
-                                        <div class="product-widget">
-                                            <div class="product-img">
-                                                <img src="<%= item.getProduct().getImageURL() %>" alt="">
-                                            </div>
-                                            <div class="product-body">
-                                                <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                                <h4 class="product-price"><span class="qty"><%= item.getQuantity() %>x</span>$<%= item.getProduct().getSalePrice() %></h4>
-                                            </div>
-                                        </div>
-                                        <% } %>
-                                        <% } else { %>
-                                        <p>Giỏ hàng của bạn đang trống</p>
-                                        <% } %>
-                                    </div>
-                                    <div class="cart-summary">
-                                        <small><%= totalQuantity %> sản phẩm</small>
-                                        <h5>Tổng: $<%= subtotal %></h5>
-                                    </div>
-                                    <div class="cart-btns">
-                                        <a href="cartItem">Xem Giỏ Hàng</a>
-                                        <a href="getOrderItem">Thanh Toán <i class="fa fa-arrow-circle-right"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /Cart -->
-                            <!-- Menu Toogle -->
-                            <div class="menu-toggle">
-                                <a href="#">
-                                    <i class="fa fa-bars"></i>
-                                    <span>Menu</span>
-                                </a>
-                            </div>
-                            <!-- /Menu Toogle -->
-                        </div>
-                    </div>
-                    <!-- /ACCOUNT -->
-                </div>
-                <!-- row -->
-            </div>
-            <!-- container -->
-        </div>
-        <!-- /MAIN HEADER -->
-    </header>
-    <!-- /HEADER -->
+            <jsp:include page="header.jsp" />
+        <!-- /HEADER -->
 
     <!-- NAVIGATION -->
     <nav id="navigation">
@@ -270,7 +105,7 @@
                         </div>
                         <div class="shop-body">
                             <h3>Laptop<br>Hot Sale</h3>
-                            <a href="/ProjectPRJ301/search?category=Laptop&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                            <a href="./search?category=Laptop&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -284,7 +119,7 @@
                         </div>
                         <div class="shop-body">
                             <h3>Phụ Kiện<br>Hot Sale</h3>
-                            <a href="/ProjectPRJ301/search?category=Accessory&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                            <a href="./search?category=Accessory&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -298,7 +133,7 @@
                         </div>
                         <div class="shop-body">
                             <h3>Máy Ảnh<br>Hot Sale</h3>
-                            <a href="/ProjectPRJ301/search?category=Camera&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                            <a href="./search?category=Camera&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -1089,6 +924,6 @@
     <script src="js/nouislider.min.js"></script>
     <script src="js/jquery.zoom.min.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/searchbar.js"></script>
+    
 </body>
 </html>
