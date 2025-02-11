@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Electro - HTML Ecommerce Template</title>
+        <title>ShoeShop</title>
 
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
@@ -191,7 +191,7 @@
                     <!-- LOGO -->
                     <div class="col-md-3">
                         <div class="header-logo">
-                            <a href="/ShoesStoreWed/home" class="logo">
+                            <a href="/ShoesStoreWeb/home" class="logo">
                                 <img src="./img/logo.png" alt="">
                             </a>
                         </div>
@@ -285,11 +285,14 @@
             <div id="responsive-nav">
                 <!-- NAV -->
                 <ul class="main-nav nav navbar-nav">
-                    <li><a href="/ShoesStoreWed/home">Trang Chủ</a></li>
-                    <li><a href="/ShoesStoreWed/product">Danh Mục</a></li>
-                    <li class="active"><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
+                    <li><a href="/ShoesStoreWeb/home">Trang Chủ</a></li>
+                    <li><a href="/ShoesStoreWeb/product">Danh Mục</a></li>
+                    <li class=""><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
+                    <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
+                    <li class="active"><a href="trash" class="admin-link">Danh Sách Sản Phẩm Đã Xóa</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                         <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                            <li><a href="trash" class="admin-link">Danh Sách Sản Phẩm Đã Xóa</a></li>
                         <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
                         </c:if>
 
@@ -364,9 +367,9 @@
                             <h3 class="footer-title">About Us</h3>
                             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
                             <ul class="footer-links">
-                                <li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
-                                <li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
-                                <li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
+                                <li><a href="#"><i class="fa fa-map-marker"></i>Thach That - Ha Noi</a></li>
+                                <li><a href="#"><i class="fa fa-phone"></i>0399823683</a></li>
+                                <li><a href="#"><i class="fa fa-envelope-o"></i>nvhoang2004k1922@email.com</a></li>
                             </ul>
                         </div>
                     </div>
@@ -376,10 +379,10 @@
                             <h3 class="footer-title">Categories</h3>
                             <ul class="footer-links">
                                 <li><a href="#">Hot deals</a></li>
-                                <li><a href="#">Laptops</a></li>
-                                <li><a href="#">Smartphones</a></li>
-                                <li><a href="#">Cameras</a></li>
-                                <li><a href="#">Accessories</a></li>
+                                <li><a href="#">Nike</a></li>
+                                <li><a href="#">Adidas</a></li>
+                                <li><a href="#">Converse</a></li>
+                                <li><a href="#">Puma</a></li>
                             </ul>
                         </div>
                     </div>

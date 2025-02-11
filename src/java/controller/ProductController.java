@@ -36,7 +36,7 @@ import java.util.Collection;
 public class ProductController extends HttpServlet {
 
     IProductDAO productDAO = new ProductDAO();
-    private static final String IMAGE_UPLOAD_DIR = "C:\\java&netbeans\\JavaWeb\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
+    private static final String IMAGE_UPLOAD_DIR = "C:\\java&netbeans\\JavaWeb\\ShoesStoreWeb\\web\\img"; // Đường dẫn thư mục lưu ảnh
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -211,7 +211,7 @@ public class ProductController extends HttpServlet {
         newProduct.setSale(sale);
         newProduct.setBrand(brand);
         productDAO.addProduct(newProduct);
-        response.sendRedirect("/ShoesStoreWed/list");
+        response.sendRedirect("/ShoesStoreWeb/list");
     }
 
     protected void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

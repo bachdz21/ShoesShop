@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Electro - HTML Ecommerce Template</title>
+        <title>ShoeShop</title>
 
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
@@ -103,8 +103,8 @@
                 <div id="top-header">
                     <div class="container">
                         <ul class="header-links pull-left">
-                            <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
-                            <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
+                            <li><a href="#"><i class="fa fa-phone"></i> 0399823683</a></li>
+                            <li><a href="#"><i class="fa fa-envelope-o"></i> nvhoang2004k1922@gmail.com</a></li>
                             <li><a href="#"><i class="fa fa-map-marker"></i> SE1872 - SWP391</a></li>
                         </ul>
                         <ul class="header-links pull-right">
@@ -132,7 +132,7 @@
                         <!-- LOGO -->
                         <div class="col-md-3">
                             <div class="header-logo">
-                                <a href="/ProjectSWP391/home" class="logo">
+                                <a href="/ShoesStoreWeb/home" class="logo">
                                     <img src="./img/logo.png" alt="">
                                 </a>
                             </div>
@@ -145,10 +145,10 @@
                                 <form action="search" method="get">
                                     <select class="input-select" name="category">
                                         <option value="">Tất cả</option>
-                                        <option value="Laptop">Laptop</option>
-                                        <option value="Smartphone">Điện Thoại</option>
-                                        <option value="Camera">Máy Ảnh</option>
-                                        <option value="Accessory">Phụ Kiện</option>
+                                        <option value="Nike">Nike</option>
+                                        <option value="Adidas">Adidas</option>
+                                        <option value="Converse">Converse</option>
+                                        <option value="Puma">Puma</option>
                                         <!-- Thêm các loại sản phẩm khác nếu cần -->
                                     </select>
                                     <input class="input" name="query" placeholder="Search here">
@@ -306,7 +306,7 @@
                     <input type="text" id="brand" name="brand" class="form-control" value="${product.brand}" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-submit">Sửa Sản Phẩm</button>
+                <button type="submit" class="btn btn-primary btn-submit">Lưu Thay Đổi</button>
                 <hr>
             </form>
         </div>
@@ -362,10 +362,10 @@
                                 <h3 class="footer-title">Categories</h3>
                                 <ul class="footer-links">
                                     <li><a href="#">Hot deals</a></li>
-                                    <li><a href="#">Laptops</a></li>
-                                    <li><a href="#">Smartphones</a></li>
-                                    <li><a href="#">Cameras</a></li>
-                                    <li><a href="#">Accessories</a></li>
+                                    <li><a href="#">Nike</a></li>
+                                    <li><a href="#">Adidas</a></li>
+                                    <li><a href="#">Converse</a></li>
+                                    <li><a href="#">Puma</a></li>
                                 </ul>
                             </div>
                         </div>
