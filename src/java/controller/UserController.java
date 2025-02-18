@@ -39,7 +39,7 @@ import utils.Encryption;
  * @author nguye
  */
 @WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/forgotPassword",
-    "/resetPassword", "/confirmLink", "/logout", "/userProfile"})
+    "/resetPassword", "/confirmLink", "/logout", "/userProfile", "/updateProfile", "/changePassword",})
 
 public class UserController extends HttpServlet {
 
