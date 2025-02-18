@@ -68,7 +68,7 @@ public class CartController extends HttpServlet {
     protected void getCartItem(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
+        User user = (User) session.getAttribute("user");
         if (user == null) {
             // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
@@ -100,7 +100,7 @@ public class CartController extends HttpServlet {
         int productId = Integer.parseInt(request.getParameter("productID"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
+        User user = (User) session.getAttribute("user");
         // Thêm sản phẩm vào giỏ hàng
         if (user == null) {
             // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập

@@ -226,7 +226,7 @@
                                     <div class="bRSn43 TvSDdG">
                                         <a class="lSrQtj" href="deleteCartItem?productId=${p.getProduct().getProductID()}">Xóa</a>
                                         <div class="J8cCGR">
-                                            <a href="/ProjectPRJ301/product?categories=${p.getProduct().getCategoryName()}&minPrice=1.00&maxPrice=999.00" class="shopee-button-no-outline slfWNx">
+                                            <a href="./product?categories=${p.getProduct().getCategoryName()}&minPrice=1.00&maxPrice=999.00" class="shopee-button-no-outline slfWNx">
                                                 <span class="wZrjgF">Tìm sản phẩm tương tự</span>
                                             </a>
                                         </div>

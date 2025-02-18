@@ -101,11 +101,11 @@
                 <div class="col-md-4 col-xs-6">
                     <div class="shop">
                         <div class="shop-img">
-                            <img src="./img/shop01.png" alt="">
+                            <img src="./img/SneakerHotSale.jpg" alt="">
                         </div>
                         <div class="shop-body">
-                            <h3>Laptop<br>Hot Sale</h3>
-                            <a href="./search?category=Laptop&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                            <h3>Giày Thể Thao<br>Hot Sale</h3>
+                            <a href="./search?category=Giày Thể Thao&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -115,11 +115,11 @@
                 <div class="col-md-4 col-xs-6">
                     <div class="shop">
                         <div class="shop-img">
-                            <img src="./img/shop03.png" alt="">
+                            <img src="./img/BootsHotSale.jpg" alt="">
                         </div>
                         <div class="shop-body">
-                            <h3>Phụ Kiện<br>Hot Sale</h3>
-                            <a href="./search?category=Accessory&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                            <h3>Boots<br>Hot Sale</h3>
+                            <a href="./search?category=Boots&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -129,11 +129,11 @@
                 <div class="col-md-4 col-xs-6">
                     <div class="shop">
                         <div class="shop-img">
-                            <img src="./img/shop02.png" alt="">
+                            <img src="./img/SandalHotSale.jpg" alt="">
                         </div>
                         <div class="shop-body">
-                            <h3>Máy Ảnh<br>Hot Sale</h3>
-                            <a href="./search?category=Camera&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                            <h3>Sandal<br>Hot Sale</h3>
+                            <a href="./search?category=Sandal&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                 </div>
