@@ -5,15 +5,12 @@
 package controller;
 
 import dal.ICartDAO;
-import dal.IProductDAO;
 import dal.IUserDAO;
 import dal.imp.CartDAO;
 import dal.imp.EmailService;
 import dal.imp.OrderDAO;
-import dal.imp.ProductDAO;
 import dal.imp.UserDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
@@ -22,15 +19,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import java.util.UUID;
 import model.CartItem;
 import model.User;
-import jakarta.mail.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Properties;
 import model.Order;
 import utils.Encryption;
 
