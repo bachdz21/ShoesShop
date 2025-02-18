@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-=======
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
->>>>>>> duyanh
 package controller;
 
 import dal.ICategoryDAO;
@@ -37,7 +29,6 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
 
-<<<<<<< HEAD
 
 @WebServlet(name = "ProductController", urlPatterns = {"/product", "/home", "/search", "/list", "/add", "/edit", "/update",
     "/deleteProduct", "/trash", "/restore", "/deleteTrash", "/productDetail", "/deleteMultipleProducts", "/productAction", "/sortProduct"})
@@ -92,44 +83,6 @@ public class ProductController extends HttpServlet {
     }
 
     protected void getFilteredSortedPagedProducts(HttpServletRequest request, HttpServletResponse response)
-=======
-/**
- *
- * @author DELL
- */
-@WebServlet(name="ProductController", urlPatterns={"/product","/productDetail"})
-public class ProductController extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-  IProductDAO productDAO = new ProductDAO(); 
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-       if (request.getServletPath().equals("/product")) {
-            getFilteredSortedPagedProducts(request, response);
-    }else if (request.getServletPath().equals("/productDetail")) {
-            productDetail(request, response);
-        }else {
-            request.getRequestDispatcher("/home").forward(request, response);
-        }
-    }
-protected void getFilteredSortedPagedProducts(HttpServletRequest request, HttpServletResponse response)
->>>>>>> duyanh
             throws ServletException, IOException {
         // Lấy các tham số lọc từ request
         String[] selectedCategories = request.getParameterValues("categories");
@@ -147,11 +100,7 @@ protected void getFilteredSortedPagedProducts(HttpServletRequest request, HttpSe
         int productsPerPage = 9;
         int offset = (page - 1) * productsPerPage;
         String sortOption = request.getParameter("sortOption") != null ? request.getParameter("sortOption") : "default";
-<<<<<<< HEAD
         String orderBy = getOrderByClause(sortOption);
-=======
-        String orderBy = getOrderByClause(sortOption);  
->>>>>>> duyanh
 
         // Lấy danh sách sản phẩm với các điều kiện
         List<Product> products = productDAO.getProductsByPage(offset, productsPerPage, orderBy, selectedCategories, selectedBrands, minPrice, maxPrice);
@@ -184,7 +133,6 @@ protected void getFilteredSortedPagedProducts(HttpServletRequest request, HttpSe
                 return "p.ProductID";
         }
     }
-<<<<<<< HEAD
 
     protected void search(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String query = request.getParameter("query");
@@ -435,9 +383,6 @@ protected void getFilteredSortedPagedProducts(HttpServletRequest request, HttpSe
     }
 
     private void productDetail(HttpServletRequest request, HttpServletResponse response)
-=======
-      private void productDetail(HttpServletRequest request, HttpServletResponse response)
->>>>>>> duyanh
             throws ServletException, IOException {
         int productId = Integer.parseInt(request.getParameter("id"));
         Product product = productDAO.getProductById(productId);
@@ -447,7 +392,6 @@ protected void getFilteredSortedPagedProducts(HttpServletRequest request, HttpSe
         request.setAttribute("productRelative", productRelative);
         request.getRequestDispatcher("productDetail.jsp").forward(request, response);
     }
-<<<<<<< HEAD
 
     protected void getAction(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -495,29 +439,5 @@ protected void getFilteredSortedPagedProducts(HttpServletRequest request, HttpSe
         }
 
     }
-=======
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-     if (request.getServletPath().equals("/productDetail")) {
-            productDetail(request, response);
-    }
-    }
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
->>>>>>> duyanh
 
 }
