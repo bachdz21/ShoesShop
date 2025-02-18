@@ -200,10 +200,8 @@ public class UserController extends HttpServlet {
         // Lưu người dùng mới vào database
         userDAO.addUser(newUser);
 
-        // Lưu thông tin người dùng vào session và chuyển hướng đến trang chủ
-        HttpSession session = request.getSession();
-        session.setAttribute("user", newUser);
-        response.sendRedirect("home");
+        
+        response.sendRedirect("login.jsp");
 
     }
 
