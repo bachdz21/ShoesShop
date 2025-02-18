@@ -1,0 +1,38 @@
+{
+  "modules": [
+    {
+      "name": "ShoesShop",
+      "path": "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\",
+      "sources": [
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\controller\\CartController.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\controller\\OrderController.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\controller\\ProductController.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\controller\\UserController.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\DBConnect.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\ICartDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\ICategoryDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\IOrderDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\IProductDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\IUserDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\imp\\CartDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\imp\\CategoryDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\imp\\EmailService.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\imp\\OrderDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\imp\\ProductDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\dal\\imp\\UserDAO.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\model\\Cart.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\model\\CartItem.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\model\\Category.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\model\\Order.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\model\\Product.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\model\\User.java",
+        "d:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\src\\java\\utils\\Encryption.java"
+      ],
+      "testSources": [],
+      "generatedSources": [],
+      "classpath": [
+        "C:\\Users\\nguye\\AppData\\Roaming\\Code\\User\\workspaceStorage\\5e68c34e0ba9f655cdba30d7c4fcb045\\redhat.java\\jdt_ws\\ShoesShop_a554944b\\bin"
+      ]
+    }
+  ]
+}
