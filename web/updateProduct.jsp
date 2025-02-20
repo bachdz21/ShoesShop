@@ -97,6 +97,7 @@
         }
         %>
         <body>
+            
             <!-- HEADER -->
             <header>
                 <!-- TOP HEADER -->
@@ -133,7 +134,7 @@
                         <div class="col-md-3">
                             <div class="header-logo">
                                 <a href="/ShoesStoreWeb/home" class="logo">
-                                    <img src="./img/logo.png" alt="">
+                                    <h1 style="color: white; margin-top: 14px">ShoeShop</h1>
                                 </a>
                             </div>
                         </div>
@@ -244,6 +245,7 @@
         <!-- /NAVIGATION -->
 
         <!-- EDITPRODUCT -->
+        
         <div class="container edit-product-container">
             <h2 class="edit-product-title">Sửa Sản Phẩm</h2>
             <form action="update" method="post" enctype="multipart/form-data" class="edit-product-form">

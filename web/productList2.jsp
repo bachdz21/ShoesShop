@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>ShoeShop</title>
+        <title>Electro - HTML Ecommerce Template</title>
 
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
@@ -135,7 +135,7 @@
     <%@page import="model.User"%>
     <%@page import="model.CartItem"%>
     <%@ page import="java.util.List" %>
-    
+
     <%@page import="jakarta.servlet.http.HttpSession"%>
     <%
         // Sử dụng biến session từ request mà không cần khai báo lại
@@ -155,8 +155,6 @@
     %>
     <body>
         <!-- HEADER -->
-        <header>
-            <!-- HEADER -->
         <header>
             <!-- TOP HEADER -->
             <div id="top-header">
@@ -287,12 +285,9 @@
                 <ul class="main-nav nav navbar-nav">
                     <li><a href="/ShoesStoreWeb/home">Trang Chủ</a></li>
                     <li><a href="/ShoesStoreWeb/product">Danh Mục</a></li>
-                    <li class=""><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
-                    <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                    <li class="active"><a href="trash" class="admin-link">Danh Sách Sản Phẩm Đã Xóa</a></li>
+                    <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                        <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                            <li><a href="trash" class="admin-link">Danh Sách Sản Phẩm Đã Xóa</a></li>
+                        <li class="active"><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
                         <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
                         </c:if>
 
@@ -305,12 +300,13 @@
     </nav>
     <!-- /NAVIGATION -->
 
-    <div class="list-product">
-        <h2 class="product-title">Danh Sách Sản Phẩm Đã Xoá</h2>
-        <a href="list" class="product-add-link">Danh Sách Sản Phẩm</a>
-        <form action="productAction" method="post">
+    <form action="deleteMultipleProducts" method="post">
+        <div class="list-product">
+            <h2 class="product-title">Danh Sách Sản Phẩm</h2>
+            <a href="addProduct.jsp" class="product-add-link">Thêm Sản Phẩm</a>
+            <a href="trash" class="product-add-link">Sản Phẩm Đã Xoá</a>
             <table border="1">
-                <tr>    
+                <tr>
                     <th>Chọn</th>
                     <th>ID</th>
                     <th>Tên Sản Phẩm</th>
@@ -321,12 +317,11 @@
                     <th>Danh Mục</th>
                     <th>Thương Hiệu</th>
                     <th>Sale</th>
-                    <th>Ngày Tạo</th>
                     <th>Chỉnh Sửa</th>
                 </tr>
-                <c:forEach var="p" items="${requestScope.listDeletedProducts}">
+                <c:forEach var="p" items="${requestScope.list}">
                     <tr>
-                        <td><input type="checkbox" name="selectedProducts" value="${p.productID}" /></td>
+                        <td><input type="checkbox" name="productIds" value="${p.productID}"></td>
                         <td>${p.productID}</td>
                         <td>${p.productName}</td>
                         <td>${p.description}</td>
@@ -336,23 +331,19 @@
                         <td>${p.categoryName}</td>
                         <td>${p.brand}</td>
                         <td>${p.sale}</td>
-                        <td>${p.createdDate}</td>
                         <td>
-                            <a href="restore?id=${p.productID}" class="action-link btn-edit">Khôi Phục</a>
+                            <a href="edit?id=${p.getProductID()}" class="action-link btn-edit">Sửa</a>
                             <span class="divider">|</span>
-                            <a href="deleteTrash?id=${p.productID}" class="action-link btn-delete">Xóa</a>
+                            <a href="deleteProduct?id=${p.productID}" class="action-link btn-delete">Xóa</a>
                         </td>
                     </tr>
                 </c:forEach>
             </table>
             <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
-            <button type="submit" class="btn-delete-all action-link btn-delete" style="border: none;
-                    margin-top: 15px;" name="action" value="deleteMultiple">Xóa Tất Cả Đã Chọn</button>
-            <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
-            <button type="submit" class="btn-delete-all action-link btn-delete" style="border: none;
-                    margin-top: 15px;" name="action" value="restoreMultiple">Khôi Phục Nhiều</button> 
-        </form>
-    </div>
+            <button type="submit" class="action-link btn-delete" style="border: none;
+                    margin-top: 15px;">Xóa Nhiều Sản Phẩm</button>
+        </div>
+    </form>
 
     <!-- FOOTER -->
     <footer id="footer">
@@ -455,7 +446,7 @@
     <!-- jQuery Plugins -->
     <script>
         function toggleSelectAll(selectAllCheckbox) {
-            const checkboxes = document.getElementsByName('selectedProducts');
+            const checkboxes = document.getElementsByName('productIds');
             checkboxes.forEach((checkbox) => {
                 checkbox.checked = selectAllCheckbox.checked;
             });

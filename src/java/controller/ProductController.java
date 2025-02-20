@@ -219,7 +219,7 @@ public class ProductController extends HttpServlet {
         int productId = Integer.parseInt(idParam);
         Product existingProduct = productDAO.getProductById(productId);
         request.setAttribute("product", existingProduct);
-        request.getRequestDispatcher("updateProduct.jsp").forward(request, response);
+        request.getRequestDispatcher("updateProduct2.jsp").forward(request, response);
     }
 
     protected void editProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -30,6 +30,7 @@
 
         <!-- Template Stylesheet -->
         <link href="css/style_1.css" rel="stylesheet">
+
         <style>
             .table>:not(caption)>*>* {
                 border-bottom-width: 0px;
@@ -37,12 +38,6 @@
 
             .form-check-input {
                 margin-top: .3em;
-            }
-
-            .table-container {
-                max-height: 565px; /* Giới hạn chiều cao của bảng */
-                overflow-y: auto;  /* Thêm cuộn dọc nếu nội dung vượt quá chiều cao */
-                position: relative; /* Để tạo không gian cho các phần sticky */
             }
 
             /* Ghim thead */
@@ -64,26 +59,30 @@
                 margin: 0rem !important;
             }
 
-            /* Tùy chỉnh thanh cuộn */
-            .table-container::-webkit-scrollbar {
-                width: 12px; /* Độ rộng của thanh cuộn dọc */
-            }
 
-            .table-container::-webkit-scrollbar-track {
-                background: none; /* Màu nền của track (vùng chứa thanh cuộn) */
-            }
-
-            .table-container::-webkit-scrollbar-thumb {
-                background: #0f1116; /* Màu của thanh cuộn */
-                border-radius: 6px; /* Làm tròn các góc của thanh cuộn */
-            }
-
-            .table-container::-webkit-scrollbar-thumb:hover {
-                background: #555; /* Màu của thanh cuộn khi di chuột qua */
-            }
         </style>
     </head>
+        <%@page import="model.User"%>
+        <%@page import="model.CartItem"%>
+        <%@ page import="java.util.List" %>
 
+        <%@page import="jakarta.servlet.http.HttpSession"%>
+        <%
+            // Sử dụng biến session từ request mà không cần khai báo lại
+            User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
+        %>
+        <% 
+        // Lấy danh sách sản phẩm trong giỏ hàng từ session
+        List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
+        int totalQuantity = 0;
+        double subtotal = 0.0;
+        if (cartItems != null) {
+            for (CartItem item : cartItems) {
+                totalQuantity += item.getQuantity();
+                subtotal += item.getProduct().getPrice() * item.getQuantity();
+            }
+        }
+        %>
     <body>
         <div class="container-fluid position-relative d-flex p-0">
             <!-- Spinner Start -->
@@ -244,65 +243,102 @@
                                        
                                     <a style="position: absolute;
                                        left: 1635px;
-                                       top: 110px;" href="trash" class="product-add-link">Sản Phẩm Đã Xóa</a>
+                                       top: 110px;" href="trash" class="product-add-link">Sản Phẩm Đã Xóa</a>     
                                 </div>
+                                
 
                                 <div class="table-responsive table-container"> <!-- Áp dụng lớp CSS ở đây -->
                                     <form action="deleteMultipleProducts" method="post">
                                         <table class="table">
-                                            <thead style="position: sticky; top: 0; background-color: #0f1116; z-index: 1">
-                                                <tr>
-                                                    <th scope="col">#</th>
-                                                    <th scope="col">ID</th>
-                                                    <th scope="col">Image</th>
-                                                    <th scope="col">Product Name</th>
-                                                    <th scope="col">Brand</th>
-                                                    <th scope="col">Category</th>
-                                                    <th scope="col">Description</th>
-                                                    <th scope="col">Price</th>
-                                                    <th scope="col">Sale</th>
-                                                    <th scope="col">Stock</th>
-                                                    <th scope="col">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <c:forEach var="p" items="${requestScope.list}">
-                                                    <tr>
-                                                        <td><input class="form-check-input" type="checkbox" name="productIds" value="${p.productID}"></td>
-                                                        <th scope="row">${p.productID}</th>
-                                                        <td><img src="${p.imageURL}" alt="Product Image" width="50"/></td>
-                                                        <td>${p.productName}</td>
-                                                        <td>${p.brand}</td>
-                                                        <td>${p.categoryName}</td>
-                                                        <td>${p.description}</td>
-                                                        <td>${p.price}</td>
-                                                        <td>${p.sale}</td>
-                                                        <td>${p.stock}</td>
-                                                        <td>
-                                                            <a href="edit?id=${p.getProductID()}" class="action-link btn-edit">Sửa</a>
-                                                            <a href="deleteProduct?id=${p.productID}" class="action-link btn-delete">Xóa</a>
-                                                        </td>
-                                                    </tr>
-                                                </c:forEach>
-                                            </tbody>
-                                            <tfoot style="position: sticky; bottom: 0; background-color: #0f1116; z-index: 1;">
-                                                <!-- Hàng cố định ở cuối -->
-                                                <tr>
-                                                    <td>
-                                                        <input class="form-check-input" type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
-                                                    </td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td><button type="submit" class="btn btn-danger m-2" style="font-size: 12px;margin: 0px;height: 25px;padding-top: 2px;"">Delete</button></td>
-                                                </tr>
-                                            </tfoot>
+                                                <h2 class="edit-product-title">Sửa Sản Phẩm</h2>
+                                                <form action="update" method="post" enctype="multipart/form-data" class="edit-product-form">
+                                                    <hr>
+                                                    <input type="hidden" id="productId" name="productId" value="${product.productID}" />
+                                                    <div class="form-group">
+                                                        <label for="productName">Tên Sản Phẩm:</label>
+                                                        <input type="text" id="productName" name="productName" class="form-control" value="${product.productName}" required>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="description">Mô Tả:</label>
+                                                        <textarea id="description" name="description" class="form-control" >${product.description}</textarea>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="price">Giá:</label>
+                                                        <input type="number" id="price" name="price" class="form-control" value="${product.price}" required>
+                                                    </div>
+
+                                                    <div class="form-group form-check">
+                                                        <input type="checkbox" class="form-check-input" id="isSale" name="isSale" onchange="toggleSaleInput(this)" ${product.sale > 0 ? 'checked' : ''}>
+                                                        <label class="form-check-label" for="isSale">Sale:</label>
+                                                    </div>
+
+                                                    <div id="salePercentage" class="form-group" style="display: ${product.sale > 0 ? 'block' : 'none'};">
+                                                        <label for="sale">Nhập phần trăm giá giảm:</label>
+                                                        <input type="text" id="sale" name="sale" class="form-control" value="${product.sale}" placeholder="Phần trăm giảm" />
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="stock">Số lượng:</label>
+                                                        <input type="number" id="stock" name="stock" class="form-control" value="${product.stock}" required>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="category">Danh Mục:</label>
+                                                        <select id="category" name="category" class="form-control" onchange="toggleOtherCategory()">
+                                                            <option value="">Chọn Danh Mục</option>
+                                                            <option value="Nike" ${product.categoryName == 'Nike' ? 'selected' : ''}>Nike</option>
+                                                            <option value="Adidas" ${product.categoryName == 'Adidas' ? 'selected' : ''}>Adidas</option>
+                                                            <option value="Converse" ${product.categoryName == 'Converse' ? 'selected' : ''}>Converse</option>
+                                                            <option value="Puma" ${product.categoryName == 'Puma' ? 'selected' : ''}>Puma</option>
+                                                            <option value="Other" ${product.categoryName == 'Other' ? 'selected' : ''}>Khác</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div id="otherCategory" class="form-group" style="display: ${product.categoryName == 'Khác' ? 'block' : 'none'};">
+                                                        <label for="otherCategoryInput">Danh Mục Khác:</label>
+                                                        <input type="text" id="otherCategoryInput" name="otherCategory" class="form-control" value="${product.categoryName == 'Khác' ? product.otherCategory : ''}" />
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="images">Tải Lên Ảnh Mới:</label>
+                                                        <br>
+                                                        <input type="file" id="images" name="images" class="form-control-file" accept="image/*" multiple>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="brand">Thương Hiệu:</label>
+                                                        <input type="text" id="brand" name="brand" class="form-control" value="${product.brand}" required>
+                                                    </div>
+
+                                                    <button type="submit" class="btn btn-primary btn-submit">Lưu Thay Đổi</button>
+                                                    <hr>
+                                                </form>
+                                                                           <!-- EDITPRODUCT -->
+
+                                            <script>
+                                                // Đặt giá trị mặc định của sale là 0 khi trang tải
+                                                document.getElementById('sale').value = '0';
+                                            </script> 
+
+
+                                            <script>
+                                                function toggleSalePriceInput() {
+                                                    const saleCheckbox = document.getElementById("sale");
+                                                    const salePriceInput = document.getElementById("salePrice");
+                                                    const salePriceLabel = document.getElementById("salePriceLabel");
+
+                                                    // Hiển thị hoặc ẩn input giá mới khi checkbox được tích hoặc bỏ tích
+                                                    if (saleCheckbox.checked) {
+                                                        salePriceInput.style.display = "inline-block";
+                                                        salePriceLabel.style.display = "inline";
+                                                    } else {
+                                                        salePriceInput.style.display = "none";
+                                                        salePriceLabel.style.display = "none";
+                                                    }
+                                                }
+                                    
                                         </table>
                                     </form>
                                 </div>
@@ -310,7 +346,58 @@
                         </div>
                     </div>
                 </div>
+                                            </script>                      
+                                            <!-- EDITPRODUCT -->
+
+                                            <script>
+                                                // Đặt giá trị mặc định của sale là 0 khi trang tải
+                                                document.getElementById('sale').value = '0';
+                                            </script> 
+
+
+                                            <script>
+                                                function toggleSalePriceInput() {
+                                                    const saleCheckbox = document.getElementById("sale");
+                                                    const salePriceInput = document.getElementById("salePrice");
+                                                    const salePriceLabel = document.getElementById("salePriceLabel");
+
+                                                    // Hiển thị hoặc ẩn input giá mới khi checkbox được tích hoặc bỏ tích
+                                                    if (saleCheckbox.checked) {
+                                                        salePriceInput.style.display = "inline-block";
+                                                        salePriceLabel.style.display = "inline";
+                                                    } else {
+                                                        salePriceInput.style.display = "none";
+                                                        salePriceLabel.style.display = "none";
+                                                    }
+                                                }
+                                            </script>                                                         
+                                                    
                 <!-- Table End -->
+                
+                <script>
+                    // Đặt giá trị mặc định của sale là 0 khi trang tải
+                    document.getElementById('sale').value = '0';
+                </script> 
+
+
+                <script>
+                    function toggleSalePriceInput() {
+                        const saleCheckbox = document.getElementById("sale");
+                        const salePriceInput = document.getElementById("salePrice");
+                        const salePriceLabel = document.getElementById("salePriceLabel");
+
+                        // Hiển thị hoặc ẩn input giá mới khi checkbox được tích hoặc bỏ tích
+                        if (saleCheckbox.checked) {
+                            salePriceInput.style.display = "inline-block";
+                            salePriceLabel.style.display = "inline";
+                        } else {
+                            salePriceInput.style.display = "none";
+                            salePriceLabel.style.display = "none";
+                        }
+                    }
+                </script>
+
+                <!-- UPDATEPRODUCT -->
 
                 <!-- Footer Start -->
                 <div class="container-fluid pt-4 px-4">
