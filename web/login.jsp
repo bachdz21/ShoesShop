@@ -38,6 +38,11 @@
                 ĐĂNG NHẬP
             </div>
             <br>
+            <c:if test="${not empty message}">
+                    <div style="color: green; text-align: center;">
+                        ${message}
+                    </div>
+                </c:if>
             <c:if test="${not empty error}">
                 <div style="color: red; text-align: center;">
                     ${error}
