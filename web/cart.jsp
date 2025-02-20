@@ -88,23 +88,7 @@
     <%@ page import="java.util.List" %>
 
     <%@page import="jakarta.servlet.http.HttpSession"%>
-    <%
-        // Sử dụng biến session từ request mà không cần khai báo lại
-        User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
-    %>
-    <% 
-    // Lấy danh sách sản phẩm trong giỏ hàng từ session
-    List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
-    int totalQuantity = 0;
-    double subtotal = 0.0;
-    if (cartItems != null) {
-        for (CartItem item : cartItems) {
-            totalQuantity += item.getQuantity();
-            subtotal += item.getProduct().getPrice() * item.getQuantity();
-        }
-    }
-    %>
-
+    
     <body>
         <!-- HEADER -->
             <jsp:include page="header.jsp" />
@@ -118,8 +102,8 @@
             <div id="responsive-nav">
                 <!-- NAV -->
                 <ul class="main-nav nav navbar-nav">
-                        <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
-                        <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
+                        <li><a href="./home">Trang Chủ</a></li>
+                        <li><a href="./product">Danh Mục</a></li>
                         <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
                             <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                             <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
