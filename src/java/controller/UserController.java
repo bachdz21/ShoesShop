@@ -129,8 +129,8 @@ public class UserController extends HttpServlet {
                 response.addCookie(usernameCookie);
                 response.addCookie(passwordCookie);
             }
-
-            request.getRequestDispatcher("/home").forward(request, response);
+            response.sendRedirect("home");
+            
         } else {
             request.setAttribute("error", "Invalid username or password");
             request.getRequestDispatcher("login.jsp").forward(request, response);

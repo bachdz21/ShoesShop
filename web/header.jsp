@@ -125,7 +125,7 @@
                                             <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
                                             <h4 class="product-price">$<%= item.getProduct().getSalePrice() %></h4>
                                         </div>
-                                        <form action="deleteCartItem" method="POST">
+                                        <form action="deleteWishlistItem" method="POST">
                                             <input type="hidden" name="productId" value="<%= item.getProduct().getProductID() %>">
                                             <button class="delete"><i class="fa fa-close"></i></button>
                                         </form>

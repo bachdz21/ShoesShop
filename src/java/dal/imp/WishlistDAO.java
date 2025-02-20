@@ -109,14 +109,30 @@ public class WishlistDAO extends DBConnect implements IWishlistDAO {
     }
 
     @Override
-    public void deleteWishlistItem(int wishlistId, int productId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void deleteWishlistItem(int userId, int productId) {
+        try {
+            // Xóa sản phẩm khỏi bảng WishlistItems
+            String deleteQuery = "DELETE wi\n"
+                    + "FROM WishlistItems wi\n"
+                    + "JOIN Wishlist w ON wi.WishlistID = w.WishlistID\n"
+                    + "JOIN Users u ON w.UserID = u.UserID\n"
+                    + "WHERE u.UserID = ? AND wi.ProductID = ?;";
+            PreparedStatement stmtDel = c.prepareStatement(deleteQuery);
+            stmtDel.setInt(1, userId);
+            stmtDel.setInt(2, productId);
+            stmtDel.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
-    
+
     public static void main(String[] args) {
         WishlistDAO w = new WishlistDAO();
+        w.deleteWishlistItem(2, 99);
         List<WishlistItem> list = w.getWishlistItems(2);
         System.out.println(list);
     }
-    
+
 }

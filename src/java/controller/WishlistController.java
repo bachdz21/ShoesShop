@@ -26,7 +26,7 @@ import model.WishlistItem;
  *
  * @author nguye
  */
-@WebServlet(name="WishlistController", urlPatterns={"/wishlist", "/addWishlist"})
+@WebServlet(name="WishlistController", urlPatterns={"/wishlist", "/getWishlist", "/addWishlist", "/deleteWishlistItem"})
 public class WishlistController extends HttpServlet {
     IWishlistDAO wishlistDAO = new WishlistDAO();
     IProductDAO productDAO = new ProductDAO();
@@ -54,6 +54,8 @@ public class WishlistController extends HttpServlet {
             getWishlistItem(request, response);
         } else if (request.getServletPath().equals("/addWishlist")) {
             addWishlistItem(request, response);
+        } else if (request.getServletPath().equals("/deleteWishlistItem")) {
+            deleteWishlistItem(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }
@@ -69,9 +71,9 @@ public class WishlistController extends HttpServlet {
             return;
         }
         int userId = user.getUserId();
-        List<WishlistItem> listCartItem = wishlistDAO.getWishlistItems(userId);
-        request.setAttribute("listWishlistItem", listCartItem);
-        request.getRequestDispatcher("wishlist").forward(request, response);
+        List<WishlistItem> listWishlistItem = wishlistDAO.getWishlistItems(userId);
+        request.setAttribute("listWishlistItem", listWishlistItem);
+        request.getRequestDispatcher("home.jsp").forward(request, response);
     }
     
     protected void addWishlistItem(HttpServletRequest request, HttpServletResponse response)
@@ -96,6 +98,46 @@ public class WishlistController extends HttpServlet {
         HttpSession session = request.getSession();
         session.setAttribute("wishlist", updatedWishlist);
     }
+    
+    protected void deleteWishlistItem(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        String productIdStr = request.getParameter("productId");
+
+        // Kiểm tra productId có hợp lệ không
+        if (productIdStr == null || productIdStr.trim().isEmpty()) {
+            response.sendRedirect(request.getHeader("Referer")); // Trả về trang trước
+            return;
+        }
+
+        try {
+            int productId = Integer.parseInt(productIdStr);
+            int userId = user.getUserId();
+            wishlistDAO.deleteWishlistItem(userId, productId);
+
+            List<WishlistItem> updatedCart = wishlistDAO.getWishlistItems(userId);
+            updateWishlistInSession(request, updatedCart);
+
+            // Trả về trang trước khi gửi request
+            String referer = request.getHeader("Referer");
+            if (referer != null && !referer.isEmpty()) {
+                response.sendRedirect(referer);
+            } else {
+                response.sendRedirect("home"); // Nếu không có referer, về giỏ hàng mặc định
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            response.sendRedirect("home");
+        }
+    }
+    
     /** 
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
@@ -110,6 +152,8 @@ public class WishlistController extends HttpServlet {
             getWishlistItem(request, response);
         } else if (request.getServletPath().equals("/addCart")) {
             addWishlistItem(request, response);
+        } else if (request.getServletPath().equals("/deleteWishlistItem")) {
+            deleteWishlistItem(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }

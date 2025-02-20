@@ -2,6 +2,7 @@
 <html lang="vi">
     <head>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -35,8 +36,14 @@
           <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
+        <style>
+            .text-danger {
+                color: #D10024 !important;
+            }
+
+        </style>
     </head>
-    
+
 
     <body>
         <!-- HEADER -->
@@ -164,12 +171,26 @@
                                                         <i class="fa fa-star"></i>
                                                         <i class="fa fa-star"></i>
                                                     </div>
+
+                                                    <!-- Kiểm tra nếu sản phẩm đã có trong wishlist -->
+                                                    <c:set var="isInWishlist" value="false" />
+                                                    <c:forEach var="item" items="${sessionScope.wishlist}">
+                                                        <c:if test="${item.product.productID == i.productID}">
+                                                            <c:set var="isInWishlist" value="true" />
+                                                        </c:if>
+                                                    </c:forEach>
+
                                                     <form action="addWishlist" method="GET" style="display: inline-block">
                                                         <input type="hidden" name="productID" value="${i.productID}">
                                                         <div class="product-btns">
-                                                            <button class="add-to-wishlist"><i class="far fa-heart"></i><span class="tooltipp">add to wishlist</span></button>
+                                                            <!-- Hiển thị icon trái tim đỏ nếu đã có trong wishlist, nếu không thì hiển thị trái tim trắng -->
+                                                            <button class="add-to-wishlist">
+                                                                <i class="${isInWishlist ? 'fa fa-heart text-danger' : 'far fa-heart'}"></i>
+                                                                <span class="tooltipp">${isInWishlist ? 'Đã có trong wishlist' : 'Thêm vào wishlist'}</span>
+                                                            </button>
                                                         </div>
                                                     </form>
+
                                                     <div class="product-btns" style="display: inline-block">
                                                         <button class="quick-view"><i class="fa-regular fa-eye"></i><span class="tooltipp">quick view</span></button>
                                                     </div>
@@ -178,7 +199,7 @@
                                                 <form action="addCartQuick" method="GET">
                                                     <div class="add-to-cart">
                                                         <input type="hidden" name="quantity" value="1">
-                                                        <input type="hidden" name="productID" value="${i.productID}"> <!-- Gửi productID -->
+                                                        <input type="hidden" name="productID" value="${i.productID}">
                                                         <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
                                                     </div>
                                                 </form>
