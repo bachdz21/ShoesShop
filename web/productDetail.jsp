@@ -266,6 +266,9 @@
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star-o"></i>
                             </div>
+                            <span style="font-size: 16px; color: gray; margin-left: 10px;">
+                                Đã bán: <strong>${totalSold}</strong> sản phẩm
+                            </span>
                         </div>
                         <div>
                             <!-- Kiểm tra nếu salePrice > 0 -->

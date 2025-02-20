@@ -27,6 +27,7 @@ public class Product {
     private Date createdDate;
     private String brand;
     private double salePrice = price;
+    private int totalSold;
     // Constructor
 
     public Product() {
@@ -222,7 +223,13 @@ public class Product {
     public void setImageURLDetail(List<String> imageURLDetail) {
         this.imageURLDetail = imageURLDetail;
     }
+   public int getTotalSold() {
+        return totalSold;
+    }
 
+    public void setTotalSold(int totalSold) {
+        this.totalSold = totalSold;
+    }
     @Override
     public String toString() {
         return "Product{" + "productID=" + productID + ", productName=" + productName + ", description=" + description
