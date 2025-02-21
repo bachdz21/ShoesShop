@@ -205,7 +205,7 @@
                                         </div>
                                     </div>
                                     <div class="HRvCAv total-amount">
-                                        <span class="total-price">0 $</span> <!-- Phần tử hiển thị tổng số tiền -->
+                                        <span class="total-price">${p.getProduct().getPrice()}</span> <!-- Phần tử hiển thị tổng số tiền -->
                                     </div>
                                     <div class="bRSn43 TvSDdG">
                                         <a class="lSrQtj" href="deleteCartItem?productId=${p.getProduct().getProductID()}">Xóa</a>

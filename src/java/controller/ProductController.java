@@ -386,9 +386,11 @@ public class ProductController extends HttpServlet {
             throws ServletException, IOException {
         int productId = Integer.parseInt(request.getParameter("id"));
         Product product = productDAO.getProductById(productId);
+        int totalSold = productDAO.getTotalProductSold(productId); // Lấy số lượng đã bán
         String category = request.getParameter("category");
         List<Product> productRelative = productDAO.getRelativeProducts(category);
         request.setAttribute("product", product);
+        request.setAttribute("totalSold", totalSold); // Truyền totalSold vào request
         request.setAttribute("productRelative", productRelative);
         request.getRequestDispatcher("productDetail.jsp").forward(request, response);
     }
