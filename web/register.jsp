@@ -15,7 +15,7 @@
     <body>
         <div class="wrapper">
             <div class="title">
-                Register Form
+                Đăng ký
             </div>
             <!-- Hiển thị thông báo lỗi -->
             <br>
@@ -30,7 +30,7 @@
                     <label>Tài Khoản</label>
                 </div>
                 <div class="field">
-                    <input type="password" name="password" required>
+                    <input type="password" name="password"  required ="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$" title="Mật khẩu phải có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số">
                     <label>Mật Khẩu</label>
                 </div>
                 <div class="field">
@@ -51,12 +51,47 @@
                 </div>
                 <br>
                 <div class="field">
-                    <input type="submit" value="Register">
+                    <input type="submit" value="Đăng ký">
                 </div>
                 <div class="signup-link">
                     Bạn đã có tài khoản rồi? <a href="login.jsp">Đăng Nhập</a>
                 </div>
             </form>
         </div>
+        <script>
+            // JavaScript kiểm tra mật khẩu và xác nhận mật khẩu, cũng như kiểm tra số điện thoại
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelector("form").addEventListener("submit", function (event) {
+                    const password = document.querySelector("input[name='password']").value;
+                    const confirmPassword = document.querySelector("input[name='confirm_password']").value;
+                    const phoneNumber = document.querySelector("input[name='phonenumber']").value;
+
+                    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+                    const phoneRegex = /^[0-9]{10}$/; // Kiểm tra số điện thoại chỉ chứa 10 chữ số
+
+                    // Kiểm tra mật khẩu
+                    if (!password.match(passwordRegex)) {
+                        alert("Mật khẩu phải có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
+                        event.preventDefault(); // Ngừng gửi biểu mẫu
+                        return;
+                    }
+
+                    // Kiểm tra xác nhận mật khẩu
+                    if (password !== confirmPassword) {
+                        alert("Mật khẩu và xác nhận mật khẩu không khớp.");
+                        event.preventDefault(); // Ngừng gửi biểu mẫu
+                        return;
+                    }
+
+                    // Kiểm tra số điện thoại
+                    if (!phoneNumber.match(phoneRegex)) {
+                        alert("Số điện thoại phải có 10 chữ số và không chứa kí tự khác.");
+                        event.preventDefault(); // Ngừng gửi biểu mẫu
+                        return;
+                    }
+                });
+            });
+        </script>
+
     </body>
 </html>

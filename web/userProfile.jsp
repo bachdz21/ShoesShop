@@ -391,13 +391,13 @@
                     <ul class="header-links pull-left">
                         <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
                         <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
-                        <li><a href="#"><i class="fa fa-map-marker"></i> SE1881 - PRJ301</a></li>
+                        <li><a href="#"><i class="fa fa-map-marker"></i> 26 Cụm 1, Thôn 3, Thạch Thất, Hà Nội</a></li>
                     </ul>
                     <ul class="header-links pull-right">
                         <% if (user == null) { %>
                         <li><a href="login.jsp"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
                             <% } else { %>
-                        <li><a href="#"><i class="fa fa-dollar"></i> Chào Mừng, <%= user.getUsername() %></a></li>
+                        <li><a href="#"><i class="fa fa-user"></i> Chào Mừng, <%= user.getUsername() %></a></li>
                         <li><a href="logout"><i class="fa fa-user-o"></i> Đăng Xuất</a></li>
                             <% } %>
                     </ul>
@@ -418,7 +418,7 @@
                     <!-- LOGO -->
                     <div class="col-md-3">
                         <div class="header-logo">
-                            <a href="/ProjectPRJ301/home" class="logo">
+                            <a href="home" class="logo">
                                 <img src="./img/logo.png" alt="">
                             </a>
                         </div>
@@ -431,10 +431,10 @@
                             <form action="search" method="get">
                                 <select class="input-select" name="category">
                                     <option value="">Tất cả</option>
-                                    <option value="Laptop">Laptop</option>
-                                    <option value="Smartphone">Điện Thoại</option>
-                                    <option value="Camera">Máy Ảnh</option>
-                                    <option value="Accessory">Phụ Kiện</option>
+                                    <option value="Laptop">Sneakers</option>
+                                    <option value="Smartphone">Oxford</option>
+                                    <option value="Camera">Boot</option>
+                                    <option value="Accessory">Sandals</option>
                                     <!-- Thêm các loại sản phẩm khác nếu cần -->
                                 </select>
                                 <input class="input" name="query" placeholder="Search here">
@@ -512,8 +512,8 @@
             <div id="responsive-nav">
                 <!-- NAV -->
                 <ul class="main-nav nav navbar-nav">
-                    <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
-                    <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
+                    <li><a href="home">Trang Chủ</a></li>
+                    <li><a href="/product">Danh Mục</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                         <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
                         <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
@@ -558,36 +558,36 @@
                             </div>
                             <hr class="my-4">
                             <ul class="list-group list-group-flush">
-                                <h2 class="product-title">Change Password</h2>
+                                <h2 class="product-title">Đổi mật khẩu</h2>
                                 <form action="changePassword" method="POST">
                                     <div class="row mb-3">
-                                        <div class="col-sm-3">
-                                            <h6 class="mb-0">Password</h6>
+                                        <div class="col-sm-12">
+                                            <h6 class="mb-0">Mật khẩu cũ</h6>
                                         </div>
-                                        <div class="col-sm-9 text-secondary">
+                                        <div class="col-sm-12 text-secondary">
                                             <input type="password" class="form-control" name="password">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-3">
-                                            <h6 class="mb-0">New Password</h6>
+                                        <div class="col-sm-12">
+                                            <h6 class="mb-0">Mật khẩu mới</h6>
                                         </div>
-                                        <div class="col-sm-9 text-secondary">
+                                        <div class="col-sm-12 text-secondary">
                                             <input type="password" class="form-control" name="newPassword">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-3">
-                                            <h6 class="mb-0">Confirm New Passwords</h6>
+                                        <div class="col-sm-12">
+                                            <h6 class="mb-0">Xác nhận mật khẩu mới</h6>
                                         </div>
-                                        <div class="col-sm-9 text-secondary">
+                                        <div class="col-sm-12 text-secondary">
                                             <input type="password" class="form-control" name="confirmNewPassword">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-3"></div>
                                         <div class="col-sm-9 text-secondary">
-                                            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                                            <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
                                         </div>
                                     </div>
                                 </form>
@@ -607,11 +607,11 @@
                     <form action="updateProfile" method="POST">         
                         <div class="card">
                             <hr>
-                            <h2 class="product-title">User Profile</h2>
+                            <h2 class="product-title">Hồ sơ của tôi</h2>
                             <div class="card-body">
                                 <div class="row mb-3">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">Full Name</h6>
+                                        <h6 class="mb-0">Tên</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
                                         <input type="text" class="form-control" name="fullName" value="${user.fullName}">
@@ -627,7 +627,7 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">Phone</h6>
+                                        <h6 class="mb-0">Số điện thoại</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
                                         <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber}">
@@ -636,7 +636,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">Address</h6>
+                                        <h6 class="mb-0">Địa chỉ</h6>
                                     </div>
                                     <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
                                         <option value="" selected>${address.get(3) != null ? address.get(3) : "Tỉnh Thành"}</option>           
@@ -653,7 +653,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">Address Detail</h6>
+                                        <h6 class="mb-0">Địa chỉ cụ thể</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
                                         <input type="text" class="form-control" name="addressDetail" value="${address.get(0)}">
@@ -663,7 +663,7 @@
                                 <div class="row" style="margin-top: 10px">
                                     <div class="col-sm-3"></div>
                                     <div class="col-sm-9 text-secondary">
-                                        <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                                        <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
                                     </div>
                                 </div>
                                 <hr>
