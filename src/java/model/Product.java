@@ -27,25 +27,9 @@ public class Product {
     private Date createdDate;
     private String brand;
     private double salePrice = price;
-    private int quantitySold;
     // Constructor
 
     public Product() {
-    }
-
-    public Product(int productID, String productName, String description, double price, int stock, String categoryName, String imageURL, List<String> imageURLDetail, int sale, Date createdDate, String brand, int quantitySold) {
-        this.productID = productID;
-        this.productName = productName;
-        this.description = description;
-        this.price = price;
-        this.stock = stock;
-        this.categoryName = categoryName;
-        this.imageURL = imageURL;
-        this.imageURLDetail = imageURLDetail;
-        this.sale = sale;
-        this.createdDate = createdDate;
-        this.brand = brand;
-        this.quantitySold = quantitySold;
     }
 
     public Product(String productName, String description, double price, int stock, String categoryName, String imageURL,
@@ -239,15 +223,6 @@ public class Product {
         this.imageURLDetail = imageURLDetail;
     }
 
-    public int getQuantitySold() {
-        return quantitySold;
-    }
-
-    public void setQuantitySold(int quantitySold) {
-        this.quantitySold = quantitySold;
-    }
-
-    
     @Override
     public String toString() {
         return "Product{" + "productID=" + productID + ", productName=" + productName + ", description=" + description

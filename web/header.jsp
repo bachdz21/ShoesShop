@@ -5,13 +5,10 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@page import="model.User" %>
 <%@page import="model.CartItem" %>
-<%@page import="model.WishlistItem" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Calendar" %>
 <%
-    // Sử dụng biến session từ request mà không cần khai báo lại
-        User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
-    // Lấy danh sách sản phẩm trong giỏ hàng từ session
+    User user = (User) request.getSession().getAttribute("user");
     List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
     int totalQuantity = 0;
     double subtotal = 0.0;
@@ -21,15 +18,6 @@
             subtotal += item.getProduct().getPrice() * item.getQuantity();
         }
     }
-    // Lấy danh sách wishlist từ session
-    List<WishlistItem> wishlistItems = (List<WishlistItem>) session.getAttribute("wishlist");
-    int total = 0;
-    if (wishlistItems != null) {
-        for (WishlistItem item : wishlistItems) {
-            total += 1;
-        }
-    }
-    
     Calendar calendar = Calendar.getInstance();
     int currentYear = calendar.get(Calendar.YEAR);
     int currentMonth = calendar.get(Calendar.MONTH) + 1;
@@ -47,17 +35,17 @@
             <ul class="header-links pull-right">
                 <% if (user == null) { %>
                 <li><a href="login.jsp"><i class="fa fa-user-o"></i> Login</a></li>
-                    <% } else { %>
+                <% } else { %>
                     <% if ("Admin".equals(user.getRole())) { %>
-                <li>
-                    <a href="/ProjectPRJ301/revenue?year=<%= currentYear %>&month=<%= currentMonth %>">
-                        <i class="fa fa-dashboard"></i> Dashboard
-                    </a>
-                </li>
-                <% } %>
-                <li><a href="userProfile"><i class="fa fa-user"></i> Welcome, <%= user.getUsername() %></a></li>
-                <li><a href="logout"><i class="fa fa-sign-out"></i> Logout</a></li>
+                    <li>
+                        <a href="/ProjectPRJ301/revenue?year=<%= currentYear %>&month=<%= currentMonth %>">
+                            <i class="fa fa-dashboard"></i> Dashboard
+                        </a>
+                    </li>
                     <% } %>
+                    <li><a href="userProfile"><i class="fa fa-user"></i> Welcome, <%= user.getUsername() %></a></li>
+                    <li><a href="logout"><i class="fa fa-sign-out"></i> Logout</a></li>
+                <% } %>
             </ul>
         </div>
     </div>
@@ -107,35 +95,12 @@
                 <div class="col-md-3 clearfix">
                     <div class="header-ctn">
                         <!-- Wishlist -->
-                        <div class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                        <div>
+                            <a href="#">
                                 <i class="fa fa-heart-o"></i>
                                 <span>Your Wishlist</span>
-                                <div class="qty"><%= total %></div>
+                                <div class="qty">2</div>
                             </a>
-                            <div class="cart-dropdown">
-                                <div class="cart-list">
-                                    <% if (wishlistItems != null && !wishlistItems.isEmpty()) { %>
-                                    <% for (WishlistItem item : wishlistItems) { %>
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="<%= item.getProduct().getImageURL() %>" alt="">
-                                        </div>
-                                        <div class="product-body">
-                                            <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                            <h4 class="product-price">$<%= item.getProduct().getSalePrice() %></h4>
-                                        </div>
-                                        <form action="deleteWishlistItem" method="POST">
-                                            <input type="hidden" name="productId" value="<%= item.getProduct().getProductID() %>">
-                                            <button class="delete"><i class="fa fa-close"></i></button>
-                                        </form>
-                                    </div>
-                                    <% } %>
-                                    <% } else { %>
-                                    <p>Danh sách yêu thích của bạn đang trống</p>
-                                    <% } %>
-                                </div>
-                            </div>
                         </div>
                         <!-- /Wishlist -->
 
@@ -149,23 +114,19 @@
                             <div class="cart-dropdown">
                                 <div class="cart-list">
                                     <% if (cartItems != null && !cartItems.isEmpty()) { %>
-                                    <% for (CartItem item : cartItems) { %>
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="<%= item.getProduct().getImageURL() %>" alt="">
+                                        <% for (CartItem item : cartItems) { %>
+                                        <div class="product-widget">
+                                            <div class="product-img">
+                                                <img src="<%= item.getProduct().getImageURL() %>" alt="">
+                                            </div>
+                                            <div class="product-body">
+                                                <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
+                                                <h4 class="product-price"><span class="qty"><%= item.getQuantity() %>x</span>$<%= item.getProduct().getSalePrice() %></h4>
+                                            </div>
                                         </div>
-                                        <div class="product-body">
-                                            <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                            <h4 class="product-price"><span class="qty"><%= item.getQuantity() %>x</span>$<%= item.getProduct().getSalePrice() %></h4>
-                                        </div>
-                                        <form action="deleteCartItem" method="POST">
-                                            <input type="hidden" name="productId" value="<%= item.getProduct().getProductID() %>">
-                                            <button class="delete"><i class="fa fa-close"></i></button>
-                                        </form>
-                                    </div>
-                                    <% } %>
+                                        <% } %>
                                     <% } else { %>
-                                    <p>Giỏ hàng của bạn đang trống</p>
+                                        <p>Giỏ hàng của bạn đang trống</p>
                                     <% } %>
                                 </div>
                                 <div class="cart-summary">
@@ -198,4 +159,3 @@
 </header>
 <!-- /HEADER -->
 <script src="js/searchbar.js"></script>
-

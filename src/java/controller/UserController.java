@@ -4,15 +4,12 @@
  */
 package controller;
 //hauy
-//saaaa
 import dal.ICartDAO;
 import dal.IUserDAO;
-import dal.IWishlistDAO;
 import dal.imp.CartDAO;
 import dal.imp.EmailService;
 import dal.imp.OrderDAO;
 import dal.imp.UserDAO;
-import dal.imp.WishlistDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -26,7 +23,6 @@ import model.CartItem;
 import model.User;
 import java.util.ArrayList;
 import model.Order;
-import model.WishlistItem;
 import utils.Encryption;
 
 /**
@@ -39,7 +35,6 @@ import utils.Encryption;
 public class UserController extends HttpServlet {
 
     ICartDAO cartDAO = new CartDAO();
-    IWishlistDAO wishlistDAO = new WishlistDAO();
     private final OrderDAO orderDAO = new OrderDAO();
     Encryption e = new Encryption();
 
@@ -110,9 +105,6 @@ public class UserController extends HttpServlet {
             // Lấy thông tin giỏ hàng của người dùng từ database và lưu vào session
             List<CartItem> cartItems = cartDAO.getCartItems(user.getUserId());
             session.setAttribute("cart", cartItems);
-            // Lấy thông tin danh sách yêu thích của người dùng từ database và lưu vào session
-            List<WishlistItem> wishlistItems = wishlistDAO.getWishlistItems(user.getUserId());
-            session.setAttribute("wishlist", wishlistItems);
             // Nếu người dùng chọn "Ghi nhớ đăng nhập"
             if ("on".equals(remember)) {
                 Cookie usernameCookie = new Cookie("username", username);
@@ -130,8 +122,8 @@ public class UserController extends HttpServlet {
                 response.addCookie(usernameCookie);
                 response.addCookie(passwordCookie);
             }
-            response.sendRedirect("home");
-            
+
+            request.getRequestDispatcher("/home").forward(request, response);
         } else {
             request.setAttribute("error", "Invalid username or password");
             request.getRequestDispatcher("login.jsp").forward(request, response);

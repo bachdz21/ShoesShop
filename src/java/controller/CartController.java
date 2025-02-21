@@ -136,40 +136,19 @@ public class CartController extends HttpServlet {
     protected void deleteCartItem(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-
+        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
+        // Thêm sản phẩm vào giỏ hàng
         if (user == null) {
+            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
             return;
         }
-
-        String productIdStr = request.getParameter("productId");
-
-        // Kiểm tra productId có hợp lệ không
-        if (productIdStr == null || productIdStr.trim().isEmpty()) {
-            response.sendRedirect(request.getHeader("Referer")); // Trả về trang trước
-            return;
-        }
-
-        try {
-            int productId = Integer.parseInt(productIdStr);
-            int userId = user.getUserId();
-            cartDAO.deleteCartItem(userId, productId);
-
-            List<CartItem> updatedCart = cartDAO.getCartItems(userId);
-            updateCartInSession(request, updatedCart);
-
-            // Trả về trang trước khi gửi request
-            String referer = request.getHeader("Referer");
-            if (referer != null && !referer.isEmpty()) {
-                response.sendRedirect(referer);
-            } else {
-                response.sendRedirect("cartItem"); // Nếu không có referer, về giỏ hàng mặc định
-            }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            response.sendRedirect("cartItem");
-        }
+        int userId = user.getUserId();
+        int productId = Integer.parseInt(request.getParameter("productId"));
+        cartDAO.deleteCartItem(userId, productId);
+        List<CartItem> updatedCart = cartDAO.getCartItems(userId);
+        updateCartInSession(request, updatedCart);
+        response.sendRedirect("cartItem"); // Chuyển hướng đến trang giỏ hàng sau khi xóa
     }
 
     protected void deleteCartItemTrash(HttpServletRequest request, HttpServletResponse response)
