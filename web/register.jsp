@@ -30,7 +30,7 @@
                     <label>Tài Khoản</label>
                 </div>
                 <div class="field">
-                    <input type="password" name="password"  required ="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$" title="Mật khẩu phải có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số">
+                    <input type="password" name="password"  required >
                     <label>Mật Khẩu</label>
                 </div>
                 <div class="field">

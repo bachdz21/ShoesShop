@@ -397,7 +397,7 @@
                         <% if (user == null) { %>
                         <li><a href="login.jsp"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
                             <% } else { %>
-                        <li><a href="#"><i class="fa fa-user"></i> Chào Mừng, <%= user.getUsername() %></a></li>
+                        <li><a href="userProfile"><i class="fa fa-user"></i> Chào Mừng, <%= user.getUsername() %></a></li>
                         <li><a href="logout"><i class="fa fa-user-o"></i> Đăng Xuất</a></li>
                             <% } %>
                     </ul>
@@ -437,7 +437,7 @@
                                     <option value="Accessory">Sandals</option>
                                     <!-- Thêm các loại sản phẩm khác nếu cần -->
                                 </select>
-                                <input class="input" name="query" placeholder="Search here">
+                                <input class="input" name="query" placeholder="Tìm kiếm">
                                 <button type="submit" class="search-btn">Tìm kiếm</button>
                             </form>
                         </div>
@@ -559,13 +559,13 @@
                             <hr class="my-4">
                             <ul class="list-group list-group-flush">
                                 <h2 class="product-title">Đổi mật khẩu</h2>
-                                <form action="changePassword" method="POST">
+                                <form action="changePassword" method="POST" onsubmit="return validatePasswordChange()">
                                     <div class="row mb-3">
                                         <div class="col-sm-12">
                                             <h6 class="mb-0">Mật khẩu cũ</h6>
                                         </div>
                                         <div class="col-sm-12 text-secondary">
-                                            <input type="password" class="form-control" name="password">
+                                            <input type="password" class="form-control" name="password" required>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -573,7 +573,7 @@
                                             <h6 class="mb-0">Mật khẩu mới</h6>
                                         </div>
                                         <div class="col-sm-12 text-secondary">
-                                            <input type="password" class="form-control" name="newPassword">
+                                            <input type="password" class="form-control" name="newPassword" required>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -581,16 +581,17 @@
                                             <h6 class="mb-0">Xác nhận mật khẩu mới</h6>
                                         </div>
                                         <div class="col-sm-12 text-secondary">
-                                            <input type="password" class="form-control" name="confirmNewPassword">
+                                            <input type="password" class="form-control" name="confirmNewPassword" required>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-3"></div>
-                                        <div class="col-sm-9 text-secondary">
+                                        <div class="col-sm-9 text-secondary " style="margin-top: 10px">
                                             <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
                                         </div>
                                     </div>
                                 </form>
+
                                 <c:if test="${not empty message}">
                                     <p class="${message == 'Đổi mật khẩu thành công.' ? 'message-success' : 'message-error'}">
                                         ${message}
@@ -614,7 +615,7 @@
                                         <h6 class="mb-0">Tên</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="fullName" value="${user.fullName}">
+                                        <input type="text" class="form-control" name="fullName" value="${user.fullName}" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -622,7 +623,7 @@
                                         <h6 class="mb-0">Email</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="email" value="${user.email}">
+                                        <input type="text" class="form-control" name="email" value="${user.email} required">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -630,7 +631,7 @@
                                         <h6 class="mb-0">Số điện thoại</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber}">
+                                        <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber} required">
                                     </div>
                                 </div>
 
@@ -638,17 +639,19 @@
                                     <div class="col-sm-3">
                                         <h6 class="mb-0">Địa chỉ</h6>
                                     </div>
+
                                     <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
-                                        <option value="" selected>${address.get(3) != null ? address.get(3) : "Tỉnh Thành"}</option>           
+                                        <option value="${address != null && address.size() > 3 ? address.get(3) : ''}" selected>Tỉnh Thành</option>
                                     </select>
 
                                     <select name="district" class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm">
-                                        <option value="" selected>${address.get(2) != null ? address.get(2) : "Quận Huyện"}</option>
+                                        <option value="${address != null && address.size() > 2 ? address.get(2) : ''}" selected>Quận Huyện</option>
                                     </select>
 
                                     <select name="ward" class="form-select form-select-sm" id="ward" aria-label=".form-select-sm">
-                                        <option value="" selected>${address.get(1) != null ? address.get(1) : "Xã Phường"}</option>
+                                        <option value="${address != null && address.size() > 1 ? address.get(1) : ''}" selected>Xã Phường</option>
                                     </select>
+
                                 </div>
 
                                 <div class="row mb-3">
@@ -656,7 +659,7 @@
                                         <h6 class="mb-0">Địa chỉ cụ thể</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="addressDetail" value="${address.get(0)}">
+                                        <input type="text" class="form-control" name="addressDetail" value="${address != null && address.size() > 0 ? address.get(0) : ""}" required>
                                     </div>
                                 </div>
 
@@ -665,6 +668,15 @@
                                     <div class="col-sm-9 text-secondary">
                                         <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
                                     </div>
+
+                                    <div class="col-sm-6 text-secondary">
+                                        <c:if test="${not empty message1}">
+                                            <p class="${message1 == 'Cập nhật hồ sơ thành công.' ? 'message-success' : 'message-error'}">
+                                                ${message1}
+                                            </p>
+                                        </c:if>
+                                    </div>
+
                                 </div>
                                 <hr>
                             </div>
@@ -866,6 +878,47 @@
             form.submit(); // Gửi form
         });
     </script>
+    <script>
+        function validatePasswordChange() {
+            // Lấy các giá trị từ các ô nhập liệu
+            var oldPassword = document.getElementsByName("password")[0].value;
+            var newPassword = document.getElementsByName("newPassword")[0].value;
+            var confirmNewPassword = document.getElementsByName("confirmNewPassword")[0].value;
+            var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
+
+            // Kiểm tra mật khẩu mới và mật khẩu xác nhận có khớp không
+            if (newPassword !== confirmNewPassword) {
+                alert("Mật khẩu mới và xác nhận mật khẩu không khớp.");
+                return false; // Không cho phép gửi form
+            }
+
+            // Kiểm tra mật khẩu cũ phải khác mật khẩu mới
+            if (oldPassword === newPassword) {
+                alert("Mật khẩu cũ không được giống mật khẩu mới.");
+                return false; // Không cho phép gửi form
+            }
+
+            // Kiểm tra mật khẩu mới có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số
+            var passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+            if (!passwordPattern.test(newPassword)) {
+                alert("Mật khẩu mới cần có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
+                return false; // Không cho phép gửi form
+            }
+
+            // Kiểm tra số điện thoại có đúng 10 số
+            var phonePattern = /^\d{10}$/;
+            if (!phonePattern.test(phoneNumber)) {
+                alert("Số điện thoại phải gồm 10 chữ số.");
+                return false; // Không cho phép gửi form
+            }
+
+            // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
+            return true;
+        }
+    </script>
+
+
+
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/slick.min.js"></script>

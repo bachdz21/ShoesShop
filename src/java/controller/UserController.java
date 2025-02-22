@@ -162,8 +162,6 @@ public class UserController extends HttpServlet {
         String fullname = request.getParameter("fullname");
         String email = request.getParameter("email");
         String phonenumber = request.getParameter("phonenumber");
-        
-        
 
         // Kiểm tra nếu username đã tồn tại
         User existingUserByUsername = userDAO.getUserByUsername(username);
@@ -272,15 +270,25 @@ public class UserController extends HttpServlet {
         int userId = user.getUserId();
         User u = userDAO.getUserById(userId); // Gọi hàm để lấy thông tin người dùng
 
-        //Xử lý địa chỉ
-        if (u.getAddress() != null) {
+        // Xử lý địa chỉ
+        if (u.getAddress() != null && !u.getAddress().isEmpty()) {
             String[] addressElements = u.getAddress().split(", ");
-            List<String> address = new ArrayList<>();
-            address.add(addressElements[0]);
-            address.add(addressElements[1]);
-            address.add(addressElements[2]);
-            address.add(addressElements[3]);
-            request.setAttribute("address", address);
+            if (addressElements.length == 4) {
+                List<String> address = new ArrayList<>();
+                address.add(addressElements[0]); // addressDetail
+                address.add(addressElements[1]); // ward
+                address.add(addressElements[2]); // district
+                address.add(addressElements[3]); // city
+                request.setAttribute("address", address);
+            }
+        } else {
+            // Nếu không có địa chỉ, có thể khởi tạo mảng trống hoặc giá trị mặc định
+            List<String> defaultAddress = new ArrayList<>();
+            defaultAddress.add("");
+            defaultAddress.add("");
+            defaultAddress.add("");
+            defaultAddress.add("");
+            request.setAttribute("address", defaultAddress);
         }
 
         //Thông tin đơn hàng
@@ -352,7 +360,8 @@ public class UserController extends HttpServlet {
         u.setPhoneNumber(phoneNumber);
         u.setAddress(address);
         userDAO.updateUser(u);
-        request.getRequestDispatcher("userProfile").forward(request, response); // Chuyển hướng đến trang JSP
+        request.setAttribute("message1", "Cập nhật hồ sơ thành công.");
+        request.getRequestDispatcher("userProfile").forward(request, response); // Chuyển về trang JSP với thông báo
     }
 
     protected void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
