@@ -36,7 +36,7 @@ import java.util.Collection;
 public class ProductController extends HttpServlet {
 
     IProductDAO productDAO = new ProductDAO();
-    private static final String IMAGE_UPLOAD_DIR = "C:\\java&netbeans\\JavaWeb\\ShoesStoreWeb\\web\\img"; // Đường dẫn thư mục lưu ảnh
+    private static final String IMAGE_UPLOAD_DIR = "C:\\java&netbeans\\JavaWeb\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -153,10 +153,10 @@ public class ProductController extends HttpServlet {
         List<Product> list = productDAO.getAllProducts();
         User user = (User) session.getAttribute("user");
 
-//        if (user == null || !user.getRole().equals("Admin")) {
-//            response.sendRedirect("login.jsp");
-//            return;
-//        }
+        if (user == null || !user.getRole().equals("Admin")) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
         request.setAttribute("list", list);
         request.getRequestDispatcher("productList.jsp").forward(request, response);
     }
@@ -189,7 +189,7 @@ public class ProductController extends HttpServlet {
                 String fileName = UUID.randomUUID().toString() + ".jpg"; // Tên tệp hình ảnh duy nhất
                 File imageFile = new File(IMAGE_UPLOAD_DIR, fileName);
                 filePart.write(imageFile.getAbsolutePath());
-                String imageUrl = "./img/" + fileName;
+                String imageUrl = "/ShoesStoreWeb/img/" + fileName;
 
                 // Thêm vào danh sách ảnh
                 imageUrls.add(imageUrl);
@@ -219,7 +219,7 @@ public class ProductController extends HttpServlet {
         int productId = Integer.parseInt(idParam);
         Product existingProduct = productDAO.getProductById(productId);
         request.setAttribute("product", existingProduct);
-        request.getRequestDispatcher("updateProduct2.jsp").forward(request, response);
+        request.getRequestDispatcher("updateProduct.jsp").forward(request, response);
     }
 
     protected void editProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

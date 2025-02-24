@@ -33,104 +33,6 @@
           <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
-        <style>
-            .list-product {
-                margin: 30px; /* Lề cho container */
-            }
-            table {
-                width: 100%; /* Đặt chiều rộng của bảng 100% */
-                border-collapse: collapse; /* Gộp các viền lại với nhau */
-                margin-top: 20px; /* Thêm khoảng cách phía trên */
-            }
-
-            /* Cài đặt cho các ô tiêu đề */
-            th {
-                background-color: #D10024; /* Màu nền xanh lá cây */
-                color: white; /* Màu chữ trắng */
-                padding: 12px; /* Đệm cho ô tiêu đề */
-                text-align: center; /* Căn trái cho chữ */
-                vertical-align: middle;
-            }
-
-            /* Cài đặt cho các ô dữ liệu */
-            td {
-                border: 1px solid #ddd; /* Viền ô dữ liệu */
-                padding: 8px; /* Đệm cho ô dữ liệu */
-                text-align: center;
-                vertical-align: middle;
-            }
-
-            /* Thay đổi màu nền khi rê chuột qua hàng */
-            tr:hover {
-                background-color: #f5f5f5; /* Màu nền khi rê chuột */
-            }
-
-            /* Cài đặt cho hàng lẻ */
-            tr:nth-child(even) {
-                background-color: #f9f9f9; /* Màu nền cho hàng lẻ */
-            }
-
-            /* Cài đặt cho hình ảnh trong bảng */
-            img {
-                border-radius: 5px; /* Bo tròn góc cho hình ảnh */
-            }
-            /* Cài đặt cho tiêu đề sản phẩm */
-            .product-title {
-                font-size: 24px; /* Kích thước chữ */
-                color: #333; /* Màu chữ */
-                margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
-                text-align: center; /* Căn giữa tiêu đề */
-            }
-
-            /* Cài đặt cho liên kết "Thêm Sản Phẩm" */
-            .product-add-link {
-                display: inline-block; /* Hiển thị như một khối */
-                margin-bottom: 20px; /* Khoảng cách dưới liên kết */
-                padding: 10px 15px; /* Đệm cho liên kết */
-                background-color: #D10024; /* Màu nền xanh lá cây */
-                color: white; /* Màu chữ trắng */
-                text-decoration: none; /* Xóa gạch chân */
-                border-radius: 5px; /* Bo tròn góc cho liên kết */
-                transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền khi rê chuột */
-            }
-
-            /* Thay đổi màu nền khi rê chuột qua liên kết */
-            .product-add-link:hover {
-                background-color: #ff3333; /* Màu nền khi rê chuột */
-            }
-
-            .divider {
-                margin: 0 10px; /* Khoảng cách giữa các liên kết */
-            }
-            .action-link {
-                text-decoration: none; /* Bỏ gạch chân */
-                padding: 8px 12px; /* Khoảng cách bên trong */
-                border-radius: 4px; /* Bo góc */
-                color: white; /* Màu chữ */
-                transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu nền */
-            }
-
-            .btn-edit {
-                background-color: #4CAF50; /* Màu xanh lá cây cho nút sửa */
-            }
-
-            .btn-delete {
-                background-color: #f44336; /* Màu đỏ cho nút xóa */
-            }
-
-            .btn-edit:hover {
-                background-color: #45a049; /* Màu xanh lá cây đậm khi hover */
-            }
-
-            .btn-delete:hover {
-                background-color: #e53935; /* Màu đỏ đậm khi hover */
-            }
-
-            .divider {
-                margin: 0 10px; /* Khoảng cách giữa các liên kết */
-            }
-
-        </style>
     </head>
     <%@page import="model.User"%>
     <%@page import="model.CartItem"%>
@@ -160,9 +62,9 @@
             <div id="top-header">
                 <div class="container">
                     <ul class="header-links pull-left">
-                        <li><a href="#"><i class="fa fa-phone"></i> 0399823683</a></li>
-                        <li><a href="#"><i class="fa fa-envelope-o"></i> nvhoang2004k1922@gmail.com</a></li>
-                        <li><a href="#"><i class="fa fa-map-marker"></i> SE1872 - SWP391</a></li>
+                        <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
+                        <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
+                        <li><a href="#"><i class="fa fa-map-marker"></i> SE1881 - PRJ301</a></li>
                     </ul>
                     <ul class="header-links pull-right">
                         <% if (user == null) { %>
@@ -189,8 +91,8 @@
                     <!-- LOGO -->
                     <div class="col-md-3">
                         <div class="header-logo">
-                            <a href="/ShoesStoreWeb/home" class="logo">
-                                <h1 style="color: white; margin-top: 14px">ShoeShop</h1>
+                            <a href="./home" class="logo">
+                                <img src="./img/logo.png" alt="">
                             </a>
                         </div>
                     </div>
@@ -202,10 +104,10 @@
                             <form action="search" method="get">
                                 <select class="input-select" name="category">
                                     <option value="">Tất cả</option>
-                                    <option value="Nike">Nike</option>
-                                    <option value="Adidas">Adidas</option>
-                                    <option value="Converse">Converse</option>
-                                    <option value="Puma">Puma</option>
+                                    <option value="Laptop">Laptop</option>
+                                    <option value="Smartphone">Điện Thoại</option>
+                                    <option value="Camera">Máy Ảnh</option>
+                                    <option value="Accessory">Phụ Kiện</option>
                                     <!-- Thêm các loại sản phẩm khác nếu cần -->
                                 </select>
                                 <input class="input" name="query" placeholder="Search here">
@@ -283,14 +185,13 @@
             <div id="responsive-nav">
                 <!-- NAV -->
                 <ul class="main-nav nav navbar-nav">
-                    <li><a href="/ShoesStoreWeb/home">Trang Chủ</a></li>
-                    <li><a href="/ShoesStoreWeb/product">Danh Mục</a></li>
+                    <li><a href="./home">Trang Chủ</a></li>
+                    <li><a href="./product">Danh Mục</a></li>
                     <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                        <li class="active"><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                        <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
                         <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
                         </c:if>
-
                 </ul>
                 <!-- /NAV -->
             </div>
@@ -300,50 +201,15 @@
     </nav>
     <!-- /NAVIGATION -->
 
-    <form action="deleteMultipleProducts" method="post">
-        <div class="list-product">
-            <h2 class="product-title">Danh Sách Sản Phẩm</h2>
-            <a href="addProduct.jsp" class="product-add-link">Thêm Sản Phẩm</a>
-            <a href="trash" class="product-add-link">Sản Phẩm Đã Xoá</a>
-            <table border="1">
-                <tr>
-                    <th>Chọn</th>
-                    <th>ID</th>
-                    <th>Tên Sản Phẩm</th>
-                    <th>Mô Tả</th>
-                    <th>Giá</th>
-                    <th>Kho</th>
-                    <th>Hình Ảnh</th>
-                    <th>Danh Mục</th>
-                    <th>Thương Hiệu</th>
-                    <th>Sale</th>
-                    <th>Chỉnh Sửa</th>
-                </tr>
-                <c:forEach var="p" items="${requestScope.list}">
-                    <tr>
-                        <td><input type="checkbox" name="productIds" value="${p.productID}"></td>
-                        <td>${p.productID}</td>
-                        <td>${p.productName}</td>
-                        <td>${p.description}</td>
-                        <td>${p.price}</td>
-                        <td>${p.stock}</td>
-                        <td><img src="${p.imageURL}" alt="Product Image" width="50"/></td>
-                        <td>${p.categoryName}</td>
-                        <td>${p.brand}</td>
-                        <td>${p.sale}</td>
-                        <td>
-                            <a href="edit?id=${p.getProductID()}" class="action-link btn-edit">Sửa</a>
-                            <span class="divider">|</span>
-                            <a href="deleteProduct?id=${p.productID}" class="action-link btn-delete">Xóa</a>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </table>
-            <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
-            <button type="submit" class="action-link btn-delete" style="border: none;
-                    margin-top: 15px;">Xóa Nhiều Sản Phẩm</button>
-        </div>
-    </form>
+    <!-- THÔNG BÁO ĐẶT HÀNG THÀNH CÔNG -->
+    <div class="container" style="margin-top: 50px; margin-bottom: 50px; text-align: center;">
+        <h1>Đặt hàng thành công!</h1>
+        <p>Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất có thể.</p>
+        <p>Mã đơn hàng của bạn là: <strong>${requestScope.orderCode}</strong></p>
+        <a href="./home" style="background-color: #D10024; border-color: #D10024" class="btn btn-success">Quay Lại Trang Chủ</a>
+        <a href="getOrderByUserID" style="background-color: #D10024; border-color: #D10024" class="btn btn-success">Xem Danh Sách Đơn Hàng</a>
+    </div>
+    <!-- /THÔNG BÁO ĐẶT HÀNG THÀNH CÔNG -->
 
     <!-- FOOTER -->
     <footer id="footer">
@@ -358,9 +224,9 @@
                             <h3 class="footer-title">About Us</h3>
                             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
                             <ul class="footer-links">
-                                <li><a href="#"><i class="fa fa-map-marker"></i>Thach That - Ha Noi</a></li>
-                                <li><a href="#"><i class="fa fa-phone"></i>0399823683</a></li>
-                                <li><a href="#"><i class="fa fa-envelope-o"></i>nvhoang2004k1922@email.com</a></li>
+                                <li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
+                                <li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
+                                <li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
                             </ul>
                         </div>
                     </div>
@@ -370,10 +236,10 @@
                             <h3 class="footer-title">Categories</h3>
                             <ul class="footer-links">
                                 <li><a href="#">Hot deals</a></li>
-                                <li><a href="#">Nike</a></li>
-                                <li><a href="#">Adidas</a></li>
-                                <li><a href="#">Converse</a></li>
-                                <li><a href="#">Puma</a></li>
+                                <li><a href="#">Laptops</a></li>
+                                <li><a href="#">Smartphones</a></li>
+                                <li><a href="#">Cameras</a></li>
+                                <li><a href="#">Accessories</a></li>
                             </ul>
                         </div>
                     </div>
@@ -444,14 +310,6 @@
     <!-- /FOOTER -->
 
     <!-- jQuery Plugins -->
-    <script>
-        function toggleSelectAll(selectAllCheckbox) {
-            const checkboxes = document.getElementsByName('productIds');
-            checkboxes.forEach((checkbox) => {
-                checkbox.checked = selectAllCheckbox.checked;
-            });
-        }
-    </script>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/slick.min.js"></script>

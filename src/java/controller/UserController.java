@@ -3,17 +3,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controller;
-
+//hauy
+//saaaa
 import dal.ICartDAO;
-import dal.IProductDAO;
 import dal.IUserDAO;
+import dal.IWishlistDAO;
 import dal.imp.CartDAO;
 import dal.imp.EmailService;
 import dal.imp.OrderDAO;
-import dal.imp.ProductDAO;
 import dal.imp.UserDAO;
+import dal.imp.WishlistDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
@@ -22,72 +22,78 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import java.util.UUID;
 import model.CartItem;
 import model.User;
-import jakarta.mail.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Properties;
 import model.Order;
+import model.WishlistItem;
 import utils.Encryption;
 
 /**
  *
  * @author nguye
  */
-@WebServlet(name = "UserController", urlPatterns = {"/user", "/login", "/register", "/logout", "/delete", "/forgotPassword",
-    "/resetPassword", "/userProfile", "/updateProfile", "/changePassword", "/confirmLink"})
+@WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/forgotPassword",
+    "/resetPassword", "/confirmLink", "/logout", "/userProfile", "/updateProfile", "/changePassword",})
 
 public class UserController extends HttpServlet {
 
     ICartDAO cartDAO = new CartDAO();
-    IProductDAO productDAO = new ProductDAO();
-    private OrderDAO orderDAO = new OrderDAO();
+    IWishlistDAO wishlistDAO = new WishlistDAO();
+    private final OrderDAO orderDAO = new OrderDAO();
     Encryption e = new Encryption();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (request.getServletPath().equals("/login")) {
-            getLogin(request, response);
-        } else if (request.getServletPath().equals("/register")) {
-            getRegister(request, response);
-        } else if (request.getServletPath().equals("/logout")) {
-            getLogout(request, response);
-        } else if (request.getServletPath().equals("/user")) {
-            getUsers(request, response);
-        } else if (request.getServletPath().equals("/delete")) {
-            getDelete(request, response);
-        } else if (request.getServletPath().equals("/forgotPassword")) {
-            forgotPassword(request, response);
-        } else if (request.getServletPath().equals("/resetPassword")) {
-            resetPassword(request, response);
-        } else if (request.getServletPath().equals("/userProfile")) {
-            userProfile(request, response);
-        } else if (request.getServletPath().equals("/updateProfile")) {
-            updateProfile(request, response);
-        } else if (request.getServletPath().equals("/changePassword")) {
-            changePassword(request, response);
-        } else if (request.getServletPath().equals("/confirmLink")) {
-            confirmLink(request, response);
-        } else {
-            request.getRequestDispatcher("/ProjectPRJ301/home").forward(request, response);
-        }
-
+        processRequest(request, response);
     }
 
-    protected void getUsers(HttpServletRequest request, HttpServletResponse response)
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        IUserDAO u = new UserDAO();
-        List<User> list = u.getAllUsers();
-        request.setAttribute("listUsers", list);
-        request.getRequestDispatcher("index.jsp").forward(request, response);
-//        HttpSession s1 = request.getSession();
-//        s1.setAttribute("listUsersSendedBySession", list);
-//        response.sendRedirect("index.jsp");
+        processRequest(request, response);
+    }
+
+    /**
+     * Xử lý yêu cầu HTTP cho cả phương thức GET và POST.
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String path = request.getServletPath();
+
+        switch (path) {
+            case "/login":
+                getLogin(request, response);
+                break;
+            case "/register":
+                getRegister(request, response);
+                break;
+            case "/logout":
+                getLogout(request, response);
+                break;
+            case "/forgotPassword":
+                forgotPassword(request, response);
+                break;
+            case "/resetPassword":
+                resetPassword(request, response);
+                break;
+            case "/confirmLink":
+                confirmLink(request, response);
+                break;
+            case "/userProfile":
+                userProfile(request, response);
+                break;
+            case "/updateProfile":
+                updateProfile(request, response);
+                break; 
+            case"/changePassword":
+                changePassword(request, response);
+                break;
+            default:
+                request.getRequestDispatcher("/home").forward(request, response);
+                break;
+        }
     }
 
     protected void getLogin(HttpServletRequest request, HttpServletResponse response)
@@ -104,6 +110,9 @@ public class UserController extends HttpServlet {
             // Lấy thông tin giỏ hàng của người dùng từ database và lưu vào session
             List<CartItem> cartItems = cartDAO.getCartItems(user.getUserId());
             session.setAttribute("cart", cartItems);
+            // Lấy thông tin danh sách yêu thích của người dùng từ database và lưu vào session
+            List<WishlistItem> wishlistItems = wishlistDAO.getWishlistItems(user.getUserId());
+            session.setAttribute("wishlist", wishlistItems);
             // Nếu người dùng chọn "Ghi nhớ đăng nhập"
             if ("on".equals(remember)) {
                 Cookie usernameCookie = new Cookie("username", username);
@@ -121,8 +130,8 @@ public class UserController extends HttpServlet {
                 response.addCookie(usernameCookie);
                 response.addCookie(passwordCookie);
             }
-
-            request.getRequestDispatcher("/home").forward(request, response);
+            response.sendRedirect("home");
+            
         } else {
             request.setAttribute("error", "Invalid username or password");
             request.getRequestDispatcher("login.jsp").forward(request, response);
@@ -135,7 +144,7 @@ public class UserController extends HttpServlet {
         HttpSession session = request.getSession();
         session.invalidate(); // Xóa phiên
         // Chuyển hướng về trang đăng nhập
-        response.sendRedirect("/ProjectPRJ301/home");
+        response.sendRedirect("./home");
     }
 
     protected void getRegister(HttpServletRequest request, HttpServletResponse response)
@@ -164,10 +173,18 @@ public class UserController extends HttpServlet {
             return;
         }
 
-        // Kiểm tra nếu username hoặc email đã tồn tại
-        User existingUser = userDAO.getUserByUsername(username);
-        if (existingUser != null) {
+        // Kiểm tra nếu username đã tồn tại
+        User existingUserByUsername = userDAO.getUserByUsername(username);
+        if (existingUserByUsername != null) {
             request.setAttribute("error", "Username already exists. Please choose another.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra nếu email đã tồn tại
+        boolean emailExists = userDAO.checkEmailExists(email);
+        if (emailExists) {
+            request.setAttribute("error", "Email already exists. Please choose another.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
@@ -182,26 +199,12 @@ public class UserController extends HttpServlet {
         // Lưu người dùng mới vào database
         userDAO.addUser(newUser);
 
-        // Lưu thông tin người dùng vào session và chuyển hướng đến trang chủ
-        HttpSession session = request.getSession();
-        session.setAttribute("user", newUser);
-        response.sendRedirect("home");
+        
+        response.sendRedirect("login.jsp");
 
     }
 
-    protected void getDelete(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String username = request.getParameter("username");
-        try {
-            UserDAO d = new UserDAO();
-//            d.deleteUserByUsername(username);
-            // Chuyển hướng đến danh sách người dùng sau khi xóa
-            response.sendRedirect("user");
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
-    }
-
+ 
     protected void forgotPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         IUserDAO u = new UserDAO();
         // Lấy email người dùng từ form quên mật khẩu
@@ -267,7 +270,8 @@ public class UserController extends HttpServlet {
         request.setAttribute("message", "Mật khẩu đã được đặt lại thành công.");
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
-
+    
+    //Hiển thị trang hồ sơ người dùng
     protected void userProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Lấy UserID từ session hoặc request
         IUserDAO userDAO = new UserDAO();
@@ -284,10 +288,6 @@ public class UserController extends HttpServlet {
         //Xử lý địa chỉ
         if (u.getAddress() != null) {
             String[] addressElements = u.getAddress().split(", ");
-            String addressDetail = addressElements[0];
-            String ward = addressElements[1];
-            String district = addressElements[2];
-            String city = addressElements[3];
             List<String> address = new ArrayList<>();
             address.add(addressElements[0]);
             address.add(addressElements[1]);
@@ -304,12 +304,14 @@ public class UserController extends HttpServlet {
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển hướng đến trang JSP
     }
-
+    
+    // Cập nhật ảnh đại diện
     protected void updateAvatar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Lấy UserID từ session hoặc request
 
     }
 
+    //Chức năng cập nhật hồ sơ
     protected void updateProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Lấy UserID từ session hoặc request
         IUserDAO userDAO = new UserDAO();
@@ -374,36 +376,6 @@ public class UserController extends HttpServlet {
 
         request.setAttribute("message", message);
         request.getRequestDispatcher("userProfile").forward(request, response); // Chuyển về trang JSP với thông báo
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        if (request.getServletPath().equals("/login")) {
-            getLogin(request, response);
-        } else if (request.getServletPath().equals("/register")) {
-            getRegister(request, response);
-        } else if (request.getServletPath().equals("/logout")) {
-            getLogout(request, response);
-        } else if (request.getServletPath().equals("/user")) {
-            getUsers(request, response);
-        } else if (request.getServletPath().equals("/delete")) {
-            getDelete(request, response);
-        } else if (request.getServletPath().equals("/forgotPassword")) {
-            forgotPassword(request, response);
-        } else if (request.getServletPath().equals("/resetPassword")) {
-            resetPassword(request, response);
-        } else if (request.getServletPath().equals("/userProfile")) {
-            userProfile(request, response);
-        } else if (request.getServletPath().equals("/updateProfile")) {
-            updateProfile(request, response);
-        } else if (request.getServletPath().equals("/changePassword")) {
-            changePassword(request, response);
-        } else if (request.getServletPath().equals("/confirmLink")) {
-            confirmLink(request, response);
-        } else {
-            request.getRequestDispatcher("/ProjectPRJ301/home").forward(request, response);
-        }
     }
 
 }

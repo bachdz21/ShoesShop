@@ -133,7 +133,7 @@
                         <!-- LOGO -->
                         <div class="col-md-3">
                             <div class="header-logo">
-                                <a href="/ShoesStoreWeb/home" class="logo">
+                                <a href="./home" class="logo">
                                     <h1 style="color: white; margin-top: 14px">ShoeShop</h1>
                                 </a>
                             </div>
@@ -219,30 +219,7 @@
         </header>
         <!-- /HEADER -->
 
-        <!-- NAVIGATION -->
-        <nav id="navigation">
-            <!-- container -->
-            <div class="container">
-                <!-- responsive-nav -->
-                <div id="responsive-nav">
-                    <!-- NAV -->
-                    <ul class="main-nav nav navbar-nav">
-                        <li><a href="/ShoesStoreWed/home">Trang Chủ</a></li>
-                        <li><a href="/ShoesStoreWed/product">Danh Mục</a></li>
-                        <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
-                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                            <li class="active"><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                            </c:if>
-
-                    </ul>
-                    <!-- /NAV -->
-                </div>
-                <!-- /responsive-nav -->
-            </div>
-            <!-- /container -->
-        </nav>
-        <!-- /NAVIGATION -->
+        <div><br></div>
 
         <!-- EDITPRODUCT -->
         

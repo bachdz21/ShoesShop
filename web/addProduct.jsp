@@ -16,7 +16,10 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet"> 
-
+        
+        <!-- Google font -->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+        
         <!-- Icon Font Stylesheet -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -32,47 +35,98 @@
         <link href="css/style_1.css" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="//cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+        
+        
+        <!-- Bootstrap -->
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
+
+        
+        <!-- Custom styles -->
+        <link type="text/css" rel="stylesheet" href="css/style.css"/>
         <style>
+            body{
+                background-color: #191c24
+            }
+            
             .form-group{
                 margin-bottom: 10px;
             }
+            
+            .sidebar {
+                position: fixed;
+                margin-top: 140px;
+                width: 250px;
+                height: 100vh;
+                overflow-y: auto;
+                background: var(--secondary);
+                transition: 0.5s;
+                z-index: 999;
+            }
+
+            .content {
+                margin-left: -1600px;
+                margin-top: 140px;
+                min-height: 100vh;
+                background: var(--dark);
+                transition: 0.5s;
+            }
+
+            #top-header {
+                width: 1850px;
+            }
+            
+            label, h1, h2, h3, h4, h5, h6 {
+              color: #6c7293;
+              font-weight: 700;
+              margin: 0 0 10px;
+            }
+
+            a {
+              color: #6c7293;
+              font-weight: 500;
+              -webkit-transition: 0.2s color;
+              transition: 0.2s color;
+            }
+            
+            input {
+                
+            }
         </style>
     </head>
+        <%@page import="model.User"%>
+        <%@page import="model.CartItem"%>
+        <%@ page import="java.util.List" %>
 
+        <%@page import="jakarta.servlet.http.HttpSession"%>
+        <%
+            // Sử dụng biến session từ request mà không cần khai báo lại
+            User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
+        %>
+        <% 
+        // Lấy danh sách sản phẩm trong giỏ hàng từ session
+        List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
+        int totalQuantity = 0;
+        double subtotal = 0.0;
+        if (cartItems != null) {
+            for (CartItem item : cartItems) {
+                totalQuantity += item.getQuantity();
+                subtotal += item.getProduct().getPrice() * item.getQuantity();
+            }
+        }
+        %>
     <body>
         <div class="container-fluid position-relative d-flex p-0">
-            <!-- Spinner Start -->
-<!--            <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>-->
-            <!-- Spinner End -->
-
-
             <!-- Sidebar Start -->
             <div class="sidebar pe-4 pb-3">
-                <nav class="navbar bg-secondary navbar-dark">
-                    <a href="index.html" class="navbar-brand mx-4 mb-3">
-                        <h3 class="text-primary"><i class="fa fa-user-edit me-2"></i>ShoeShop</h3>
-                    </a>
-                    <div class="d-flex align-items-center ms-4 mb-4">
-                        <div class="position-relative">
-                            <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="mb-0">Hoang</h6>
-                            <span>Admin</span>
-                        </div>
-                    </div>
+                    <nav class="navbar bg-secondary navbar-dark">
+
                     <div class="navbar-nav w-100">
                         <a href="index.html" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>List</a>
                             <div class="dropdown-menu bg-transparent border-0">
-                                <a href="getAllOrders" class="dropdown-item ">All Orders List</a>
-                                <a href="list" class="dropdown-item active">All Products List</a>
+                                <a href="#" class="dropdown-item">All Orders List</a>
+                                <a href="list" class="dropdown-item nav-item nav-link active">All Products List</a>
                                 <a href="#" class="dropdown-item">Other</a>
                             </div>
                         </div>
@@ -91,101 +145,125 @@
                 </nav>
             </div>
             <!-- Sidebar End -->
+                <!-- Navbar End -->
+                
+                
+            <!-- MAIN HEADER -->
+            <header>
+                                <!-- TOP HEADER -->
+                <div id="top-header">
+                    <div class="container">
+                        <ul class="header-links pull-left">
+                            <li><a href="#"><i class="fa fa-phone"></i> 0399823683</a></li>
+                            <li><a href="#"><i class="fa fa-envelope-o"></i> nvhoang2004k1922@gmail.com</a></li>
+                            <li><a href="#"><i class="fa fa-map-marker"></i> SE1872 - SWP391</a></li>
+                        </ul>
+                        <ul class="header-links pull-right">
+                            <% if (user == null) { %>
+                            <li><a href="login.jsp"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
+                                <% } else { %>
+                            <li><a href="#"><i class="fa fa-dollar"></i> Chào Mừng, <%= user.getUsername() %></a></li>
+                            <li><a href="logout"><i class="fa fa-user-o"></i> Đăng Xuất</a></li>
+                                <% } %>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /TOP HEADER -->
+            <div id="header">
+                <!-- container -->
+                <div class="container">
+                    <!-- row -->
+                    <div class="row">
+                        <!-- LOGO -->
+                        <div class="col-md-3">
+                            <div class="header-logo">
+                                <a href="/ShoesStoreWeb/home" class="logo">
+                                    <h1 style="color: white; margin-top: 14px">ShoeShop</h1>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- /LOGO -->
 
+                        <!-- SEARCH BAR -->
+                        <div class="col-md-6">
+                            <div class="header-search">
+                                <form action="search" method="get">
+                                    <select class="input-select" name="category">
+                                        <option value="">Tất cả</option>
+                                        <option value="Nike">Nike</option>
+                                        <option value="Adidas">Adidas</option>
+                                        <option value="Converse">Converse</option>
+                                        <option value="Puma">Puma</option>
+                                        <!-- Thêm các loại sản phẩm khác nếu cần -->
+                                    </select>
+                                    <input class="input" name="query" placeholder="Search here">
+                                    <button type="submit" class="search-btn">Tìm kiếm</button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- /SEARCH BAR -->
 
+                        <!-- ACCOUNT -->
+                        <div class="col-md-3 clearfix">
+                            <div class="header-ctn">
+
+                                <!-- Cart -->
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                        <i class="fa fa-shopping-cart"></i>
+                                        <span>Giỏ Hàng</span>
+                                        <div class="qty"><%= totalQuantity %></div>
+                                    </a>
+                                    <div class="cart-dropdown">
+                                        <div class="cart-list">
+                                            <% if (cartItems != null && !cartItems.isEmpty()) { %>
+                                            <% for (CartItem item : cartItems) { %>
+                                            <div class="product-widget">
+                                                <div class="product-img">
+                                                    <img src="<%= item.getProduct().getImageURL() %>" alt="">
+                                                </div>
+                                                <div class="product-body">
+                                                    <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
+                                                    <h4 class="product-price"><span class="qty"><%= item.getQuantity() %>x</span>$<%= item.getProduct().getSalePrice() %></h4>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                            <% } else { %>
+                                            <p>Giỏ hàng của bạn đang trống</p>
+                                            <% } %>
+                                        </div>
+                                        <div class="cart-summary">
+                                            <small><%= totalQuantity %> sản phẩm</small>
+                                            <h5>Tổng: $<%= subtotal %></h5>
+                                        </div>
+                                        <div class="cart-btns">
+                                            <a href="cartItem">Xem Giỏ Hàng</a>
+                                            <a href="getOrderItem">Thanh Toán <i class="fa fa-arrow-circle-right"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /Cart -->
+                                <!-- Menu Toogle -->
+                                <div class="menu-toggle">
+                                    <a href="#">
+                                        <i class="fa fa-bars"></i>
+                                        <span>Menu</span>
+                                    </a>
+                                </div>
+                                <!-- /Menu Toogle -->
+                            </div>
+                        </div>
+                        <!-- /ACCOUNT -->
+                    </div>
+                    <!-- row -->
+                </div>
+                <!
+        <!-- /HEAD-- container -->
+            </div>
+            <!-- /MAIN HEADER -->
+        </header>
             <!-- Content Start -->
             <div class="content">
-                <!-- Navbar Start -->
-                <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
-                    <a href="index.html" class="navbar-brand d-flex d-lg-none me-4">
-                        <h2 class="text-primary mb-0"><i class="fa fa-user-edit"></i></h2>
-                    </a>
-                    <a href="#" class="sidebar-toggler flex-shrink-0">
-                        <i class="fa fa-bars"></i>
-                    </a>
-                    <form class="d-none d-md-flex ms-4">
-                        <input class="form-control bg-dark border-0" type="search" placeholder="Search">
-                    </form>
-                    <div class="navbar-nav align-items-center ms-auto">
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fa fa-envelope me-lg-2"></i>
-                                <span class="d-none d-lg-inline-flex">Message</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                                <a href="#" class="dropdown-item">
-                                    <div class="d-flex align-items-center">
-                                        <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                        <div class="ms-2">
-                                            <h6 class="fw-normal mb-0">Hoang send you a message</h6>
-                                            <small>15 minutes ago</small>
-                                        </div>
-                                    </div>
-                                </a>
-                                <hr class="dropdown-divider">
-                                <a href="#" class="dropdown-item">
-                                    <div class="d-flex align-items-center">
-                                        <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                        <div class="ms-2">
-                                            <h6 class="fw-normal mb-0">Hoang send you a message</h6>
-                                            <small>15 minutes ago</small>
-                                        </div>
-                                    </div>
-                                </a>
-                                <hr class="dropdown-divider">
-                                <a href="#" class="dropdown-item">
-                                    <div class="d-flex align-items-center">
-                                        <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                        <div class="ms-2">
-                                            <h6 class="fw-normal mb-0">Hoang send you a message</h6>
-                                            <small>15 minutes ago</small>
-                                        </div>
-                                    </div>
-                                </a>
-                                <hr class="dropdown-divider">
-                                <a href="#" class="dropdown-item text-center">See all message</a>
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fa fa-bell me-lg-2"></i>
-                                <span class="d-none d-lg-inline-flex">Notification</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                                <a href="#" class="dropdown-item">
-                                    <h6 class="fw-normal mb-0">Profile updated</h6>
-                                    <small>15 minutes ago</small>
-                                </a>
-                                <hr class="dropdown-divider">
-                                <a href="#" class="dropdown-item">
-                                    <h6 class="fw-normal mb-0">New user added</h6>
-                                    <small>15 minutes ago</small>
-                                </a>
-                                <hr class="dropdown-divider">
-                                <a href="#" class="dropdown-item">
-                                    <h6 class="fw-normal mb-0">Password changed</h6>
-                                    <small>15 minutes ago</small>
-                                </a>
-                                <hr class="dropdown-divider">
-                                <a href="#" class="dropdown-item text-center">See all notifications</a>
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <img class="rounded-circle me-lg-2" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                <span class="d-none d-lg-inline-flex">Hoang</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                                <a href="#" class="dropdown-item">My Profile</a>
-                                <a href="#" class="dropdown-item">Settings</a>
-                                <a href="#" class="dropdown-item">Log Out</a>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-                <!-- Navbar End -->
-
-
                 <!-- Form Start -->
                 <div class="container-fluid pt-4 px-4">
                     <div class="bg-secondary rounded h-100 p-4">
@@ -253,7 +331,7 @@
                                 <input type="text" id="brand" name="brand" class="form-control" required>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-submit">Thêm Sản Phẩm</button>
+                            <button style="background-color: #d10024" type="submit" class="btn btn-primary btn-submit">Thêm Sản Phẩm</button>
                             <hr>
                         </form>
                         <!-- ADDPRODUCT -->
@@ -271,11 +349,6 @@
                             <div class="col-12 col-sm-6 text-center text-sm-start">
                                 &copy; <a href="#">ShoeShop</a>, All Right Reserved. 
                             </div>
-                            <div class="col-12 col-sm-6 text-center text-sm-end">
-                                <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                                Designed By <a href="https://htmlcodex.com">HTML Codex  </a>
-                                <br>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -283,9 +356,6 @@
             </div>
             <!-- Content End -->
 
-
-            <!-- Back to Top -->
-            <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
         </div>
 
         <!-- JavaScript Libraries -->

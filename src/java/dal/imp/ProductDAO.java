@@ -77,13 +77,13 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setPrice(rs.getDouble("Price"));
                 product.setStock(rs.getInt("Stock"));
                 product.setImageURL(rs.getString("ImageURL"));
-                product.setCategoryName(rs.getString("CategoryName")); // Kiểm tra cột này
+                product.setCategoryName(rs.getString("CategoryName")); 
                 product.setBrand(rs.getString("brand"));
                 product.setSale(rs.getInt("Sale"));
                 product.setCreatedDate(rs.getDate("CreatedDate"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
-                    product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Làm tròn đến 2 chữ số thập phân
+                    product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); 
                 }
                 products.add(product);
             }
