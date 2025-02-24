@@ -28,8 +28,6 @@ public class CartItem {
         this.product = product;
     }
 
-    
-
     public int getCartItemId() {
         return cartItemId;
     }
