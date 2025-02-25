@@ -605,7 +605,7 @@
 
                 <div class="col-lg-8">
 
-                    <form action="updateProfile" method="POST">         
+                    <form action="updateProfile" method="POST" onsubmit="return validateProfileForm()">
                         <div class="card">
                             <hr>
                             <h2 class="product-title">Hồ sơ của tôi</h2>
@@ -623,7 +623,7 @@
                                         <h6 class="mb-0">Email</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="email" value="${user.email} required">
+                                        <input type="email" class="form-control" name="email" value="${user.email}" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -631,7 +631,7 @@
                                         <h6 class="mb-0">Số điện thoại</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber} required">
+                                        <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber}" required>
                                     </div>
                                 </div>
 
@@ -639,7 +639,6 @@
                                     <div class="col-sm-3">
                                         <h6 class="mb-0">Địa chỉ</h6>
                                     </div>
-
                                     <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
                                         <option value="${address != null && address.size() > 3 ? address.get(3) : ''}" selected>Tỉnh Thành</option>
                                     </select>
@@ -651,7 +650,6 @@
                                     <select name="ward" class="form-select form-select-sm" id="ward" aria-label=".form-select-sm">
                                         <option value="${address != null && address.size() > 1 ? address.get(1) : ''}" selected>Xã Phường</option>
                                     </select>
-
                                 </div>
 
                                 <div class="row mb-3">
@@ -668,7 +666,6 @@
                                     <div class="col-sm-9 text-secondary">
                                         <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
                                     </div>
-
                                     <div class="col-sm-6 text-secondary">
                                         <c:if test="${not empty message1}">
                                             <p class="${message1 == 'Cập nhật hồ sơ thành công.' ? 'message-success' : 'message-error'}">
@@ -676,13 +673,12 @@
                                             </p>
                                         </c:if>
                                     </div>
-
                                 </div>
                                 <hr>
                             </div>
                         </div>
-
                     </form>
+
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="card">
@@ -905,11 +901,21 @@
                 return false; // Không cho phép gửi form
             }
 
-            // Kiểm tra số điện thoại có đúng 10 số
+
+            // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
+            return true;
+        }
+    </script>
+    <script>
+        function validateProfileForm() {
+            // Lấy giá trị số điện thoại từ ô nhập liệu
+            var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
+
+            // Kiểm tra số điện thoại có đúng 10 chữ số
             var phonePattern = /^\d{10}$/;
             if (!phonePattern.test(phoneNumber)) {
                 alert("Số điện thoại phải gồm 10 chữ số.");
-                return false; // Không cho phép gửi form
+                return false; // Không cho phép gửi form nếu không đúng định dạng
             }
 
             // Nếu tất cả các điều kiện đều đúng, cho phép gửi form

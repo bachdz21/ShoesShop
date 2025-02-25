@@ -24,9 +24,55 @@ import model.User;
 
 // UserDAO => Đã có connections
 public class UserDAO extends DBConnect implements IUserDAO {
-    
+
     Encryption e = new Encryption();
     // Method : Đọc dữ liệu có trong bảng User từ database lên Java
+
+    @Override
+    public List<String> getAllEmails() {
+        List<String> emails = new ArrayList<>();
+        String sql = "SELECT Email FROM Users"; // Chắc chắn rằng 'Users' là tên bảng và 'Email' là tên cột
+        try (PreparedStatement stmt = c.prepareStatement(sql); // Sử dụng kết nối từ 'c'
+                 ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                emails.add(rs.getString("Email"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // In lỗi nếu có
+        }
+        return emails;
+    }
+
+    @Override
+    public List<String> getAllUsernames() {
+        List<String> usernames = new ArrayList<>();
+        String sql = "SELECT Username FROM Users"; // Kiểm tra danh sách username
+        try (PreparedStatement stmt = c.prepareStatement(sql); // Sử dụng kết nối từ 'c'
+                 ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                usernames.add(rs.getString("Username"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // In lỗi nếu có
+        }
+        return usernames;
+    }
+
+    @Override
+    public List<String> getAllPhoneNumbers() {
+        List<String> phoneNumbers = new ArrayList<>();
+        String sql = "SELECT PhoneNumber FROM Users"; // Chắc chắn rằng 'Users' là tên bảng và 'PhoneNumber' là tên cột
+        try (PreparedStatement stmt = c.prepareStatement(sql); // Sử dụng kết nối từ 'c'
+                 ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                phoneNumbers.add(rs.getString("PhoneNumber"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // In lỗi nếu có
+        }
+        return phoneNumbers;
+    }
+
     @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
@@ -130,6 +176,7 @@ public class UserDAO extends DBConnect implements IUserDAO {
         return user; // Trả về user nếu tìm thấy, ngược lại trả về null
     }
 
+    @Override
     public boolean checkEmailExists(String userEmail) {
         String query = "SELECT COUNT(*) FROM Users WHERE Email = ?";
         try (PreparedStatement stmt = c.prepareStatement(query)) {
@@ -144,6 +191,23 @@ public class UserDAO extends DBConnect implements IUserDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public boolean checkUsernameExists(String username) {
+        String query = "SELECT COUNT(*) FROM Users WHERE Username = ?";
+        try (PreparedStatement stmt = c.prepareStatement(query)) {
+            stmt.setString(1, username);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;  // Nếu có kết quả, tức là username đã tồn tại
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;  // Nếu không có kết quả, tức là username không tồn tại
     }
 
     @Override
@@ -255,7 +319,7 @@ public class UserDAO extends DBConnect implements IUserDAO {
             e.printStackTrace(); // In ra lỗi nếu có
         }
     }
-    
+
     @Override
     public void changePassword(int userId, String newPassword) {
         String query = "UPDATE Users SET Password = ? WHERE UserID = ?";
@@ -268,7 +332,7 @@ public class UserDAO extends DBConnect implements IUserDAO {
             e.printStackTrace();
         }
     }
-    
+
     public static void main(String[] args) {
         Encryption e = new Encryption();
         UserDAO ud = new UserDAO();

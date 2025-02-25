@@ -12,11 +12,16 @@ import model.User;
  * @author nguye
  */
 public interface IUserDAO {
+    List<String> getAllEmails();
+    List<String> getAllUsernames();
+    List<String> getAllPhoneNumbers();
     List<User> getAllUsers();
     void addUser(User u);
     User login(String username, String password);
     User getUserByUsername(String username);
     boolean checkEmailExists(String userEmail);
+    boolean checkUsernameExists(String userEmail);
+    //checkUsernameExists
     void saveResetCode(String userEmail, String resetCode);
     boolean isResetCodeValid(String resetCode);
     void updatePassword(String resetCode, String newPassword);

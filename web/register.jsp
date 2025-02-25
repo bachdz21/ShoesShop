@@ -1,9 +1,3 @@
-<%-- 
-    Document   : register
-    Created on : Oct 10, 2024, 12:32:38 AM
-    Author     : nguye
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -24,13 +18,13 @@
                     ${error}
                 </div>
             </c:if>
-            <form action="register" method="POST">
+            <form action="register" method="POST" id="registerForm">
                 <div class="field">
                     <input type="text" name="username" required>
                     <label>Tài Khoản</label>
                 </div>
                 <div class="field">
-                    <input type="password" name="password"  required >
+                    <input type="password" name="password" required>
                     <label>Mật Khẩu</label>
                 </div>
                 <div class="field">
@@ -51,7 +45,7 @@
                 </div>
                 <br>
                 <div class="field">
-                    <input type="submit" value="Đăng ký">
+                    <input type="submit" value="Đăng ký" id="submitBtn">
                 </div>
                 <div class="signup-link">
                     Bạn đã có tài khoản rồi? <a href="login.jsp">Đăng Nhập</a>
@@ -59,8 +53,45 @@
             </form>
         </div>
         <script>
-            // JavaScript kiểm tra mật khẩu và xác nhận mật khẩu, cũng như kiểm tra số điện thoại
             document.addEventListener("DOMContentLoaded", function () {
+                const usernameInput = document.querySelector("input[name='username']");
+                const emailInput = document.querySelector("input[name='email']");
+                const submitButton = document.querySelector("#submitBtn");
+
+                function checkExisting() {
+                    const username = usernameInput.value;
+                    const email = emailInput.value;
+
+                    // Kiểm tra xem giá trị đã được lấy đúng hay chưa
+                    console.log("Checking username: ", username, "and email: ", email);
+
+                    fetch(`/checkExisting?username=${username}&email=${email}`, {
+                        method: "GET"
+                    })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);  // Kiểm tra phản hồi từ server
+                                if (data.isUsernameExists) {
+                                    alert("Tên đăng nhập đã tồn tại.");
+                                    submitButton.disabled = true;
+                                } else if (data.isEmailExists) {
+                                    alert("Email đã tồn tại.");
+                                    submitButton.disabled = true;
+                                } else {
+                                    submitButton.disabled = false;
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Có lỗi xảy ra:", error);
+                            });
+                }
+
+
+                // Gọi kiểm tra khi người dùng nhập username hoặc email
+                usernameInput.addEventListener("input", checkExisting);
+                emailInput.addEventListener("input", checkExisting);
+
+                // JavaScript kiểm tra mật khẩu và xác nhận mật khẩu, cũng như kiểm tra số điện thoại
                 document.querySelector("form").addEventListener("submit", function (event) {
                     const password = document.querySelector("input[name='password']").value;
                     const confirmPassword = document.querySelector("input[name='confirm_password']").value;
@@ -92,6 +123,5 @@
                 });
             });
         </script>
-
     </body>
 </html>

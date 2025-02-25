@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 import model.Order;
 import model.WishlistItem;
+import org.json.JSONObject;
 import utils.Encryption;
 
 /**
@@ -36,7 +37,7 @@ import utils.Encryption;
  * @author nguye
  */
 @WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/forgotPassword",
-    "/resetPassword", "/confirmLink", "/logout", "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar"})
+    "/resetPassword", "/confirmLink", "/logout", "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar", "/checkExisting"})
 @MultipartConfig
 
 public class UserController extends HttpServlet {
@@ -50,44 +51,58 @@ public class UserController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String path = request.getServletPath();
+
+        switch (path) {
+            case "/login":
+                getLogin(request, response);//get
+                break;
+            case "/register":
+                getRegister(request, response);//get 
+                break;
+            case "/checkExisting":
+                checkExisting(request, response);//get 
+                break;
+            case "/logout":
+                getLogout(request, response);//get
+                break;
+
+            case "/confirmLink":
+                confirmLink(request, response);//get của resetPassword lấy giá trị của reset code
+                break;
+
+            case "/userProfile":
+                userProfile(request, response);//get
+                break;
+
+            default:
+                request.getRequestDispatcher("/home").forward(request, response);
+                break;
+        }
+
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Xử lý yêu cầu HTTP cho cả phương thức GET và POST.
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
         String path = request.getServletPath();
 
         switch (path) {
             case "/login":
-                getLogin(request, response);
+                postLogin(request, response);//post
                 break;
             case "/register":
-                getRegister(request, response);
+                postRegister(request, response);//post(cần thêm get để check xem trùng email hay tên chưa, xác thực email)
                 break;
-            case "/logout":
-                getLogout(request, response);
-                break;
+
             case "/forgotPassword":
-                forgotPassword(request, response);
+                forgotPassword(request, response);//post(cần thêm get check xem email có tồn tại không)
                 break;
+
             case "/resetPassword":
-                resetPassword(request, response);
+                resetPassword(request, response);//post lấy giá trị code, mk, nlmk
                 break;
-            case "/confirmLink":
-                confirmLink(request, response);
-                break;
-            case "/userProfile":
-                userProfile(request, response);
-                break;
+
             case "/updateProfile":
                 updateProfile(request, response);
                 break;
@@ -101,9 +116,38 @@ public class UserController extends HttpServlet {
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
         }
+
     }
 
     protected void getLogin(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lấy tất cả các cookies từ yêu cầu
+        Cookie[] cookies = request.getCookies();
+
+        String username = "";
+        String password = "";
+
+        // Kiểm tra xem có cookie username và password không
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("username".equals(cookie.getName())) {
+                    username = cookie.getValue(); // Gán giá trị cookie username vào biến
+                }
+                if ("password".equals(cookie.getName())) {
+                    password = cookie.getValue(); // Gán giá trị cookie password vào biến
+                }
+            }
+        }
+
+        // Gắn giá trị của username và password vào request để sử dụng trong JSP
+        request.setAttribute("username", username);
+        request.setAttribute("password", password);
+
+        // Tiến hành forward request đến trang login.jsp
+        request.getRequestDispatcher("login.jsp").forward(request, response);
+    }
+
+    protected void postLogin(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
@@ -154,6 +198,40 @@ public class UserController extends HttpServlet {
     }
 
     protected void getRegister(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lấy danh sách email, username và phonenumber từ cơ sở dữ liệu
+        List<String> existingEmails = userDAO.getAllEmails();
+        List<String> existingUsernames = userDAO.getAllUsernames();
+        List<String> existingPhoneNumbers = userDAO.getAllPhoneNumbers();
+
+        // Đưa các danh sách vào request để sử dụng trong trang JSP
+        request.setAttribute("existingEmails", existingEmails);
+        request.setAttribute("existingUsernames", existingUsernames);
+        request.setAttribute("existingPhoneNumbers", existingPhoneNumbers);
+
+        // Tiến hành forward request đến trang register.jsp
+        request.getRequestDispatcher("register.jsp").forward(request, response);
+    }
+    
+    protected void checkExisting(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
+
+        // Kiểm tra trong cơ sở dữ liệu
+        boolean isUsernameExists = userDAO.checkUsernameExists(username);
+        boolean isEmailExists = userDAO.checkEmailExists(email);
+
+        // Trả kết quả dưới dạng JSON
+        JSONObject result = new JSONObject();
+        result.put("isUsernameExists", isUsernameExists);
+        result.put("isEmailExists", isEmailExists);
+
+        response.setContentType("application/json");
+        response.getWriter().write(result.toString());
+    }
+    
+
+    protected void postRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Tạo đối tượng DAO để thao tác với cơ sở dữ liệu
         String username = request.getParameter("username");
@@ -264,7 +342,7 @@ public class UserController extends HttpServlet {
         User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
         if (user == null) {
             // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("login");
             return;
         }
         int userId = user.getUserId();
@@ -382,11 +460,6 @@ public class UserController extends HttpServlet {
         // Kiểm tra mật khẩu hiện tại
         if (!user.getPassword().equals(e.getMd5(password))) {
             message = "Mật khẩu hiện tại không chính xác.";
-        } else if (!newPassword.equals(confirmPassword)) {
-            message = "Mật khẩu mới và xác nhận không khớp.";
-
-        } else if (newPassword.equals(password)) {
-            message = "Mật khẩu mới và mật khẩu cũ phải khác nhau.";
         } else {
             userDAO.changePassword(userId, e.getMd5(newPassword)); // Cập nhật mật khẩu mới
             message = "Đổi mật khẩu thành công.";
@@ -394,6 +467,15 @@ public class UserController extends HttpServlet {
 
         request.setAttribute("message", message);
         request.getRequestDispatcher("userProfile").forward(request, response); // Chuyển về trang JSP với thông báo
+    }
+
+    public static void main(String[] args) {
+        // Tạo đối tượng để gọi phương thức generateResetCode
+        UserController main = new UserController();
+
+        // Gọi phương thức và in mã xác nhận ra màn hình
+        String resetCode = main.generateResetCode();
+        System.out.println("Mã xác nhận: " + resetCode);
     }
 
 }

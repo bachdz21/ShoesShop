@@ -46,7 +46,7 @@
             </ul>
             <ul class="header-links pull-right">
                 <% if (user == null) { %>
-                <li><a href="login.jsp"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
+                <li><a href="login"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
                     <% } else { %>
                     <% if ("Admin".equals(user.getRole())) { %>
                 <li>
