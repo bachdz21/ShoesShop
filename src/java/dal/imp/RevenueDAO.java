@@ -231,7 +231,7 @@ public class RevenueDAO extends DBConnect {
                 + "    [Year], \n"
                 + "    SUM(TotalRevenue) AS DailyRevenue\n"
                 + "FROM \n"
-                + "    [ProjectPRJ301].[dbo].[DailyRevenue]\n"
+                + "    [ProjectSWP].[dbo].[DailyRevenue]\n"
                 + "WHERE \n"
                 + "    (CAST(CONCAT([Year], '-', [Month], '-', [Day]) AS DATE) >= CAST(DATEADD(DAY, -?, GETDATE()) AS DATE)\n"
                 + "    AND CAST(CONCAT([Year], '-', [Month], '-', [Day]) AS DATE) <= CAST(GETDATE() AS DATE))\n"

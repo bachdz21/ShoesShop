@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 
-    <head>
+    
         <meta charset="UTF-8">
         <%@ page contentType="text/html; charset=UTF-8" %>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -39,49 +39,52 @@
         
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
-    <style>
+        <style>
         .sidebar {
-    position: fixed;
-    margin-top: 140px;
-    width: 250px;
-    height: 100vh;
-    overflow-y: auto;
-    background: var(--secondary);
-    transition: 0.5s;
-    z-index: 999;
-}
+            position: fixed;
+            margin-top: 140px;
+            width: 250px;
+            height: 100vh;
+            overflow-y: auto;
+            background: var(--secondary);
+            transition: 0.5s;
+            z-index: 999;
+        }
 
-.content {
-    margin-left: -1600px;
-    margin-top: 140px;
-    min-height: 100vh;
-    background: var(--dark);
-    transition: 0.5s;
-}
+        .content {
+            margin-left: -1600px;
+            margin-top: 140px;
+            min-height: 100vh;
+            background: var(--dark);
+            transition: 0.5s;
+        }
 
-#top-header {
-    width: 1850px;
-}
+        #top-header {
+            width: 1850px;
+        }
 
-h1, h2, h3, h4, h5, h6 {
-  color: #eb1616;
-  font-weight: 700;
-  margin: 0 0 10px;
-}
+        h1, h2, h3, h4, h5, h6 {
+          color: #eb1616;
+          font-weight: 700;
+          margin: 0 0 10px;
+        }
 
-a {
-  color: #eb1616;
-  font-weight: 500;
-  -webkit-transition: 0.2s color;
-  transition: 0.2s color;
-}
-            body{
-                background-color: #191c24
-                
-            }
-            
+        a {
+          color: #eb1616;
+          font-weight: 500;
+          -webkit-transition: 0.2s color;
+          transition: 0.2s color;
+        }
+        body{
+            overflow-y: hidden;
+            background-color: #191c24
+        }
+
+        .bg-secondary {
+            display: block !important;
+        }
     </style>
-    </head>
+    
         <%@page import="model.User"%>
         <%@page import="model.CartItem"%>
         <%@ page import="java.util.List" %>
@@ -120,16 +123,13 @@ a {
                     <div class="navbar-nav w-100">
                         <a href="dashBoard.jsp" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Elements</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>List</a>
                             <div class="dropdown-menu bg-transparent border-0">
                                 <a href="getAllOrders" class="dropdown-item">All Orders List</a>
                                 <a href="list" class="dropdown-item">All Products List</a>
-                                <a href="element.html" class="dropdown-item">Other Elements</a>
+                                <a href="element.html" class="dropdown-item">Other</a>
                             </div>
                         </div>
-                        <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
-                        <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
-                        <a href="table.jsp" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
                         <a href="chart.jsp" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
@@ -144,119 +144,7 @@ a {
                 </nav>
             </div>
             <!-- Sidebar End -->
-            <header>
-                                <!-- TOP HEADER -->
-                <div id="top-header">
-                    <div class="container">
-                        <ul class="header-links pull-left">
-                            <li><a href="#"><i class="fa fa-phone"></i> 0399823683</a></li>
-                            <li><a href="#"><i class="fa fa-envelope-o"></i> nvhoang2004k1922@gmail.com</a></li>
-                            <li><a href="#"><i class="fa fa-map-marker"></i> SE1872 - SWP391</a></li>
-                        </ul>
-                        <ul class="header-links pull-right">
-                            <% if (user == null) { %>
-                            <li><a href="login.jsp"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
-                                <% } else { %>
-                            <li><a href="#"><i class="fa fa-dollar"></i> Chào Mừng, <%= user.getUsername() %></a></li>
-                            <li><a href="logout"><i class="fa fa-user-o"></i> Đăng Xuất</a></li>
-                                <% } %>
-                        </ul>
-                    </div>
-                </div>
-                <!-- /TOP HEADER -->
-            <div id="header">
-                <!-- container -->
-                <div class="container">
-                    <!-- row -->
-                    <div class="row">
-                        <!-- LOGO -->
-                        <div class="col-md-3">
-                            <div class="header-logo">
-                                <a href="/ShoesStoreWeb/home" class="logo">
-                                    <h1 style="color: white; margin-top: 14px">ShoeShop</h1>
-                                </a>
-                            </div>
-                        </div>
-                        <!-- /LOGO -->
-
-                        <!-- SEARCH BAR -->
-                        <div class="col-md-6">
-                            <div class="header-search">
-                                <form action="search" method="get">
-                                    <select class="input-select" name="category">
-                                        <option value="">Tất cả</option>
-                                        <option value="Nike">Nike</option>
-                                        <option value="Adidas">Adidas</option>
-                                        <option value="Converse">Converse</option>
-                                        <option value="Puma">Puma</option>
-                                        <!-- Thêm các loại sản phẩm khác nếu cần -->
-                                    </select>
-                                    <input class="input" name="query" placeholder="Search here">
-                                    <button type="submit" class="search-btn">Tìm kiếm</button>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- /SEARCH BAR -->
-
-                        <!-- ACCOUNT -->
-                        <div class="col-md-3 clearfix">
-                            <div class="header-ctn">
-
-                                <!-- Cart -->
-                                <div class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                                        <i class="fa fa-shopping-cart"></i>
-                                        <span>Giỏ Hàng</span>
-                                        <div class="qty"><%= totalQuantity %></div>
-                                    </a>
-                                    <div class="cart-dropdown">
-                                        <div class="cart-list">
-                                            <% if (cartItems != null && !cartItems.isEmpty()) { %>
-                                            <% for (CartItem item : cartItems) { %>
-                                            <div class="product-widget">
-                                                <div class="product-img">
-                                                    <img src="<%= item.getProduct().getImageURL() %>" alt="">
-                                                </div>
-                                                <div class="product-body">
-                                                    <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                                    <h4 class="product-price"><span class="qty"><%= item.getQuantity() %>x</span>$<%= item.getProduct().getSalePrice() %></h4>
-                                                </div>
-                                            </div>
-                                            <% } %>
-                                            <% } else { %>
-                                            <p>Giỏ hàng của bạn đang trống</p>
-                                            <% } %>
-                                        </div>
-                                        <div class="cart-summary">
-                                            <small><%= totalQuantity %> sản phẩm</small>
-                                            <h5>Tổng: $<%= subtotal %></h5>
-                                        </div>
-                                        <div class="cart-btns">
-                                            <a href="cartItem">Xem Giỏ Hàng</a>
-                                            <a href="getOrderItem">Thanh Toán <i class="fa fa-arrow-circle-right"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /Cart -->
-                                <!-- Menu Toogle -->
-                                <div class="menu-toggle">
-                                    <a href="#">
-                                        <i class="fa fa-bars"></i>
-                                        <span>Menu</span>
-                                    </a>
-                                </div>
-                                <!-- /Menu Toogle -->
-                            </div>
-                        </div>
-                        <!-- /ACCOUNT -->
-                    </div>
-                    <!-- row -->
-                </div>
-                <!
-        <!-- /HEAD-- container -->
-            </div>
-            <!-- /MAIN HEADER -->
-        </header>
+            <jsp:include page="header.jsp" />
 
             <!-- Content Start -->
             <div class="content">
@@ -370,7 +258,7 @@ a {
         <script src="lib/owlcarousel/owl.carousel.min.js"></script>
         <script src="lib/tempusdominus/js/moment.min.js"></script>
         <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-        <script src="lib/tempusdominus/js/tem   pusdominus-bootstrap-4.min.js"></script>
+        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             // Hàm JavaScript để tự động submit form

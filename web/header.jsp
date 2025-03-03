@@ -40,9 +40,9 @@
     <div id="top-header">
         <div class="container">
             <ul class="header-links pull-left">
-                <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
-                <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
-                <li><a href="#"><i class="fa fa-map-marker"></i> SE1881 - PRJ301</a></li>
+                <li><a href="#"><i class="fa fa-phone"></i> 0399823683</a></li>
+                <li><a href="#"><i class="fa fa-envelope-o"></i> group2@gmail.com</a></li>
+                <li><a href="#"><i class="fa fa-map-marker"></i> SE1872 - SWP391</a></li>
             </ul>
             <ul class="header-links pull-right">
                 <% if (user == null) { %>
@@ -70,8 +70,8 @@
                 <!-- LOGO -->
                 <div class="col-md-3">
                     <div class="header-logo">
-                        <a href="./home" class="logo">
-                            <img src="./img/logo.png" alt="">
+                        <a style="color: white; font-size: 40px; font-family: fantasy" href="./home" class="logo">
+                            ShoeShop
                         </a>
                     </div>
                 </div>
@@ -88,10 +88,10 @@
                                 </div>
                                 <ul id="list" class="dropdown-list">
                                     <li class="dropdown-list-item" value="">All</li>
-                                    <li class="dropdown-list-item" value="Laptop">Laptop</li>
-                                    <li class="dropdown-list-item" value="Smartphone">Smartphone</li>
-                                    <li class="dropdown-list-item" value="Camera">Camera</li>
-                                    <li class="dropdown-list-item" value="Accessory">Accessory</li>
+                                    <li class="dropdown-list-item" value="Sneakers">Sneakers</li>
+                                    <li class="dropdown-list-item" value="Oxford">Oxford</li>
+                                    <li class="dropdown-list-item" value="Boot">Boot</li>
+                                    <li class="dropdown-list-item" value="Sandal">Sandal</li>
                                 </ul>
                             </div>
                             <div class="search-box">

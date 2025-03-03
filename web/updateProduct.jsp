@@ -97,127 +97,7 @@
         }
         %>
         <body>
-            
-            <!-- HEADER -->
-            <header>
-                <!-- TOP HEADER -->
-                <div id="top-header">
-                    <div class="container">
-                        <ul class="header-links pull-left">
-                            <li><a href="#"><i class="fa fa-phone"></i> 0399823683</a></li>
-                            <li><a href="#"><i class="fa fa-envelope-o"></i> nvhoang2004k1922@gmail.com</a></li>
-                            <li><a href="#"><i class="fa fa-map-marker"></i> SE1872 - SWP391</a></li>
-                        </ul>
-                        <ul class="header-links pull-right">
-                            <% if (user == null) { %>
-                            <li><a href="login.jsp"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
-                                <% } else { %>
-                            <li><a href="#"><i class="fa fa-dollar"></i> Chào Mừng, <%= user.getUsername() %></a></li>
-                            <li><a href="logout"><i class="fa fa-user-o"></i> Đăng Xuất</a></li>
-                                <% } %>
-                        </ul>
-                    </div>
-                </div>
-                <!-- /TOP HEADER -->
-            </header>
-
-            <!-- /TOP HEADER -->
-
-
-            <!-- MAIN HEADER -->
-            <div id="header">
-                <!-- container -->
-                <div class="container">
-                    <!-- row -->
-                    <div class="row">
-                        <!-- LOGO -->
-                        <div class="col-md-3">
-                            <div class="header-logo">
-                                <a href="./home" class="logo">
-                                    <h1 style="color: white; margin-top: 14px">ShoeShop</h1>
-                                </a>
-                            </div>
-                        </div>
-                        <!-- /LOGO -->
-
-                        <!-- SEARCH BAR -->
-                        <div class="col-md-6">
-                            <div class="header-search">
-                                <form action="search" method="get">
-                                    <select class="input-select" name="category">
-                                        <option value="">Tất cả</option>
-                                        <option value="Nike">Nike</option>
-                                        <option value="Adidas">Adidas</option>
-                                        <option value="Converse">Converse</option>
-                                        <option value="Puma">Puma</option>
-                                        <!-- Thêm các loại sản phẩm khác nếu cần -->
-                                    </select>
-                                    <input class="input" name="query" placeholder="Search here">
-                                    <button type="submit" class="search-btn">Tìm kiếm</button>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- /SEARCH BAR -->
-
-                        <!-- ACCOUNT -->
-                        <div class="col-md-3 clearfix">
-                            <div class="header-ctn">
-
-                                <!-- Cart -->
-                                <div class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                                        <i class="fa fa-shopping-cart"></i>
-                                        <span>Giỏ Hàng</span>
-                                        <div class="qty"><%= totalQuantity %></div>
-                                    </a>
-                                    <div class="cart-dropdown">
-                                        <div class="cart-list">
-                                            <% if (cartItems != null && !cartItems.isEmpty()) { %>
-                                            <% for (CartItem item : cartItems) { %>
-                                            <div class="product-widget">
-                                                <div class="product-img">
-                                                    <img src="<%= item.getProduct().getImageURL() %>" alt="">
-                                                </div>
-                                                <div class="product-body">
-                                                    <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                                    <h4 class="product-price"><span class="qty"><%= item.getQuantity() %>x</span>$<%= item.getProduct().getSalePrice() %></h4>
-                                                </div>
-                                            </div>
-                                            <% } %>
-                                            <% } else { %>
-                                            <p>Giỏ hàng của bạn đang trống</p>
-                                            <% } %>
-                                        </div>
-                                        <div class="cart-summary">
-                                            <small><%= totalQuantity %> sản phẩm</small>
-                                            <h5>Tổng: $<%= subtotal %></h5>
-                                        </div>
-                                        <div class="cart-btns">
-                                            <a href="cartItem">Xem Giỏ Hàng</a>
-                                            <a href="getOrderItem">Thanh Toán <i class="fa fa-arrow-circle-right"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /Cart -->
-                                <!-- Menu Toogle -->
-                                <div class="menu-toggle">
-                                    <a href="#">
-                                        <i class="fa fa-bars"></i>
-                                        <span>Menu</span>
-                                    </a>
-                                </div>
-                                <!-- /Menu Toogle -->
-                            </div>
-                        </div>
-                        <!-- /ACCOUNT -->
-                    </div>
-                    <!-- row -->
-                </div>
-                <!-- container -->
-            </div>
-            <!-- /MAIN HEADER -->
-        </header>
-        <!-- /HEADER -->
+        <jsp:include page="header.jsp" />
 
         <div><br></div>
 
@@ -262,10 +142,10 @@
                     <label for="category">Danh Mục:</label>
                     <select id="category" name="category" class="form-control" onchange="toggleOtherCategory()">
                         <option value="">Chọn Danh Mục</option>
-                        <option value="Nike" ${product.categoryName == 'Nike' ? 'selected' : ''}>Nike</option>
-                        <option value="Adidas" ${product.categoryName == 'Adidas' ? 'selected' : ''}>Adidas</option>
-                        <option value="Converse" ${product.categoryName == 'Converse' ? 'selected' : ''}>Converse</option>
-                        <option value="Puma" ${product.categoryName == 'Puma' ? 'selected' : ''}>Puma</option>
+                        <option value="Sneakers" ${product.categoryName == 'Sneakers' ? 'selected' : ''}>Sneakers</option>
+                        <option value="Oxford" ${product.categoryName == 'Oxford' ? 'selected' : ''}>Oxford</option>
+                        <option value="Boot" ${product.categoryName == 'Boot' ? 'selected' : ''}>Boot</option>
+                        <option value="Sandal" ${product.categoryName == 'Sandal' ? 'selected' : ''}>Sandal</option>
                         <option value="Other" ${product.categoryName == 'Other' ? 'selected' : ''}>Khác</option>
                     </select>
                 </div>
