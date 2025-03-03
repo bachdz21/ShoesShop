@@ -185,7 +185,7 @@ a {
                         </div>
                     </div>
                 </nav>
-            </div>
+            </div>  
             <!-- Sidebar End -->
                 <!-- Navbar End -->
                 
