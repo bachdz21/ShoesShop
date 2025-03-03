@@ -25,8 +25,7 @@ import model.User;
 // UserDAO => Đã có connections
 public class UserDAO extends DBConnect implements IUserDAO {
 
-    Encryption e = new Encryption();
-    // Method : Đọc dữ liệu có trong bảng User từ database lên Java
+
 
     @Override
     public List<String> getAllEmails() {
@@ -346,6 +345,7 @@ public class UserDAO extends DBConnect implements IUserDAO {
 ////      
         System.out.println(e.getMd5("9824"));
 //        ud.changePassword(user.get(11).getUserId(), user.get(11).getPassword());
+       
     }
 
 }

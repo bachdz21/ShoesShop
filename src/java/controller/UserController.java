@@ -28,6 +28,7 @@ import model.User;
 import java.util.ArrayList;
 import java.util.UUID;
 import model.Order;
+import model.OrderDetail;
 import model.WishlistItem;
 import org.json.JSONObject;
 import utils.Encryption;
@@ -37,7 +38,7 @@ import utils.Encryption;
  * @author nguye
  */
 @WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/forgotPassword",
-    "/resetPassword", "/confirmLink", "/logout", "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar", "/checkExisting"})
+    "/resetPassword", "/confirmLink", "/logout", "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar", "/checkExisting", "/viewOderHistory", "/orderDetail"})
 @MultipartConfig
 
 public class UserController extends HttpServlet {
@@ -73,6 +74,12 @@ public class UserController extends HttpServlet {
 
             case "/userProfile":
                 userProfile(request, response);//get
+                break;
+            case "/viewOderHistory":
+//                viewOderHistory(request, response);//get
+                break;
+            case "/orderDetail":
+                orderDetail(request, response);//get
                 break;
 
             default:
@@ -112,6 +119,10 @@ public class UserController extends HttpServlet {
             case "/updateAvatar":
                 updateAvatar(request, response);
                 break;
+            case "/orderDetail":
+                orderDetail(request, response);//get
+                break;
+
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -212,7 +223,7 @@ public class UserController extends HttpServlet {
         // Tiến hành forward request đến trang register.jsp
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
-    
+
     protected void checkExisting(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String email = request.getParameter("email");
@@ -229,7 +240,6 @@ public class UserController extends HttpServlet {
         response.setContentType("application/json");
         response.getWriter().write(result.toString());
     }
-    
 
     protected void postRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -439,7 +449,7 @@ public class UserController extends HttpServlet {
         u.setAddress(address);
         userDAO.updateUser(u);
         request.setAttribute("message1", "Cập nhật hồ sơ thành công.");
-        request.getRequestDispatcher("userProfile").forward(request, response); // Chuyển về trang JSP với thông báo
+        request.getRequestDispatcher("./userProfile").forward(request, response); // Chuyển về trang JSP với thông báo
     }
 
     protected void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -466,7 +476,7 @@ public class UserController extends HttpServlet {
         }
 
         request.setAttribute("message", message);
-        request.getRequestDispatcher("userProfile").forward(request, response); // Chuyển về trang JSP với thông báo
+        request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển về trang JSP với thông báo
     }
 
     public static void main(String[] args) {
@@ -476,6 +486,24 @@ public class UserController extends HttpServlet {
         // Gọi phương thức và in mã xác nhận ra màn hình
         String resetCode = main.generateResetCode();
         System.out.println("Mã xác nhận: " + resetCode);
+    }
+
+    
+
+    protected void orderDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        int orderId = Integer.parseInt(request.getParameter("orderId"));
+        
+        Order o = orderDAO.getOrdersByOrderId(orderId);
+        
+        
+        List<OrderDetail> orderDetails = orderDAO.getOrderDetailByOderId(orderId);
+        
+        request.setAttribute("user", user);
+        request.setAttribute("order", o);// tính tổng tiền, phương thức thanh toán,trạng thái
+        request.setAttribute("orderDetails", orderDetails);
+        request.getRequestDispatcher("viewDetailOrderHistory.jsp").forward(request, response);
     }
 
 }
