@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  *
- * @author nguye
+ * @author Hoang
  */
 public class Product {
 

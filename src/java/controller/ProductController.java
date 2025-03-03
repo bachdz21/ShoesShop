@@ -36,7 +36,7 @@ import java.util.Collection;
 public class ProductController extends HttpServlet {
 
     IProductDAO productDAO = new ProductDAO();
-    private static final String IMAGE_UPLOAD_DIR = "D:\\Materials\\Kì 4 - Fall24\\ProjectPRJ301\\web\\img"; // Đường dẫn thư mục lưu ảnh
+    private static final String IMAGE_UPLOAD_DIR = "C:\\java&netbeans\\JavaWeb\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -189,7 +189,7 @@ public class ProductController extends HttpServlet {
                 String fileName = UUID.randomUUID().toString() + ".jpg"; // Tên tệp hình ảnh duy nhất
                 File imageFile = new File(IMAGE_UPLOAD_DIR, fileName);
                 filePart.write(imageFile.getAbsolutePath());
-                String imageUrl = "./img/" + fileName;
+                String imageUrl = "/ShoesStoreWeb/img/" + fileName;
 
                 // Thêm vào danh sách ảnh
                 imageUrls.add(imageUrl);
@@ -211,7 +211,7 @@ public class ProductController extends HttpServlet {
         newProduct.setSale(sale);
         newProduct.setBrand(brand);
         productDAO.addProduct(newProduct);
-        response.sendRedirect("/ProjectPRJ301/list");
+        response.sendRedirect("/ShoesStoreWeb/list");
     }
 
     protected void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -435,7 +435,7 @@ public class ProductController extends HttpServlet {
         } else if (request.getServletPath().equals("/productAction")) {
             getAction(request, response);
         } else {
-            request.getRequestDispatcher("/home").forward(request, response);
+                request.getRequestDispatcher("/home").forward(request, response);
         }
 
     }

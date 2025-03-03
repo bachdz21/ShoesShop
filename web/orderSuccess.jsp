@@ -91,7 +91,7 @@
                     <!-- LOGO -->
                     <div class="col-md-3">
                         <div class="header-logo">
-                            <a href="/ProjectPRJ301/home" class="logo">
+                            <a href="./home" class="logo">
                                 <img src="./img/logo.png" alt="">
                             </a>
                         </div>
@@ -185,8 +185,8 @@
             <div id="responsive-nav">
                 <!-- NAV -->
                 <ul class="main-nav nav navbar-nav">
-                    <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
-                    <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
+                    <li><a href="./home">Trang Chủ</a></li>
+                    <li><a href="./product">Danh Mục</a></li>
                     <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                         <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>

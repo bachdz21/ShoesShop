@@ -9,8 +9,12 @@ package model;
 <<<<<<< HEAD
  * @author nguye
 =======
+<<<<<<< HEAD
+ * @author nguye
+=======
  * @author DELL
 >>>>>>> duyanh
+>>>>>>> a36e5804532c6711f7b53d115428020fc999a915
  */
 public class Category {
     private int categoryID;
