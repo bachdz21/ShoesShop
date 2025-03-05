@@ -15,6 +15,7 @@ public interface IUserDAO {
     List<String> getAllEmails();
     List<String> getAllUsernames();
     List<String> getAllPhoneNumbers();
+    List<User> getLockedUsers();
     List<User> getAllUsers();
     void addUser(User u);
     User login(String username, String password);
@@ -28,4 +29,8 @@ public interface IUserDAO {
     User getUserById(Integer userId);
     void updateUser(User u);
     void changePassword(int userId, String newPassword);
+    void isLocked(int userId);
+    void isUnlocked(int userId);
+    List<User> filterUsers(String username, String fullName, String email, String phone, String registrationDate);
+
 }

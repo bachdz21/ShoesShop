@@ -12,6 +12,7 @@ import dal.imp.EmailService;
 import dal.imp.OrderDAO;
 import dal.imp.UserDAO;
 import dal.imp.WishlistDAO;
+import jakarta.mail.internet.MimeUtility;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -38,7 +39,10 @@ import utils.Encryption;
  * @author nguye
  */
 @WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/forgotPassword",
-    "/resetPassword", "/confirmLink", "/logout", "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar", "/checkExisting", "/viewOderHistory", "/orderDetail"})
+    "/resetPassword", "/confirmLink", "/logout", "/userProfile", "/updateProfile",
+    "/changePassword", "/updateAvatar", "/checkExisting", "/orderDetail",
+    "/getUsers", "/banUser", "/getBanUsers", "/restoreUser", "/emailReminder",
+    "/filterUser"})
 @MultipartConfig
 
 public class UserController extends HttpServlet {
@@ -75,13 +79,28 @@ public class UserController extends HttpServlet {
             case "/userProfile":
                 userProfile(request, response);//get
                 break;
-            case "/viewOderHistory":
-//                viewOderHistory(request, response);//get
-                break;
+
             case "/orderDetail":
                 orderDetail(request, response);//get
                 break;
-
+            case "/getUsers":
+                getUsers(request, response);//get
+                break;
+            case "/banUser":
+                banUser(request, response);//get
+                break;
+            case "/getBanUsers":
+                getBanUsers(request, response);//get
+                break;
+            case "/restoreUser":
+                restoreUser(request, response);//get
+                break;
+            case "/emailReminder":
+                emailReminder(request, response);//get
+                break;
+            case "/filterUser":
+                filterUser(request, response);//get
+                break;
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -118,9 +137,6 @@ public class UserController extends HttpServlet {
                 break;
             case "/updateAvatar":
                 updateAvatar(request, response);
-                break;
-            case "/orderDetail":
-                orderDetail(request, response);//get
                 break;
 
             default:
@@ -194,7 +210,7 @@ public class UserController extends HttpServlet {
             response.sendRedirect("home");
 
         } else {
-            request.setAttribute("error", "Invalid username or password");
+            request.setAttribute("error", "Tài khoản hoặc mật khẩu không đúng");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
@@ -479,31 +495,288 @@ public class UserController extends HttpServlet {
         request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển về trang JSP với thông báo
     }
 
-    public static void main(String[] args) {
-        // Tạo đối tượng để gọi phương thức generateResetCode
-        UserController main = new UserController();
-
-        // Gọi phương thức và in mã xác nhận ra màn hình
-        String resetCode = main.generateResetCode();
-        System.out.println("Mã xác nhận: " + resetCode);
-    }
-
-    
-
     protected void orderDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         int orderId = Integer.parseInt(request.getParameter("orderId"));
-        
+
         Order o = orderDAO.getOrdersByOrderId(orderId);
-        
-        
+
         List<OrderDetail> orderDetails = orderDAO.getOrderDetailByOderId(orderId);
-        
+
         request.setAttribute("user", user);
         request.setAttribute("order", o);// tính tổng tiền, phương thức thanh toán,trạng thái
         request.setAttribute("orderDetails", orderDetails);
         request.getRequestDispatcher("viewDetailOrderHistory.jsp").forward(request, response);
+    }
+
+    protected void getUsers(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lấy thông tin phân trang
+        String pageStr = request.getParameter("page");
+        int page = (pageStr != null && !pageStr.isEmpty()) ? Integer.parseInt(pageStr) : 1;
+        int pageSize = 10; // Số người dùng trên mỗi trang
+
+        // Lấy danh sách người dùng từ UserDAO
+        List<User> allUsers = userDAO.getAllUsers();
+
+        // Tạo danh sách khách hàng và nhân viên
+        List<User> customers = new ArrayList<>();
+        List<User> employees = new ArrayList<>();
+
+        // Tính toán phân trang
+        int totalUsers = allUsers.size();
+        int totalPages = (int) Math.ceil((double) totalUsers / pageSize);
+
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, totalUsers);
+        List<User> paginatedUsers = allUsers.subList(startIndex, endIndex);
+        // Phân loại người dùng theo role và đếm đơn hàng
+        for (User user : paginatedUsers) {
+
+            int deliveredCount = 0;
+            int cancelledCount = 0;
+
+            // Lặp qua danh sách đơn hàng và đếm theo trạng thái
+            for (Order order : user.getOrders()) {
+                if ("Delivered".equals(order.getOrderStatus())) {
+                    deliveredCount++;
+                } else if ("Cancelled".equals(order.getOrderStatus())) {
+                    cancelledCount++;
+                }
+            }
+
+            // Set số lượng đơn mua và đơn hủy vào User
+            user.setDeliveredCount(deliveredCount);
+            user.setCancelledCount(cancelledCount);
+
+            // Phân loại người dùng
+            if ("Customer".equals(user.getRole())) {
+                customers.add(user);
+            } else {
+                employees.add(user);
+            }
+        }
+
+        // Gửi dữ liệu đến JSP
+        request.setAttribute("customers", customers);
+        request.setAttribute("employees", employees);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.getRequestDispatcher("accountList.jsp").forward(request, response);
+
+    }
+
+    protected void banUser(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lấy thông tin userId từ tham số request
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user"); // Lấy user từ session (nếu có)
+
+        int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
+        userDAO.isLocked(userId); // Gọi phương thức isLocked để khóa tài khoản
+
+        // Hiển thị thông báo thành công
+//        String message = "Khóa tài khoản thành công.";
+//        session.setAttribute("message", message);
+        // Chuyển hướng về trang danh sách người dùng
+        response.sendRedirect("getUsers"); // Sau khi khóa tài khoản, chuyển về trang danh sách người dùng
+    }
+
+    protected void getBanUsers(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lấy danh sách người dùng bị khóa từ UserDAO
+        List<User> allLockedUsers = userDAO.getLockedUsers();
+
+        // Tạo danh sách khách hàng và nhân viên bị khóa
+        List<User> customerLockedUsers = new ArrayList<>();
+        List<User> adminLockedUsers = new ArrayList<>();
+
+        // Phân loại người dùng bị khóa theo role
+        for (User user : allLockedUsers) {
+            if ("Customer".equals(user.getRole())) {
+                customerLockedUsers.add(user);
+            } else {
+                adminLockedUsers.add(user);
+            }
+        }
+
+        // Gửi dữ liệu đến JSP
+        request.setAttribute("customerLockedUsers", customerLockedUsers);
+        request.setAttribute("adminLockedUsers", adminLockedUsers);
+        // Gửi danh sách người dùng đến JSP
+        request.getRequestDispatcher("lockedUserList.jsp").forward(request, response);
+
+    }
+
+    protected void restoreUser(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lấy thông tin userId từ tham số request
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user"); // Lấy user từ session (nếu có)
+
+        int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
+        userDAO.isUnlocked(userId);
+
+        // Hiển thị thông báo thành công
+//        String message = "Khôi phục tài khoản thành công.";
+//        session.setAttribute("message", message);
+        // Chuyển hướng về trang danh sách người dùng bị khóa
+        response.sendRedirect("getBanUsers"); // Sau khi khôi phục tài khoản, chuyển về trang danh sách người dùng bị khóa
+    }
+
+    protected void emailReminder(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lấy thông tin userId từ tham số request
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user"); // Lấy user từ session (nếu có)
+
+        int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
+        userDAO.isUnlocked(userId);
+        User u = userDAO.getUserById(userId); // Gọi hàm để lấy thông tin người dùng
+        // Gửi email cho người dùng
+        String subject = "[Lời ngỏ ý] Quan trọng:Nhắc nhở về hành vi đặt hàng không hợp lệ";
+        String encodedSubject = MimeUtility.encodeText(subject, "UTF-8", "B");
+        String messageText = "<html><body>"
+                + "<p><b>Kính gửi " + u.getFullName() + ",</b></p>"
+                + "<p>Chúng tôi rất tiếc phải thông báo rằng chúng tôi đã phát hiện tài khoản của bạn có hành vi đặt hàng và không hoàn tất nhiều lần trên hệ thống của cửa hàng <i>Hola Shoes Shop</i>. Điều này không chỉ gây khó khăn cho công việc kinh doanh của chúng tôi mà còn ảnh hưởng đến khả năng phục vụ các khách hàng khác.</p>"
+                + "<p>Chúng tôi hiểu rằng có thể có lý do khách quan khiến bạn không thể hoàn tất đơn hàng, tuy nhiên, chúng tôi mong muốn bạn có thể cân nhắc và tránh tái diễn hành vi này trong tương lai. Nếu tình trạng này tiếp tục xảy ra, chúng tôi sẽ buộc phải áp dụng các biện pháp như tạm khóa tài khoản hoặc từ chối nhận đơn hàng từ tài khoản của bạn.</p>"
+                + "<p>Chúng tôi hy vọng sẽ tiếp tục phục vụ bạn trong các lần mua sắm sắp tới với các trải nghiệm tốt nhất.</p>"
+                + "<p>Cảm ơn bạn đã hợp tác và hiểu cho tình huống này.</p>"
+                + "<p>Trân trọng,</p>"
+                + "<p><i>Hola Shoes Shop</i></p>"
+                + "<p>26 Cụm 1, Thôn 3, Thạch Thất, Hà Nội</p>"
+                + "<p>T: 0812843609 </p>"
+                + "<p>E: nguyenphuong9824@gmail.com</p>"
+                + "<p>F: https://www.facebook.com/HolaShoesShop</p>"
+                + "<p>W: http://localhost:8080/ShoesStoreWed</p>"
+                + "</body></html>";
+
+        EmailService.sendEmail(u.getEmail(), encodedSubject, messageText);
+
+        // Hiển thị thông báo thành công
+//        String message = "Khôi phục tài khoản thành công.";
+//        session.setAttribute("message", message);
+        // Chuyển hướng về trang danh sách người dùng bị khóa
+        response.sendRedirect("getUsers"); // Sau khi khóa tài khoản, chuyển về trang danh sách người dùng
+    }
+
+    protected void filterUser(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lấy thông tin phân trang cho khách hàng và nhân viên
+        String pageStr1 = request.getParameter("pageStr1"); // Phân trang cho khách hàng
+        String pageStr2 = request.getParameter("pageStr2"); // Phân trang cho nhân viên
+
+        // Nếu không có tham số phân trang, mặc định là trang 1
+        int pageCustomer = (pageStr1 != null && !pageStr1.isEmpty()) ? Integer.parseInt(pageStr1) : 1;
+        int pageEmployee = (pageStr2 != null && !pageStr2.isEmpty()) ? Integer.parseInt(pageStr2) : 1;
+        int pageSize = 4; // Số người dùng trên mỗi trang
+
+        String username = request.getParameter("username");
+        String fullName = request.getParameter("fullName");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String registrationDate = request.getParameter("registrationDate");
+
+        // Lọc người dùng theo các thông tin được nhập từ form
+        List<User> filteredUsers = userDAO.filterUsers(username, fullName, email, phone, registrationDate);
+
+        // Tạo danh sách khách hàng và nhân viên từ kết quả lọc
+        List<User> customers = new ArrayList<>();
+        List<User> employees = new ArrayList<>();
+
+        for (User user : filteredUsers) {
+            int deliveredCount = 0;
+            int cancelledCount = 0;
+
+            for (Order order : user.getOrders()) {
+                if ("Delivered".equals(order.getOrderStatus())) {
+                    deliveredCount++;
+                } else if ("Cancelled".equals(order.getOrderStatus())) {
+                    cancelledCount++;
+                }
+            }
+
+            user.setDeliveredCount(deliveredCount);
+            user.setCancelledCount(cancelledCount);
+
+            if ("Customer".equals(user.getRole())) {
+                customers.add(user);
+            } else {
+                employees.add(user);
+            }
+        }
+
+        // Phân trang cho khách hàng
+        int totalCustomers = customers.size();
+        int totalPagesCustomer = (int) Math.ceil((double) totalCustomers / pageSize);
+        int startIndexCustomer = (pageCustomer - 1) * pageSize;
+        int endIndexCustomer = Math.min(startIndexCustomer + pageSize, totalCustomers);
+
+        if (startIndexCustomer < totalCustomers) {
+            List<User> paginatedCustomers = customers.subList(startIndexCustomer, endIndexCustomer);
+            request.setAttribute("customers", paginatedCustomers);
+        } else {
+            request.setAttribute("customers", new ArrayList<>()); // Nếu không có dữ liệu, gán danh sách rỗng
+        }
+
+        // Phân trang cho nhân viên
+        int totalEmployees = employees.size();
+        int totalPagesEmployee = (int) Math.ceil((double) totalEmployees / pageSize);
+        int startIndexEmployee = (pageEmployee - 1) * pageSize;
+        int endIndexEmployee = Math.min(startIndexEmployee + pageSize, totalEmployees);
+
+        if (startIndexEmployee < totalEmployees) {
+            List<User> paginatedEmployees = employees.subList(startIndexEmployee, endIndexEmployee);
+            request.setAttribute("employees", paginatedEmployees);
+        } else {
+            request.setAttribute("employees", new ArrayList<>()); // Nếu không có dữ liệu, gán danh sách rỗng
+        }
+
+        request.setAttribute("currentPageCustomer", pageCustomer);
+        request.setAttribute("currentPageEmployee", pageEmployee);
+        request.setAttribute("totalPagesCustomer", totalPagesCustomer);
+        request.setAttribute("totalPagesEmployee", totalPagesEmployee);
+        request.getRequestDispatcher("accountList.jsp").forward(request, response);
+    }
+
+    public static void main(String[] args) {
+        String username = "1";
+        String fullName = null;
+        String email = null;
+        String phone = null;
+        String registrationDate = null;
+        UserDAO userDAO = new UserDAO();
+
+        // Lọc người dùng theo các thông tin được nhập từ form
+        List<User> filteredUsers = userDAO.filterUsers(username, fullName, email, phone, registrationDate);
+
+        // Tạo danh sách khách hàng và nhân viên từ kết quả lọc
+        List<User> customers = new ArrayList<>();
+        List<User> employees = new ArrayList<>();
+
+        for (User user : filteredUsers) {
+            int deliveredCount = 0;
+            int cancelledCount = 0;
+
+            for (Order order : user.getOrders()) {
+                if ("Delivered".equals(order.getOrderStatus())) {
+                    deliveredCount++;
+                } else if ("Cancelled".equals(order.getOrderStatus())) {
+                    cancelledCount++;
+                }
+            }
+
+            user.setDeliveredCount(deliveredCount);
+            user.setCancelledCount(cancelledCount);
+
+            if ("Customer".equals(user.getRole())) {
+                System.out.println(user.getUserId());
+                customers.add(user);
+            } else {
+                employees.add(user);
+            }
+        }
     }
 
 }
