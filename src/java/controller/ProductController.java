@@ -15,20 +15,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import java.io.File;
-import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
-import model.Category;
 import model.Product;
 import model.User;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpSession;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-
 
 @WebServlet(name = "ProductController", urlPatterns = {"/product", "/home", "/search", "/list", "/add", "/edit", "/update",
     "/deleteProduct", "/trash", "/restore", "/deleteTrash", "/productDetail", "/deleteMultipleProducts", "/productAction", "/sortProduct"})
@@ -42,7 +39,7 @@ public class ProductController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (request.getServletPath().equals("/home")) {
-            getSaleProducts(request, response);
+            getHomeProducts(request, response);
         } else if (request.getServletPath().equals("/product")) {
             getFilteredSortedPagedProducts(request, response);
         } else if (request.getServletPath().equals("/search")) {
@@ -75,10 +72,16 @@ public class ProductController extends HttpServlet {
 
     }
 
-    protected void getSaleProducts(HttpServletRequest request, HttpServletResponse response)
+    protected void getHomeProducts(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<Product> listSale = productDAO.getSaleProducts();
+        List<Product> listMostSoldSneakers = productDAO.getMostSoldProducts("Sneaker");
+        List<Product> listMostSoldBoots = productDAO.getMostSoldProducts("Boot");
+        List<Product> listMostSoldSandals = productDAO.getMostSoldProducts("Sandal");
         request.setAttribute("listSaleProducts", listSale);
+        request.setAttribute("listMostSoldSneakers", listMostSoldSneakers);
+        request.setAttribute("listMostSoldBoots", listMostSoldBoots);
+        request.setAttribute("listMostSoldSandals", listMostSoldSandals);
         request.getRequestDispatcher("home.jsp").forward(request, response);
     }
 
@@ -300,18 +303,22 @@ public class ProductController extends HttpServlet {
     private void deleteImages(Product product) {
         // Xóa ảnh chính nếu tồn tại
         if (product.getImageURL() != null) {
-            File mainImageFile = new File(IMAGE_UPLOAD_DIR, product.getImageURL().substring(6)); // Bỏ phần "./img/" trong đường dẫn
-            if (mainImageFile.exists()) {
-                mainImageFile.delete();
+            Path mainImagePath = Paths.get(IMAGE_UPLOAD_DIR, product.getImageURL().substring(6)); // Bỏ phần "./img/" trong đường dẫn
+            try {
+                Files.deleteIfExists(mainImagePath);
+            } catch (IOException e) {
+                e.printStackTrace(); // Hoặc log lỗi phù hợp
             }
         }
 
         // Xóa ảnh chi tiết nếu có
         if (product.getImageURLDetail() != null) {
             for (String detailImageUrl : product.getImageURLDetail()) {
-                File detailImageFile = new File(IMAGE_UPLOAD_DIR, detailImageUrl.substring(6)); // Bỏ phần "./img/" trong đường dẫn
-                if (detailImageFile.exists()) {
-                    detailImageFile.delete();
+                Path detailImagePath = Paths.get(IMAGE_UPLOAD_DIR, detailImageUrl.substring(6)); // Bỏ phần "./img/" trong đường dẫn
+                try {
+                    Files.deleteIfExists(detailImagePath); // Xóa file nếu tồn tại
+                } catch (IOException e) {
+                    System.err.println("Không thể xóa file: " + detailImagePath + " - " + e.getMessage());
                 }
             }
         }
@@ -409,7 +416,7 @@ public class ProductController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (request.getServletPath().equals("/home")) {
-            getSaleProducts(request, response);
+            getHomeProducts(request, response);
         } else if (request.getServletPath().equals("/product")) {
             getFilteredSortedPagedProducts(request, response);
         } else if (request.getServletPath().equals("/search")) {
