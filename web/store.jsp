@@ -319,9 +319,13 @@
                                             <i class="fa fa-star"></i>
                                         </div>
                                     </div>
-                                    <div class="add-to-cart">
-                                        <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-                                    </div>
+                                    <form action="addCartQuick" method="GET">
+                                                <div class="add-to-cart">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <input type="hidden" name="productID" value="${i.productID}"> <!-- Gửi productID -->
+                                                    <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
+                                                </div>
+                                            </form>
                                 </div>
                             </div>
                         </c:forEach>

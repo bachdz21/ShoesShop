@@ -134,7 +134,7 @@ public class UserController extends HttpServlet {
             
         } else {
             request.setAttribute("error", "Invalid username or password");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("./login").forward(request, response);
         }
     }
 

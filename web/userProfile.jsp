@@ -23,6 +23,7 @@
 
         <!-- Font Awesome Icon -->
         <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.3.1/css/all.css'>
 
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
@@ -358,7 +359,78 @@
                 border-radius: 5px;
                 margin-top: 10px;
             }
-
+            
+            .review-form {
+                background-color: #fff;
+                padding: 20px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                color: #666;
+                font-size: 14px;
+            }
+            .product-info {
+                margin-bottom: 20px;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            .product-image {
+                max-width: 200px;
+                height: auto;
+                margin-bottom: 10px;
+            }
+            .star-rating {
+                display: flex;
+                gap: 5px;
+                margin-bottom: 10px;
+            }
+            .star {
+                font-size: 24px;
+                color: #ccc;
+                cursor: pointer;
+                transition: color 0.3s ease;
+            }
+            .star.active {
+                color: #ffd700;
+            }
+            textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                box-sizing: border-box;
+                font-size: 14px;
+                height: 100px;
+                resize: vertical;
+            }
+            .file-input {
+                margin-top: 5px;
+            }
+            .submit-btn {
+                background-color: #ffd700;
+                color: #fff;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+                width: 100%;
+            }
+            .submit-btn:hover {
+                background-color: #e0a400;
+            }
+            .note {
+                color: #888;
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
         </style>
     </head>
     <%@page import="model.User"%>
@@ -384,494 +456,447 @@
     %>
     <body>
         <!-- HEADER -->
-        <header>
-            <!-- TOP HEADER -->
-            <div id="top-header">
+        <jsp:include page="header.jsp"/>
+        <!-- /HEADER -->
+
+            <!-- NAVIGATION -->
+            <nav id="navigation">
+                <!-- container -->
                 <div class="container">
-                    <ul class="header-links pull-left">
-                        <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
-                        <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
-                        <li><a href="#"><i class="fa fa-map-marker"></i> SE1881 - PRJ301</a></li>
-                    </ul>
-                    <ul class="header-links pull-right">
-                        <% if (user == null) { %>
-                        <li><a href="login.jsp"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
-                            <% } else { %>
-                        <li><a href="#"><i class="fa fa-dollar"></i> Chào Mừng, <%= user.getUsername() %></a></li>
-                        <li><a href="logout"><i class="fa fa-user-o"></i> Đăng Xuất</a></li>
-                            <% } %>
-                    </ul>
-                </div>
-            </div>
-            <!-- /TOP HEADER -->
-        </header>
-
-        <!-- /TOP HEADER -->
-
-
-        <!-- MAIN HEADER -->
-        <div id="header">
-            <!-- container -->
-            <div class="container">
-                <!-- row -->
-                <div class="row">
-                    <!-- LOGO -->
-                    <div class="col-md-3">
-                        <div class="header-logo">
-                            <a href="/ProjectPRJ301/home" class="logo">
-                                <img src="./img/logo.png" alt="">
-                            </a>
-                        </div>
-                    </div>
-                    <!-- /LOGO -->
-
-                    <!-- SEARCH BAR -->
-                    <div class="col-md-6">
-                        <div class="header-search">
-                            <form action="search" method="get">
-                                <select class="input-select" name="category">
-                                    <option value="">Tất cả</option>
-                                    <option value="Laptop">Laptop</option>
-                                    <option value="Smartphone">Điện Thoại</option>
-                                    <option value="Camera">Máy Ảnh</option>
-                                    <option value="Accessory">Phụ Kiện</option>
-                                    <!-- Thêm các loại sản phẩm khác nếu cần -->
-                                </select>
-                                <input class="input" name="query" placeholder="Search here">
-                                <button type="submit" class="search-btn">Tìm kiếm</button>
-                            </form>
-                        </div>
-                    </div>
-                    <!-- /SEARCH BAR -->
-
-                    <!-- ACCOUNT -->
-                    <div class="col-md-3 clearfix">
-                        <div class="header-ctn">
-
-                            <!-- Cart -->
-                            <div class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                                    <i class="fa fa-shopping-cart"></i>
-                                    <span>Giỏ Hàng</span>
-                                    <div class="qty"><%= totalQuantity %></div>
-                                </a>
-                                <div class="cart-dropdown">
-                                    <div class="cart-list">
-                                        <% if (cartItems != null && !cartItems.isEmpty()) { %>
-                                        <% for (CartItem item : cartItems) { %>
-                                        <div class="product-widget">
-                                            <div class="product-img">
-                                                <img src="<%= item.getProduct().getImageURL() %>" alt="">
-                                            </div>
-                                            <div class="product-body">
-                                                <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                                <h4 class="product-price"><span class="qty"><%= item.getQuantity() %>x</span>$<%= item.getProduct().getSalePrice() %></h4>
-                                            </div>
-                                        </div>
-                                        <% } %>
-                                        <% } else { %>
-                                        <p>Giỏ hàng của bạn đang trống</p>
-                                        <% } %>
-                                    </div>
-                                    <div class="cart-summary">
-                                        <small><%= totalQuantity %> sản phẩm</small>
-                                        <h5>Tổng: $<%= subtotal %></h5>
-                                    </div>
-                                    <div class="cart-btns">
-                                        <a href="cartItem">Xem Giỏ Hàng</a>
-                                        <a href="getOrderItem">Thanh Toán <i class="fa fa-arrow-circle-right"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /Cart -->
-                            <!-- Menu Toogle -->
-                            <div class="menu-toggle">
-                                <a href="#">
-                                    <i class="fa fa-bars"></i>
-                                    <span>Menu</span>
-                                </a>
-                            </div>
-                            <!-- /Menu Toogle -->
-                        </div>
-                    </div>
-                    <!-- /ACCOUNT -->
-                </div>
-                <!-- row -->
-            </div>
-            <!-- container -->
-        </div>
-        <!-- /MAIN HEADER -->
-    </header>
-    <!-- /HEADER -->
-
-    <!-- NAVIGATION -->
-    <nav id="navigation">
-        <!-- container -->
-        <div class="container">
-            <!-- responsive-nav -->
-            <div id="responsive-nav">
-                <!-- NAV -->
-                <ul class="main-nav nav navbar-nav">
-                    <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
-                    <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
-                        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                        <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                        <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                        </c:if>
-                </ul>
-                <!-- /NAV -->
-            </div>
-            <!-- /responsive-nav -->
-        </div>
-        <!-- /container -->
-    </nav>
-    <!-- /NAVIGATION -->
-
-
-    <div class="container user-profile">
-        <div class="main-body">
-            <div class="row" style="margin-top: 30px; margin-bottom: 30px">
-                <div class="col-lg-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex flex-column align-items-center text-center">
-                                <form action="updateAvatar" method="POST" enctype="multipart/form-data" multiple required>
-                                    <div class="profile-image-container">
-                                        <label for="profileImage" style="cursor: pointer;">
-                                            <img style="margin: 10px; cursor: pointer;" 
-                                                 src="${user.profileImageURL != null && user.profileImageURL != '' ? 
-                                                        user.profileImageURL : 'https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg'}" 
-                                                 alt="Profile Image" class="rounded-circle p-1 bg-primary" width="110" height="110px">
-                                            <input type="file" id="profileImage" name="profileImageURL" accept="image/*" style="display: none;" onchange="updateAvatar()">
-
-                                            <div class="camera-overlay" style="margin: 10px;">
-                                                <i class="fas fa-camera camera-icon"></i>
-                                            </div>
-                                        </label>
-                                    </div>
-                                </form>
-                                <div class="mt-3">
-                                    <h4>${user.fullName}</h4>
-                                    <p class="text-secondary mb-1">${user.role}</p>
-                                    <p class="text-muted font-size-sm">${user.address}</p>
-                                </div>
-                            </div>
-                            <hr class="my-4">
-                            <ul class="list-group list-group-flush">
-                                <h2 class="product-title">Change Password</h2>
-                                <form action="changePassword" method="POST">
-                                    <div class="row mb-3">
-                                        <div class="col-sm-3">
-                                            <h6 class="mb-0">Password</h6>
-                                        </div>
-                                        <div class="col-sm-9 text-secondary">
-                                            <input type="password" class="form-control" name="password">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-sm-3">
-                                            <h6 class="mb-0">New Password</h6>
-                                        </div>
-                                        <div class="col-sm-9 text-secondary">
-                                            <input type="password" class="form-control" name="newPassword">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-sm-3">
-                                            <h6 class="mb-0">Confirm New Passwords</h6>
-                                        </div>
-                                        <div class="col-sm-9 text-secondary">
-                                            <input type="password" class="form-control" name="confirmNewPassword">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-3"></div>
-                                        <div class="col-sm-9 text-secondary">
-                                            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
-                                        </div>
-                                    </div>
-                                </form>
-                                <c:if test="${not empty message}">
-                                    <p class="${message == 'Đổi mật khẩu thành công.' ? 'message-success' : 'message-error'}">
-                                        ${message}
-                                    </p>
+                    <!-- responsive-nav -->
+                    <div id="responsive-nav">
+                        <!-- NAV -->
+                        <ul class="main-nav nav navbar-nav">
+                            <li><a href="home">Trang Chủ</a></li>
+                            <li><a href="/product">Danh Mục</a></li>
+                                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                                <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
                                 </c:if>
-                            </ul>
-                        </div>
+                        </ul>
+                        <!-- /NAV -->
                     </div>
+                    <!-- /responsive-nav -->
                 </div>
+                <!-- /container -->
+            </nav>
+            <!-- /NAVIGATION -->
 
 
-                <div class="col-lg-8">
-
-                    <form action="updateProfile" method="POST">         
-                        <div class="card">
-                            <hr>
-                            <h2 class="product-title">User Profile</h2>
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Full Name</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="fullName" value="${user.fullName}">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Email</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="email" value="${user.email}">
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Phone</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber}">
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Address</h6>
-                                    </div>
-                                    <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
-                                        <option value="" selected>${address.get(3) != null ? address.get(3) : "Tỉnh Thành"}</option>           
-                                    </select>
-
-                                    <select name="district" class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm">
-                                        <option value="" selected>${address.get(2) != null ? address.get(2) : "Quận Huyện"}</option>
-                                    </select>
-
-                                    <select name="ward" class="form-select form-select-sm" id="ward" aria-label=".form-select-sm">
-                                        <option value="" selected>${address.get(1) != null ? address.get(1) : "Xã Phường"}</option>
-                                    </select>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Address Detail</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="addressDetail" value="${address.get(0)}">
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 10px">
-                                    <div class="col-sm-3"></div>
-                                    <div class="col-sm-9 text-secondary">
-                                        <button type="submit" class="btn btn-primary px-4">Save Changes</button>
-                                    </div>
-                                </div>
-                                <hr>
-                            </div>
-                        </div>
-
-                    </form>
-                    <div class="row">
-                        <div class="col-sm-12">
+            <div class="container user-profile">
+                <div class="main-body">
+                    <div class="row" style="margin-top: 30px; margin-bottom: 30px">
+                        <div class="col-lg-4">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="list-product">
-                                        <h2 class="product-title">Danh Sách Đơn Hàng</h2>
-                                        <div class="table-responsive">
-                                            <table border="1">
-                                                <tr>
-                                                    <th>Mã Đơn Hàng</th>
-                                                    <th>Ngày Đặt Hàng</th>
-                                                    <th>Tổng Số Tiền</th>
-                                                    <th>Trạng Thái</th>
-                                                    <th>Phương Thức Thanh Toán</th>
-                                                    <th>Địa Chỉ Giao Hàng</th>
-                                                    <th>Chi Tiết</th>
-                                                </tr>
-                                                <c:forEach var="order" items="${orders}">
-                                                    <tr>
-                                                        <td>${order.orderCode}</td>
-                                                        <td>${order.orderDate}</td>
-                                                        <td>${order.totalAmount}</td>
-                                                        <td>${order.orderStatus}</td>
-                                                        <td>${order.paymentMethod}</td>
-                                                        <td>${order.shippingAddress}</td>
-                                                        <td><a href="orderDetail?id=${order.orderId}">Chi Tiết</a></td>
-                                                    </tr>
-                                                </c:forEach>
-                                            </table>
+                                    <div class="d-flex flex-column align-items-center text-center">
+                                        <form action="updateAvatar" method="POST" enctype="multipart/form-data" multiple required>
+                                            <div class="profile-image-container">
+                                                <label for="profileImage" style="cursor: pointer;">
+                                                    <img style="margin: 10px; cursor: pointer;" 
+                                                         src="${user.profileImageURL != null && user.profileImageURL != '' ? 
+                                                                user.profileImageURL : 'https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg'}" 
+                                                         alt="Profile Image" class="rounded-circle p-1 bg-primary" width="110" height="110px">
+                                                    <input type="file" id="profileImage" name="profileImageURL" accept="image/*" style="display: none;" onchange="updateAvatar()">
+
+                                                    <div class="camera-overlay" style="margin: 10px;">
+                                                        <i class="fas fa-camera camera-icon"></i>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </form>
+                                        <div class="mt-3">
+                                            <h4>${user.fullName}</h4>
+                                            <p class="text-secondary mb-1">${user.role}</p>
+                                            <p class="text-muted font-size-sm">${user.address}</p>
+                                        </div>
+                                    </div>
+                                    <hr class="my-4">
+                                    <ul class="list-group list-group-flush">
+                                        <h2 class="product-title">Đổi mật khẩu</h2>
+                                        <form action="changePassword" method="POST" onsubmit="return validatePasswordChange()">
+                                            <div class="row mb-3">
+                                                <div class="col-sm-12">
+                                                    <h6 class="mb-0">Mật khẩu cũ</h6>
+                                                </div>
+                                                <div class="col-sm-12 text-secondary">
+                                                    <input type="password" class="form-control" name="password" required>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-sm-12">
+                                                    <h6 class="mb-0">Mật khẩu mới</h6>
+                                                </div>
+                                                <div class="col-sm-12 text-secondary">
+                                                    <input type="password" class="form-control" name="newPassword" required>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-sm-12">
+                                                    <h6 class="mb-0">Xác nhận mật khẩu mới</h6>
+                                                </div>
+                                                <div class="col-sm-12 text-secondary">
+                                                    <input type="password" class="form-control" name="confirmNewPassword" required>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-3"></div>
+                                                <div class="col-sm-9 text-secondary " style="margin-top: 10px">
+                                                    <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <c:if test="${not empty message}">
+                                            <p class="${message == 'Đổi mật khẩu thành công.' ? 'message-success' : 'message-error'}">
+                                                ${message}
+                                            </p>
+                                        </c:if>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-8">
+
+                            <form action="updateProfile" method="POST" onsubmit="return validateProfileForm()">
+                                <div class="card">
+                                    <hr>
+                                    <h2 class="product-title">Hồ sơ của tôi</h2>
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-sm-3">
+                                                <h6 class="mb-0">Tên</h6>
+                                            </div>
+                                            <div class="col-sm-9 text-secondary">
+                                                <input type="text" class="form-control" name="fullName" value="${user.fullName}" required>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-3">
+                                                <h6 class="mb-0">Email</h6>
+                                            </div>
+                                            <div class="col-sm-9 text-secondary">
+                                                <input type="email" class="form-control" name="email" value="${user.email}" required>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-3">
+                                                <h6 class="mb-0">Số điện thoại</h6>
+                                            </div>
+                                            <div class="col-sm-9 text-secondary">
+                                                <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber}" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-sm-3">
+                                                <h6 class="mb-0">Địa chỉ</h6>
+                                            </div>
+                                            <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
+                                                <option value="${address != null && address.size() > 3 ? address.get(3) : ''}" selected>Tỉnh Thành</option>
+                                            </select>
+
+                                            <select name="district" class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm">
+                                                <option value="${address != null && address.size() > 2 ? address.get(2) : ''}" selected>Quận Huyện</option>
+                                            </select>
+
+                                            <select name="ward" class="form-select form-select-sm" id="ward" aria-label=".form-select-sm">
+                                                <option value="${address != null && address.size() > 1 ? address.get(1) : ''}" selected>Xã Phường</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-sm-3">
+                                                <h6 class="mb-0">Địa chỉ cụ thể</h6>
+                                            </div>
+                                            <div class="col-sm-9 text-secondary">
+                                                <input type="text" class="form-control" name="addressDetail" value="${address != null && address.size() > 0 ? address.get(0) : ""}" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" style="margin-top: 10px">
+                                            <div class="col-sm-3"></div>
+                                            <div class="col-sm-9 text-secondary">
+                                                <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+                                            </div>
+                                            <div class="col-sm-6 text-secondary">
+                                                <c:if test="${not empty message1}">
+                                                    <p class="${message1 == 'Cập nhật hồ sơ thành công.' ? 'message-success' : 'message-error'}">
+                                                        ${message1}
+                                                    </p>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="list-product">
+                                                <h2 class="product-title">Danh Sách Đơn Hàng</h2>
+                                                <div class="table-responsive">
+                                                    <table border="1">
+                                                        <tr>
+                                                            <th>Mã Đơn Hàng</th>
+                                                            <th>Ngày Đặt Hàng</th>
+                                                            <th>Tổng Số Tiền</th>
+                                                            <th>Trạng Thái</th>
+                                                            <th>Phương Thức Thanh Toán</th>
+                                                            <th>Địa Chỉ Giao Hàng</th>
+                                                            <th>Chi Tiết</th>
+                                                            <th>Đánh Giá</th>
+                                                        </tr>
+                                                        <c:forEach var="order" items="${orders}">
+                                                            <tr>
+                                                                <td>${order.orderCode}</td>
+                                                                <td>${order.orderDate}</td>
+                                                                <td>${order.totalAmount}</td>
+                                                                <td>${order.orderStatus}</td>
+                                                                <td>${order.paymentMethod}</td>
+                                                                <td>${order.shippingAddress}</td>
+                                                                <td><a href="orderDetail?id=${order.orderId}">Chi Tiết</a></td>
+                                                                <td>
+                                                                    <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#loginModal">
+                                                                        Đánh Giá
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        </c:forEach>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-
-    <!-- FOOTER -->
-    <footer id="footer">
-        <!-- top footer -->
-        <div class="section">
-            <!-- container -->
-            <div class="container">
-                <!-- row -->
-                <div class="row">
-                    <div class="col-md-3 col-xs-6">
-                        <div class="footer">
-                            <h3 class="footer-title">About Us</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
-                            <ul class="footer-links">
-                                <li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
-                                <li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
-                                <li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3 col-xs-6">
-                        <div class="footer">
-                            <h3 class="footer-title">Categories</h3>
-                            <ul class="footer-links">
-                                <li><a href="#">Hot deals</a></li>
-                                <li><a href="#">Laptops</a></li>
-                                <li><a href="#">Smartphones</a></li>
-                                <li><a href="#">Cameras</a></li>
-                                <li><a href="#">Accessories</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="clearfix visible-xs"></div>
-
-                    <div class="col-md-3 col-xs-6">
-                        <div class="footer">
-                            <h3 class="footer-title">Information</h3>
-                            <ul class="footer-links">
-                                <li><a href="#">About Us</a></li>
-                                <li><a href="#">Contact Us</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
-                                <li><a href="#">Orders and Returns</a></li>
-                                <li><a href="#">Terms & Conditions</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3 col-xs-6">
-                        <div class="footer">
-                            <h3 class="footer-title">Service</h3>
-                            <ul class="footer-links">
-                                <li><a href="#">My Account</a></li>
-                                <li><a href="#">View Cart</a></li>
-                                <li><a href="#">Wishlist</a></li>
-                                <li><a href="#">Track My Order</a></li>
-                                <li><a href="#">Help</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- /row -->
-            </div>
-            <!-- /container -->
-        </div>
-        <!-- /top footer -->
-
-        <!-- bottom footer -->
-        <div id="bottom-footer" class="section">
-            <div class="container">
-                <!-- row -->
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <ul class="footer-payments">
-                            <li><a href="#"><i class="fa fa-cc-visa"></i></a></li>
-                            <li><a href="#"><i class="fa fa-credit-card"></i></a></li>
-                            <li><a href="#"><i class="fa fa-cc-paypal"></i></a></li>
-                            <li><a href="#"><i class="fa fa-cc-mastercard"></i></a></li>
-                            <li><a href="#"><i class="fa fa-cc-discover"></i></a></li>
-                            <li><a href="#"><i class="fa fa-cc-amex"></i></a></li>
-                        </ul>
-                        <span class="copyright">
-                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                        </span>
-
 
                     </div>
                 </div>
-                <!-- /row -->
             </div>
-            <!-- /container -->
-        </div>
-        <!-- /bottom footer -->
-    </footer>
-    <!-- /FOOTER -->
 
-    <!-- jQuery Plugins -->
-    <!-- jQuery -->
-    <!-- Bootstrap Bundle JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <script>
-                                var citis = document.getElementById("city");
-                                var districts = document.getElementById("district");
-                                var wards = document.getElementById("ward");
-                                var Parameter = {
-                                    url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
-                                    method: "GET",
-                                    responseType: "application/json",
-                                };
-                                var promise = axios(Parameter);
-                                promise.then(function (result) {
-                                    renderCity(result.data);
-                                });
+            <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header border-bottom-0">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-title text-center">
+                                <h4>Đánh Giá Sản Phẩm</h4>
+                            </div>
+                            <div class="d-flex flex-column text-center">
+                                <form class="review-form" enctype="multipart/form-data" style="text-align: start">
+                                    <div class="form-group product-info">
+                                        <label>Product Information:</label>
+                                        <img src="path/to/product/image.jpg" alt="Product Image" class="product-image">
+                                        <p>Product Name: [Product Name Here]</p>
+                                    </div>
 
-                                function renderCity(data) {
-                                    for (const x of data) {
-                                        // Đặt value thành tên thay vì ID
-                                        citis.options[citis.options.length] = new Option(x.Name, x.Name);
-                                    }
-                                    citis.onchange = function () {
-                                        districts.length = 1;
-                                        wards.length = 1;
-                                        if (this.value != "") {
-                                            const result = data.filter(n => n.Name === this.value);
+                                    <div class="form-group">
+                                        <label for="rating">Your Rating * :</label>
+                                        <div class="star-rating" id="starRating">
+                                            <span class="star" data-value="1">★</span>
+                                            <span class="star" data-value="2">★</span>
+                                            <span class="star" data-value="3">★</span>
+                                            <span class="star" data-value="4">★</span>
+                                            <span class="star" data-value="5">★</span>
+                                        </div>
+                                        <input type="hidden" name="rating" id="ratingValue" value="">
+                                    </div>
 
-                                            for (const k of result[0].Districts) {
-                                                // Đặt value thành tên thay vì ID
-                                                districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                                    <div class="form-group">
+                                        <label for="review">Your Review * :</label>
+                                        <textarea id="review" name="review" required></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Upload Media (Optional):</label>
+                                        <input type="file" name="media" class="file-input" accept="image/*,video/*">
+                                    </div>
+
+                                    <button type="submit" class="submit-btn">Leave Your Review</button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+                <!-- FOOTER -->
+                <jsp:include page="footer.jsp"/>
+                <!-- /FOOTER -->
+
+                <!-- jQuery Plugins -->
+                <!-- jQuery -->
+                <!-- Bootstrap Bundle JS -->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+                <script>
+                                            var citis = document.getElementById("city");
+                                            var districts = document.getElementById("district");
+                                            var wards = document.getElementById("ward");
+                                            var Parameter = {
+                                                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+                                                method: "GET",
+                                                responseType: "application/json",
+                                            };
+                                            var promise = axios(Parameter);
+                                            promise.then(function (result) {
+                                                renderCity(result.data);
+                                            });
+
+                                            function renderCity(data) {
+                                                for (const x of data) {
+                                                    // Đặt value thành tên thay vì ID
+                                                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
+                                                }
+                                                citis.onchange = function () {
+                                                    districts.length = 1;
+                                                    wards.length = 1;
+                                                    if (this.value != "") {
+                                                        const result = data.filter(n => n.Name === this.value);
+
+                                                        for (const k of result[0].Districts) {
+                                                            // Đặt value thành tên thay vì ID
+                                                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                                                        }
+                                                    }
+                                                };
+                                                districts.onchange = function () {
+                                                    wards.length = 1;
+                                                    const dataCity = data.filter((n) => n.Name === citis.value);
+                                                    if (this.value != "") {
+                                                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+
+                                                        for (const w of dataWards) {
+                                                            // Đặt value thành tên thay vì ID
+                                                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
+                                                        }
+                                                    }
+                                                };
                                             }
-                                        }
-                                    };
-                                    districts.onchange = function () {
-                                        wards.length = 1;
-                                        const dataCity = data.filter((n) => n.Name === citis.value);
-                                        if (this.value != "") {
-                                            const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+                </script>
+                <script>
+                    document.getElementById('profileImage').addEventListener('change', function () {
+                        const form = this.closest('form'); // Lấy form bao quanh
+                        form.submit(); // Gửi form
+                    });
+                </script>
+                <script>
+                    function validatePasswordChange() {
+                        // Lấy các giá trị từ các ô nhập liệu
+                        var oldPassword = document.getElementsByName("password")[0].value;
+                        var newPassword = document.getElementsByName("newPassword")[0].value;
+                        var confirmNewPassword = document.getElementsByName("confirmNewPassword")[0].value;
+                        var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
 
-                                            for (const w of dataWards) {
-                                                // Đặt value thành tên thay vì ID
-                                                wards.options[wards.options.length] = new Option(w.Name, w.Name);
-                                            }
-                                        }
-                                    };
+                        // Kiểm tra mật khẩu mới và mật khẩu xác nhận có khớp không
+                        if (newPassword !== confirmNewPassword) {
+                            alert("Mật khẩu mới và xác nhận mật khẩu không khớp.");
+                            return false; // Không cho phép gửi form
+                        }
+
+                        // Kiểm tra mật khẩu cũ phải khác mật khẩu mới
+                        if (oldPassword === newPassword) {
+                            alert("Mật khẩu cũ không được giống mật khẩu mới.");
+                            return false; // Không cho phép gửi form
+                        }
+
+                        // Kiểm tra mật khẩu mới có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số
+                        var passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+                        if (!passwordPattern.test(newPassword)) {
+                            alert("Mật khẩu mới cần có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
+                            return false; // Không cho phép gửi form
+                        }
+
+
+                        // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
+                        return true;
+                    }
+                </script>
+                <script>
+                    function validateProfileForm() {
+                        // Lấy giá trị số điện thoại từ ô nhập liệu
+                        var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
+
+                        // Kiểm tra số điện thoại có đúng 10 chữ số
+                        var phonePattern = /^\d{10}$/;
+                        if (!phonePattern.test(phoneNumber)) {
+                            alert("Số điện thoại phải gồm 10 chữ số.");
+                            return false; // Không cho phép gửi form nếu không đúng định dạng
+                        }
+
+                        // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
+                        return true;
+                    }
+                </script>
+
+                <script>
+                    $(document).ready(function () {
+                        $('#loginModal').modal('show');
+                        $(function () {
+                            $('[data-toggle="tooltip"]').tooltip()
+                        })
+                    });
+                </script>
+                <!-- jQuery -->
+                <script src='https://code.jquery.com/jquery-3.3.1.slim.min.js'></script>
+                <!-- Popper JS -->
+                <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'></script>
+                <!-- Bootstrap JS -->
+                <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
+                <script>
+                    const stars = document.querySelectorAll('.star');
+                    const ratingInput = document.getElementById('ratingValue');
+
+                    stars.forEach(star => {
+                        star.addEventListener('click', function () {
+                            const value = this.getAttribute('data-value');
+                            ratingInput.value = value;
+
+                            stars.forEach(s => s.classList.remove('active'));
+                            this.classList.add('active');
+                            for (let i = 0; i < value; i++) {
+                                stars[i].classList.add('active');
+                            }
+                        });
+
+                        star.addEventListener('mouseover', function () {
+                            const value = this.getAttribute('data-value');
+                            stars.forEach((s, index) => {
+                                if (index < value)
+                                    s.classList.add('active');
+                                else
+                                    s.classList.remove('active');
+                            });
+                        });
+
+                        star.addEventListener('mouseout', function () {
+                            stars.forEach(s => s.classList.remove('active'));
+                            const currentRating = ratingInput.value;
+                            if (currentRating) {
+                                for (let i = 0; i < currentRating; i++) {
+                                    stars[i].classList.add('active');
                                 }
-    </script>
-    <script>
-        document.getElementById('profileImage').addEventListener('change', function () {
-            const form = this.closest('form'); // Lấy form bao quanh
-            form.submit(); // Gửi form
-        });
-    </script>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/slick.min.js"></script>
-    <script src="js/nouislider.min.js"></script>
-    <script src="js/jquery.zoom.min.js"></script>
-    <script src="js/main.js"></script>
+                            }
+                        });
+                    });
+                </script>
+                <script src="js/jquery.min.js"></script>
+                <script src="js/bootstrap.min.js"></script>
+                <script src="js/slick.min.js"></script>
+                <script src="js/nouislider.min.js"></script>
+                <script src="js/jquery.zoom.min.js"></script>
+                <script src="js/main.js"></script>
 
-</body>
-</html>
+                </body>
+                </html>
