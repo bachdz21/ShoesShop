@@ -285,7 +285,7 @@
             }
 
             .table-responsive {
-                max-height: 283px; /* Chiều cao tối đa của bảng */
+                max-height: 200px; /* Chiều cao tối đa của bảng */
                 overflow-y: auto; /* Thêm thanh cuộn dọc khi vượt quá chiều cao tối đa */
                 overflow-x: hidden; /* Ẩn thanh cuộn ngang (tuỳ chọn) */
             }
@@ -449,9 +449,6 @@
                 text-align: left;
             }
 
-            .table-responsive {
-                margin-top: 20px;
-            }
 
             .table {
                 width: 100%;
@@ -521,7 +518,7 @@
 
                             <div class="tab-content">
                                 <!-- Chờ xác nhận -->
-                                <div id="pending" class=" tab-pane active">
+                                <div id="pending" class=" tab-pane active table-responsive">
                                     <table>
                                         <tr>
                                             <th>Mã Đơn Hàng</th>
@@ -549,7 +546,7 @@
                                 </div>
 
                                 <!-- Đang vận chuyển -->
-                                <div id="shipped" class=" tab-pane fade">
+                                <div id="shipped" class=" tab-pane fade table-responsive">
                                     <table>
                                         <tr>
                                             <th>Mã Đơn Hàng</th>
@@ -577,7 +574,7 @@
                                 </div>
 
                                 <!-- Đã giao -->
-                                <div id="delivered" class=" tab-pane fade">
+                                <div id="delivered" class=" tab-pane fade table-responsive">
                                     <table>
                                         <tr>
                                             <th>Mã Đơn Hàng</th>
@@ -605,7 +602,7 @@
                                 </div>
 
                                 <!-- Đã hủy -->
-                                <div id="cancelled" class=" tab-pane fade">
+                                <div id="cancelled" class=" tab-pane fade table-responsive">
                                     <table>
                                         <tr>
                                             <th>Mã Đơn Hàng</th>

@@ -138,9 +138,9 @@
                 <!-- User's Information -->
                 <div>
                     <h3>Thông tin người nhận</h3>
-                    <p>Tên người nhận: ${user.fullName}</p>
-                    <p>Địa chỉ: ${user.address}</p>
-                    <p>Số điện thoại: ${user.phoneNumber}</p>
+                    <p>Tên người nhận: ${order.recipientName}</p>
+                    <p>Địa chỉ: ${order.shippingAddress}</p>
+                    <p>Số điện thoại: ${order.recipientPhone}</p>
                 </div>
 
                 <!-- Order Details -->
