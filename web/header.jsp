@@ -40,23 +40,23 @@
     <div id="top-header">
         <div class="container">
             <ul class="header-links pull-left">
-                <li><a href="#"><i class="fa fa-phone"></i> 0399823683</a></li>
-                <li><a href="#"><i class="fa fa-envelope-o"></i> group2@gmail.com</a></li>
-                <li><a href="#"><i class="fa fa-map-marker"></i> SE1872 - SWP391</a></li>
+                <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
+                <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
+                <li><a href="#"><i class="fa fa-map-marker"></i> 26 Cụm 1, Thôn 3, Thạch Thất, Hà Nội</a></li>
             </ul>
             <ul class="header-links pull-right">
                 <% if (user == null) { %>
-                <li><a href="login.jsp"><i class="fa fa-user-o"></i> Login</a></li>
+                <li><a href="login"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
                     <% } else { %>
                     <% if ("Admin".equals(user.getRole())) { %>
                 <li>
-                    <a href="/ShoesStoreWeb/revenue?year=<%= currentYear %>&month=<%= currentMonth %>">
+                    <a href="list">
                         <i class="fa fa-dashboard"></i> Dashboard
                     </a>
                 </li>
                 <% } %>
-                <li><a href="userProfile"><i class="fa fa-user"></i> Welcome, <%= user.getUsername() %></a></li>
-                <li><a href="logout"><i class="fa fa-sign-out"></i> Logout</a></li>
+                <li><a href="userProfile"><i class="fa fa-user"></i> Chào mừng, <%= user.getUsername() %></a></li>
+                <li><a href="logout"><i class="fa fa-sign-out"></i> Đăng xuất</a></li>
                     <% } %>
             </ul>
         </div>
@@ -70,8 +70,8 @@
                 <!-- LOGO -->
                 <div class="col-md-3">
                     <div class="header-logo">
-                        <a style="color: white; font-size: 40px; font-family: fantasy" href="./home" class="logo">
-                            ShoeShop
+                        <a href="./home" class="logo">
+                            <img src="./img/logo2.png" alt="">
                         </a>
                     </div>
                 </div>
@@ -88,10 +88,10 @@
                                 </div>
                                 <ul id="list" class="dropdown-list">
                                     <li class="dropdown-list-item" value="">All</li>
-                                    <li class="dropdown-list-item" value="Sneakers">Sneakers</li>
-                                    <li class="dropdown-list-item" value="Oxford">Oxford</li>
-                                    <li class="dropdown-list-item" value="Boot">Boot</li>
-                                    <li class="dropdown-list-item" value="Sandal">Sandal</li>
+                                    <li class="dropdown-list-item" value="Laptop">Sneakers</li>
+                                    <li class="dropdown-list-item" value="Smartphone">Oxford</li>
+                                    <li class="dropdown-list-item" value="Camera">Boot</li>
+                                    <li class="dropdown-list-item" value="Accessory">Sandals</li>
                                 </ul>
                             </div>
                             <div class="search-box">
