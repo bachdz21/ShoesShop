@@ -8,53 +8,63 @@ package model;
  *
  * @author nguye
  */
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Review {
 
-    private int reviewID;
-    private int productID;
-    private int userID;
+    private int reviewId;
+    private int productId;
+    private int userId;
     private Integer rating;
     private String comment;
-    private Date reviewDate;
+    private LocalDateTime reviewDate;
     private boolean isApproved;
-    private boolean isVerifiedPurchase;
 
-    // Constructor
-    public Review(int reviewID, int productID, int userID, Integer rating, String comment, Date reviewDate, boolean isApproved, boolean isVerifiedPurchase) {
-        this.reviewID = reviewID;
-        this.productID = productID;
-        this.userID = userID;
+    // Constructors
+    public Review() {
+    }
+
+    public Review(int productId, int userId, Integer rating, String comment) {
+        this.productId = productId;
+        this.userId = userId;
+        this.rating = rating;
+        this.comment = comment;
+    }
+
+    public Review(int reviewId, int productId, int userId, Integer rating,
+            String comment, LocalDateTime reviewDate, boolean isApproved) {
+        this.reviewId = reviewId;
+        this.productId = productId;
+        this.userId = userId;
         this.rating = rating;
         this.comment = comment;
         this.reviewDate = reviewDate;
         this.isApproved = isApproved;
-        this.isVerifiedPurchase = isVerifiedPurchase;
+    }
+    
+    // Getters and Setters
+    public int getReviewId() {
+        return reviewId;
     }
 
-    public int getReviewID() {
-        return reviewID;
+    public void setReviewId(int reviewId) {
+        this.reviewId = reviewId;
     }
 
-    public void setReviewID(int reviewID) {
-        this.reviewID = reviewID;
+    public int getProductId() {
+        return productId;
     }
 
-    public int getProductID() {
-        return productID;
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
-    public void setProductID(int productID) {
-        this.productID = productID;
+    public int getUserId() {
+        return userId;
     }
 
-    public int getUserID() {
-        return userID;
-    }
-
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public Integer getRating() {
@@ -73,35 +83,19 @@ public class Review {
         this.comment = comment;
     }
 
-    public Date getReviewDate() {
+    public LocalDateTime getReviewDate() {
         return reviewDate;
     }
 
-    public void setReviewDate(Date reviewDate) {
+    public void setReviewDate(LocalDateTime reviewDate) {
         this.reviewDate = reviewDate;
     }
 
-    public boolean isIsApproved() {
+    public boolean isApproved() {
         return isApproved;
     }
 
-    public void setIsApproved(boolean isApproved) {
+    public void setApproved(boolean isApproved) {
         this.isApproved = isApproved;
     }
-
-    public boolean isIsVerifiedPurchase() {
-        return isVerifiedPurchase;
-    }
-
-    public void setIsVerifiedPurchase(boolean isVerifiedPurchase) {
-        this.isVerifiedPurchase = isVerifiedPurchase;
-    }
-
-    @Override
-    public String toString() {
-        return "Review{" + "reviewID=" + reviewID + ", productID=" + productID + ", userID=" + userID + ", rating=" + rating + ", comment=" + comment + ", reviewDate=" + reviewDate + ", isApproved=" + isApproved + ", isVerifiedPurchase=" + isVerifiedPurchase + '}';
-    }
-
 }
-
-  

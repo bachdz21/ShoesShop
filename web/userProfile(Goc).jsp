@@ -433,6 +433,27 @@
             }
         </style>
     </head>
+    <%@page import="model.User"%>
+    <%@page import="model.CartItem"%>
+    <%@ page import="java.util.List" %>
+
+    <%@page import="jakarta.servlet.http.HttpSession"%>
+    <%
+        // Sử dụng biến session từ request mà không cần khai báo lại
+        User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
+    %>
+    <% 
+    // Lấy danh sách sản phẩm trong giỏ hàng từ session
+    List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
+    int totalQuantity = 0;
+    double subtotal = 0.0;
+    if (cartItems != null) {
+        for (CartItem item : cartItems) {
+            totalQuantity += item.getQuantity();
+            subtotal += item.getProduct().getPrice() * item.getQuantity();
+        }
+    }
+    %>
     <body>
         <!-- HEADER -->
         <jsp:include page="header.jsp"/>
@@ -641,9 +662,12 @@
                                                             <td>${order.shippingAddress}</td>
                                                             <td><a href="orderDetail?id=${order.orderId}">Chi Tiết</a></td>
                                                             <td>
-                                                                <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#reviewModal" data-orderid="${order.orderId}">
-                                                                    Đánh Giá
-                                                                </button>
+                                                                <form action="/getProductsByOrderID" method="POST">
+                                                                    <input type="hidden" name="orderID" value="${order.orderId}">
+                                                                    <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#loginModal">
+                                                                        Đánh Giá
+                                                                    </button>
+                                                                </form>
                                                             </td>
                                                         </tr>
                                                     </c:forEach>
@@ -660,7 +684,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header border-bottom-0">
@@ -671,18 +695,16 @@
                     <div class="modal-body">
                         <div class="form-title text-center">
                             <h4>Đánh Giá Sản Phẩm</h4>
-                            <p id="modalResult"></p>
+                            <p>Order ID: ${orderID}</p>
                         </div>
                         <div class="d-flex flex-column text-center">
-                            <form action="addReview" method="POST" class="review-form" enctype="multipart/form-data" style="text-align: start">
+                            <form class="review-form" enctype="multipart/form-data" style="text-align: start">
                                 <div class="form-group product-info">
                                     <label>Chọn sản phẩm để đánh giá:</label>
-                                    <select name="productID" id="productSelect" required>
+                                    <select name="selected_product" id="productSelect" required>
                                         <option value="" disabled selected>Chọn một sản phẩm</option>
                                         <!-- Danh sách sản phẩm sẽ được thêm bằng JS -->
                                     </select>
-                                    <!-- Input ẩn cho productID -->
-
                                     <div class="selected-product-info" id="selectedProductInfo" style="display: none;">
                                         <img id="selectedProductImage" src="" alt="Selected Product" class="product-image">
                                         <p id="selectedProductName"></p>
@@ -703,13 +725,12 @@
 
                                 <div class="form-group">
                                     <label for="review">Your Review * :</label>
-                                    <textarea id="review" name="review"></textarea>
+                                    <textarea id="review" name="review" required></textarea>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Upload Media (Optional):</label>
-                                    <input type="file" name="media" class="file-input" accept="image/*,video/*" multiple>
-                                    <input type="hidden" name="mediaType" id="mediaType">
+                                    <input type="file" name="media" class="file-input" accept="image/*,video/*">
                                 </div>
 
                                 <button type="submit" class="submit-btn">Leave Your Review</button>
@@ -727,162 +748,51 @@
         <!-- jQuery Plugins -->
         <!-- jQuery -->
         <!-- Bootstrap Bundle JS -->
-
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const buttons = document.querySelectorAll(".btn-info"); // Nút "Đánh Giá"
-                buttons.forEach(function (button) {
-                    button.addEventListener("click", function (event) {
-                        event.preventDefault(); // Ngăn chặn hành động mặc định
-
-                        // Lấy orderID từ data attribute của nút
-                        var orderID = button.getAttribute('data-orderid');
-
-                        // Gửi request AJAX
-                        fetch("getProductsByOrderID", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/x-www-form-urlencoded"
-                            },
-                            body: "orderID=" + orderID
-                        })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.error) {
-                                        alert("Error: " + data.error);
-                                    } else {
-                                        // Làm sạch danh sách sản phẩm trong select trước khi thêm sản phẩm mới
-                                        const productSelect = document.getElementById("productSelect");
-                                        productSelect.innerHTML = '<option value="" disabled selected>Chọn một sản phẩm</option>'; // reset
-
-                                        // Duyệt qua danh sách sản phẩm và thêm các option vào select
-                                        data.forEach(product => {
-                                            let option = document.createElement("option");
-                                            option.value = product.productID;  // Sử dụng productID
-                                            option.textContent = product.productName;  // Hiển thị tên sản phẩm
-                                            productSelect.appendChild(option);
-                                        });
-
-                                        // Hiển thị thông tin và gán productID khi chọn sản phẩm
-                                        productSelect.addEventListener('change', function () {
-                                            const selectedProductId = productSelect.value;
-                                            const selectedProduct = data.find(p => p.productID == selectedProductId);
-
-                                            if (selectedProduct) {
-                                                // Hiển thị hình ảnh và tên sản phẩm đã chọn
-                                                document.getElementById("selectedProductImage").src = selectedProduct.imageURL;
-                                                document.getElementById("selectedProductName").textContent = selectedProduct.productName;
-                                                document.getElementById("selectedProductInfo").style.display = "block";
-                                            }
-                                        });
-                                    }
-                                })
-                                .catch(error => {
-                                    alert("Có lỗi xảy ra!");
-                                });
-                    });
-                });
-
-                // Reset lại thông tin modal khi đóng hoặc khi mở modal mới
-                function resetModal() {
-                    // Reset lại các trường thông tin trong modal
-                    document.getElementById("modalResult").innerText = "";
-                    document.getElementById("productSelect").value = ""; // Reset chọn sản phẩm
-                    document.getElementById("selectedProductImage").src = ""; // Reset hình ảnh
-                    document.getElementById("selectedProductName").textContent = ""; // Reset tên sản phẩm
-                    document.getElementById("selectedProductInfo").style.display = "none"; // Ẩn thông tin sản phẩm
-                    document.getElementById("hiddenProductID").value = ""; // Reset productID
-                }
-
-                // Đóng modal khi bấm vào nút X
-                document.querySelector(".close").addEventListener("click", function () {
-                    $('#reviewModal').modal('hide');
-                    resetModal(); // Reset thông tin modal khi đóng
-                });
-
-                // Đóng modal khi bấm ra ngoài
-                window.onclick = function (event) {
-                    var modal = document.getElementById("reviewModal");
-                    if (event.target === modal) {
-                        $('#reviewModal').modal('hide');
-                        resetModal(); // Reset thông tin modal khi đóng
-                    }
-                };
-
-                // Reset padding-right khi đóng modal
-                $('#reviewModal').on('hidden.bs.modal', function () {
-                    $('body').css('padding-right', ''); // Xóa padding-right khi modal đóng
-                });
-            });
-        </script>
-
-        <script>
-            document.querySelector('.file-input').addEventListener('change', function (event) {
-                var files = event.target.files;  // Lấy tất cả các file được chọn
-                var mediaTypes = [];  // Mảng lưu loại media (image, video, or other)
-
-                // Duyệt qua từng file và xác định loại
-                Array.from(files).forEach(file => {
-                    var fileType = file.type;
-
-                    // Kiểm tra kiểu file và thêm vào mảng mediaTypes
-                    if (fileType.startsWith('image/')) {
-                        mediaTypes.push('image');
-                    } else if (fileType.startsWith('video/')) {
-                        mediaTypes.push('video');
-                    } else {
-                        mediaTypes.push('other'); // Nếu là loại file khác
-                    }
-                });
-                console.log('Media Types:', mediaTypes);
-                // Cập nhật giá trị vào input ẩn (dùng để gửi qua form)
-                document.getElementById('mediaType').value = JSON.stringify(mediaTypes);  // Chuyển mảng thành JSON string
-            });
-        </script>
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
         <script>
-            var citis = document.getElementById("city");
-            var districts = document.getElementById("district");
-            var wards = document.getElementById("ward");
-            var Parameter = {
-                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
-                method: "GET",
-                responseType: "application/json",
-            };
-            var promise = axios(Parameter);
-            promise.then(function (result) {
-                renderCity(result.data);
-            });
-            function renderCity(data) {
-                for (const x of data) {
-                    // Đặt value thành tên thay vì ID
-                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
-                }
-                citis.onchange = function () {
-                    districts.length = 1;
-                    wards.length = 1;
-                    if (this.value != "") {
-                        const result = data.filter(n => n.Name === this.value);
-                        for (const k of result[0].Districts) {
-                            // Đặt value thành tên thay vì ID
-                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
-                        }
-                    }
-                };
-                districts.onchange = function () {
-                    wards.length = 1;
-                    const dataCity = data.filter((n) => n.Name === citis.value);
-                    if (this.value != "") {
-                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
-                        for (const w of dataWards) {
-                            // Đặt value thành tên thay vì ID
-                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
-                        }
-                    }
-                };
-            }
+                            var citis = document.getElementById("city");
+                            var districts = document.getElementById("district");
+                            var wards = document.getElementById("ward");
+                            var Parameter = {
+                                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+                                method: "GET",
+                                responseType: "application/json",
+                            };
+                            var promise = axios(Parameter);
+                            promise.then(function (result) {
+                                renderCity(result.data);
+                            });
+
+                            function renderCity(data) {
+                                for (const x of data) {
+                                    // Đặt value thành tên thay vì ID
+                                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
+                                }
+                                citis.onchange = function () {
+                                    districts.length = 1;
+                                    wards.length = 1;
+                                    if (this.value != "") {
+                                        const result = data.filter(n => n.Name === this.value);
+
+                                        for (const k of result[0].Districts) {
+                                            // Đặt value thành tên thay vì ID
+                                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                                        }
+                                    }
+                                };
+                                districts.onchange = function () {
+                                    wards.length = 1;
+                                    const dataCity = data.filter((n) => n.Name === citis.value);
+                                    if (this.value != "") {
+                                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+
+                                        for (const w of dataWards) {
+                                            // Đặt value thành tên thay vì ID
+                                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
+                                        }
+                                    }
+                                };
+                            }
         </script>
         <script>
             document.getElementById('profileImage').addEventListener('change', function () {
@@ -897,6 +807,7 @@
                 var newPassword = document.getElementsByName("newPassword")[0].value;
                 var confirmNewPassword = document.getElementsByName("confirmNewPassword")[0].value;
                 var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
+
                 // Kiểm tra mật khẩu mới và mật khẩu xác nhận có khớp không
                 if (newPassword !== confirmNewPassword) {
                     alert("Mật khẩu mới và xác nhận mật khẩu không khớp.");
@@ -926,6 +837,7 @@
             function validateProfileForm() {
                 // Lấy giá trị số điện thoại từ ô nhập liệu
                 var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
+
                 // Kiểm tra số điện thoại có đúng 10 chữ số
                 var phonePattern = /^\d{10}$/;
                 if (!phonePattern.test(phoneNumber)) {
@@ -955,16 +867,19 @@
         <script>
             const stars = document.querySelectorAll('.star');
             const ratingInput = document.getElementById('ratingValue');
+
             stars.forEach(star => {
                 star.addEventListener('click', function () {
                     const value = this.getAttribute('data-value');
                     ratingInput.value = value;
+
                     stars.forEach(s => s.classList.remove('active'));
                     this.classList.add('active');
                     for (let i = 0; i < value; i++) {
                         stars[i].classList.add('active');
                     }
                 });
+
                 star.addEventListener('mouseover', function () {
                     const value = this.getAttribute('data-value');
                     stars.forEach((s, index) => {
@@ -974,6 +889,7 @@
                             s.classList.remove('active');
                     });
                 });
+
                 star.addEventListener('mouseout', function () {
                     stars.forEach(s => s.classList.remove('active'));
                     const currentRating = ratingInput.value;
@@ -986,6 +902,43 @@
             });
         </script>
 
+        <script>
+            const orderProducts = [
+            <c:forEach var="product" items="${productInOrder}">
+            {
+            id: "${product.productID}",
+                    name: "${product.productName}",
+                    image: "${product.imageURL}"
+            }<c:if test="${!product.last}">,</c:if>
+            </c:forEach>
+            ];
+
+            // Điền danh sách sản phẩm vào dropdown
+            const productSelect = document.getElementById('productSelect');
+            orderProducts.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = product.name;
+                option.dataset.image = product.image; // Lưu đường dẫn ảnh vào dataset
+                productSelect.appendChild(option);
+            });
+
+            // Hiển thị thông tin sản phẩm khi chọn
+            productSelect.addEventListener('change', function () {
+                const selectedOption = this.options[this.selectedIndex];
+                const selectedProductInfo = document.getElementById('selectedProductInfo');
+                const selectedProductImage = document.getElementById('selectedProductImage');
+                const selectedProductName = document.getElementById('selectedProductName');
+
+                if (selectedOption.value) {
+                    selectedProductImage.src = selectedOption.dataset.image;
+                    selectedProductName.textContent = `Tên sản phẩm: ${selectedOption.textContent}`;
+                    selectedProductInfo.style.display = 'flex';
+                } else {
+                    selectedProductInfo.style.display = 'none';
+                }
+            });
+        </script>
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/slick.min.js"></script>

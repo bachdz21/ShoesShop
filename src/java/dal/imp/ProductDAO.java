@@ -58,7 +58,6 @@ public class ProductDAO extends DBConnect implements IProductDAO {
             e.printStackTrace();
         }
         return products;
-
     }
 
     @Override

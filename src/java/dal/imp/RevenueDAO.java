@@ -118,7 +118,7 @@ public class RevenueDAO extends DBConnect {
                 + "LEFT JOIN Orders o ON od.OrderID = o.OrderID\n"
                 + "GROUP BY c.CategoryName\n"
                 + "ORDER BY \n"
-                + "    CASE WHEN c.CategoryName = 'Sneakers' THEN 1\n"
+                + "    CASE WHEN c.CategoryName = 'Sneaker' THEN 1\n"
                 + "         WHEN c.CategoryName = 'Oxford' THEN 2\n"
                 + "         WHEN c.CategoryName = 'Boot' THEN 3\n"
                 + "         WHEN c.CategoryName = 'Sandal' THEN 4\n"

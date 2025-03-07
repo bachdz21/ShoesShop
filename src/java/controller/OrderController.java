@@ -1,5 +1,6 @@
 package controller;
 
+import com.google.gson.Gson;
 import dal.imp.CartDAO;
 import dal.imp.OrderDAO;
 import java.io.IOException;
@@ -17,11 +18,12 @@ import model.Product;
 import model.User;
 
 @WebServlet(name = "Order", urlPatterns = {"/order", "/checkout", "/getOrderItem", "/getCartItemUpdateQuantity",
-    "/getOrderByUserID", "/getAllOrders", "/updateStatus", "/getDetailOrders"})
+    "/getOrderByUserID", "/getAllOrders", "/updateStatus", "/getDetailOrders", "/getProductsByOrderID"})
 public class OrderController extends HttpServlet {
 
     private OrderDAO orderDAO = new OrderDAO();
     private CartDAO cartDAO = new CartDAO();
+    private static final long serialVersionUID = 1L;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,6 +38,8 @@ public class OrderController extends HttpServlet {
             getOrderByUserID(request, response);
         } else if (request.getServletPath().equals("/getAllOrders")) {
             getAllOrders(request, response);
+        } else if (request.getServletPath().equals("/getProductsByOrderID")) {
+            getProductsByOrderID(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }
@@ -120,7 +124,7 @@ public class OrderController extends HttpServlet {
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("allOrderList.jsp").forward(request, response);
     }
-    
+
     protected void getAllOrders(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
@@ -133,7 +137,56 @@ public class OrderController extends HttpServlet {
         request.setAttribute("orders", allOrders);
         request.getRequestDispatcher("allOrderList.jsp").forward(request, response);
     }
-    
+
+    protected void getProductsByOrderID(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Kiểm tra quyền truy cập người dùng
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN); // HTTP 403 - Forbidden
+            response.getWriter().write("{\"error\":\"Quyền truy cập không hợp lệ\"}");
+            return;
+        }
+
+        try {
+            // Lấy orderID từ request
+            String orderIDStr = request.getParameter("orderID");
+            if (orderIDStr == null || orderIDStr.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // HTTP 400 - Bad Request
+                response.getWriter().write("{\"error\":\"Mã đơn hàng là bắt buộc\"}");
+                return;
+            }
+
+            int orderID = Integer.parseInt(orderIDStr);
+
+            // Truy vấn các sản phẩm trong đơn hàng từ DAO (giả sử bạn đã có phương thức getProductsByOrderID)
+            List<Product> productInOrder = orderDAO.getProductsByOrderID(orderID);
+
+            if (productInOrder == null || productInOrder.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND); // HTTP 404 - Not Found
+                response.getWriter().write("{\"error\":\"Không tìm thấy sản phẩm cho Mã đơn hàng này\"}");
+                return;
+            }
+
+            // Giả sử bạn muốn trả về tất cả các sản phẩm trong đơn hàng dưới dạng danh sách
+            Gson gson = new Gson();
+            String json = gson.toJson(productInOrder); // Chuyển danh sách sản phẩm thành JSON
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(json);
+            
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // HTTP 400 - Bad Request
+            response.getWriter().write("{\"error\":\"Định dạng Mã đơn hàng không hợp lệ\"}");
+        } catch (Exception e) {
+            // Log lỗi và trả về lỗi server
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // HTTP 500 - Internal Server Error
+            response.getWriter().write("{\"error\":\"Đã xảy ra lỗi khi xử lý yêu cầu của bạn\"}");
+        }
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -147,6 +200,8 @@ public class OrderController extends HttpServlet {
             getOrderByUserID(request, response);
         } else if (request.getServletPath().equals("/getAllOrders")) {
             getAllOrders(request, response);
+        } else if (request.getServletPath().equals("/getProductsByOrderID")) {
+            getProductsByOrderID(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }

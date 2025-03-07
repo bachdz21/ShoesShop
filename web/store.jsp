@@ -82,7 +82,7 @@
             <div id="responsive-nav">
                 <!-- NAV -->
                 <ul class="main-nav nav navbar-nav">
-                    <li><a href="/ShoesStoreWed/home">Trang Chủ</a></li>
+                    <li><a href="./home">Trang Chủ</a></li>
                     <li class="active"><a href="/ShoesStoreWed/product">Danh Mục</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                         <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
