@@ -1,0 +1,120 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 10, 2025, 11:08:03 AM
+    Author     : nguye
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500&display=swap");
+:root {
+  --blue: #9ab3f5;
+  --purple: #9a1663;
+  --white: #ffffff;
+
+  --shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style-type: none;
+  font-family: "Montserrat", sans-serif;
+}
+
+
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: 50px;
+  background-color: var(--white);
+  
+}
+
+.dropdown-searchbar {
+  position: relative;
+  width: 40%;
+  border-radius: 50px;
+  background-color: #D10024;
+  border: 1px solid var(--white);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.dropdown-text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.5rem;
+  font-weight: 500;
+  background-color: transparent;
+  padding: 1rem 1.6rem;
+  color: var(--white);
+}
+
+.dropdown-list {
+  display: block;
+  position: absolute;
+  top: 4rem;
+  left: 0;
+  width: 100%;
+  border-radius: 15px;
+  max-height: 0;
+  overflow: hidden;
+  background-color: var(--white);
+  transition: max-height 0.5s;
+  z-index: 999;
+  margin-top: 5px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); 
+}
+
+.dropdown-list-item {
+  font-size: 1.5rem;
+  font-weight: 500;
+  border-radius: 15px;
+  padding: 1rem 0 1rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.3s ease, margin-left 0.2s ease;
+}
+
+.dropdown-list-item:hover {
+  margin-left: 0.5rem;
+  color: #D10024;
+}
+
+#list.show {
+  max-height: 300px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  padding-right: 1rem;
+  width: 100%;
+  color: #D10024;
+}
+
+.search-box input {
+  padding: 1rem;
+  width: 95%;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #D10024;
+  border: 0;
+  outline: 0;
+}
+
+.search-box i {
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.search-box input::placeholder {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #D10024;
+}
+
