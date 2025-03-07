@@ -23,6 +23,7 @@
 
         <!-- Font Awesome Icon -->
         <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.3.1/css/all.css'>
 
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
@@ -484,10 +485,34 @@
                 margin-top: 30px;
             }
         </style>
-        <%@ include file="header.jsp" %>
+        
     </head>
     
     <body>
+        <%@ include file="header.jsp" %>
+        <!-- NAVIGATION -->
+        <nav id="navigation">
+            <!-- container -->
+            <div class="container">
+                <!-- responsive-nav -->
+                <div id="responsive-nav">
+                    <!-- NAV -->
+                    <ul class="main-nav nav navbar-nav">
+                        <li><a href="home">Trang Chủ</a></li>
+                        <li><a href="/product">Danh Mục</a></li>
+                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
+                            </c:if>
+                    </ul>
+                    <!-- /NAV -->
+                </div>
+                <!-- /responsive-nav -->
+            </div>
+            <!-- /container -->
+        </nav>
+        <!-- /NAVIGATION -->
+
     <div class="container user-profile">
         <div class="main-body">
             <div class="row" style="margin-top: 30px; margin-bottom: 30px">
@@ -786,125 +811,387 @@
                     
                 </div>
 
+    
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="list-product">
+                                            <h2 class="product-title">Danh Sách Đơn Hàng</h2>
+                                            <div class="table-responsive">
+                                                <table border="1">
+                                                    <tr>
+                                                        <th>Mã Đơn Hàng</th>
+                                                        <th>Ngày Đặt Hàng</th>
+                                                        <th>Tổng Số Tiền</th>
+                                                        <th>Trạng Thái</th>
+                                                        <th>Phương Thức Thanh Toán</th>
+                                                        <th>Địa Chỉ Giao Hàng</th>
+                                                        <th>Chi Tiết</th>
+                                                        <th>Đánh Giá</th>
+                                                    </tr>
+                                                    <c:forEach var="order" items="${orders}">
+                                                        <tr>
+                                                            <td>${order.orderCode}</td>
+                                                            <td>${order.orderDate}</td>
+                                                            <td>${order.totalAmount}</td>
+                                                            <td>${order.orderStatus}</td>
+                                                            <td>${order.paymentMethod}</td>
+                                                            <td>${order.shippingAddress}</td>
+                                                            <td><a href="orderDetail?id=${order.orderId}">Chi Tiết</a></td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#reviewModal" data-orderid="${order.orderId}">
+                                                                    Đánh Giá
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header border-bottom-0">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-title text-center">
+                            <h4>Đánh Giá Sản Phẩm</h4>
+                            <p id="modalResult"></p>
+                        </div>
+                        <div class="d-flex flex-column text-center">
+                            <form action="addReview" method="POST" class="review-form" enctype="multipart/form-data" style="text-align: start">
+                                <div class="form-group product-info">
+                                    <label>Chọn sản phẩm để đánh giá:</label>
+                                    <select name="productID" id="productSelect" required>
+                                        <option value="" disabled selected>Chọn một sản phẩm</option>
+                                        <!-- Danh sách sản phẩm sẽ được thêm bằng JS -->
+                                    </select>
+                                    <!-- Input ẩn cho productID -->
+
+                                    <div class="selected-product-info" id="selectedProductInfo" style="display: none;">
+                                        <img id="selectedProductImage" src="" alt="Selected Product" class="product-image">
+                                        <p id="selectedProductName"></p>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="rating">Your Rating * :</label>
+                                    <div class="star-rating" id="starRating">
+                                        <span class="star" data-value="1">★</span>
+                                        <span class="star" data-value="2">★</span>
+                                        <span class="star" data-value="3">★</span>
+                                        <span class="star" data-value="4">★</span>
+                                        <span class="star" data-value="5">★</span>
+                                    </div>
+                                    <input type="hidden" name="rating" id="ratingValue" value="">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="review">Your Review * :</label>
+                                    <textarea id="review" name="review"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Upload Media (Optional):</label>
+                                    <input type="file" name="media" class="file-input" accept="image/*,video/*" multiple>
+                                    <input type="hidden" name="mediaType" id="mediaType">
+                                </div>
+
+                                <button type="submit" class="submit-btn">Leave Your Review</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <jsp:include page="footer.jsp"/>
+        <!-- /FOOTER -->
+
+        <!-- jQuery Plugins -->
+        <!-- jQuery -->
+        <!-- Bootstrap Bundle JS -->
 
 
-    <!-- FOOTER -->
-    <%@ include file="blank.jsp" %>
-    <!-- /FOOTER -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll(".btn-info"); // Nút "Đánh Giá"
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                event.preventDefault(); // Ngăn chặn hành động mặc định
 
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <script>
-                                var citis = document.getElementById("city");
-                                var districts = document.getElementById("district");
-                                var wards = document.getElementById("ward");
-                                var Parameter = {
-                                    url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
-                                    method: "GET",
-                                    responseType: "application/json",
-                                };
-                                var promise = axios(Parameter);
-                                promise.then(function (result) {
-                                    renderCity(result.data);
+                // Lấy orderID từ data attribute của nút
+                var orderID = button.getAttribute('data-orderid');
+
+                // Gửi request AJAX
+                fetch("getProductsByOrderID", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "orderID=" + orderID
+                })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                alert("Error: " + data.error);
+                            } else {
+                                // Làm sạch danh sách sản phẩm trong select trước khi thêm sản phẩm mới
+                                const productSelect = document.getElementById("productSelect");
+                                productSelect.innerHTML = '<option value="" disabled selected>Chọn một sản phẩm</option>'; // reset
+
+                                // Duyệt qua danh sách sản phẩm và thêm các option vào select
+                                data.forEach(product => {
+                                    let option = document.createElement("option");
+                                    option.value = product.productID;  // Sử dụng productID
+                                    option.textContent = product.productName;  // Hiển thị tên sản phẩm
+                                    productSelect.appendChild(option);
                                 });
 
-                                function renderCity(data) {
-                                    for (const x of data) {
-                                        // Đặt value thành tên thay vì ID
-                                        citis.options[citis.options.length] = new Option(x.Name, x.Name);
+                                // Hiển thị thông tin và gán productID khi chọn sản phẩm
+                                productSelect.addEventListener('change', function () {
+                                    const selectedProductId = productSelect.value;
+                                    const selectedProduct = data.find(p => p.productID == selectedProductId);
+
+                                    if (selectedProduct) {
+                                        // Hiển thị hình ảnh và tên sản phẩm đã chọn
+                                        document.getElementById("selectedProductImage").src = selectedProduct.imageURL;
+                                        document.getElementById("selectedProductName").textContent = selectedProduct.productName;
+                                        document.getElementById("selectedProductInfo").style.display = "block";
                                     }
-                                    citis.onchange = function () {
-                                        districts.length = 1;
-                                        wards.length = 1;
-                                        if (this.value != "") {
-                                            const result = data.filter(n => n.Name === this.value);
-
-                                            for (const k of result[0].Districts) {
-                                                // Đặt value thành tên thay vì ID
-                                                districts.options[districts.options.length] = new Option(k.Name, k.Name);
-                                            }
-                                        }
-                                    };
-                                    districts.onchange = function () {
-                                        wards.length = 1;
-                                        const dataCity = data.filter((n) => n.Name === citis.value);
-                                        if (this.value != "") {
-                                            const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
-
-                                            for (const w of dataWards) {
-                                                // Đặt value thành tên thay vì ID
-                                                wards.options[wards.options.length] = new Option(w.Name, w.Name);
-                                            }
-                                        }
-                                    };
-                                }
-    </script>
-    <script>
-        document.getElementById('profileImage').addEventListener('change', function () {
-            const form = this.closest('form'); // Lấy form bao quanh
-            form.submit(); // Gửi form
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            alert("Có lỗi xảy ra!");
+                        });
+            });
         });
-    </script>
-    <script>
-        function validatePasswordChange() {
-            // Lấy các giá trị từ các ô nhập liệu
-            var oldPassword = document.getElementsByName("password")[0].value;
-            var newPassword = document.getElementsByName("newPassword")[0].value;
-            var confirmNewPassword = document.getElementsByName("confirmNewPassword")[0].value;
-            var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
 
-            // Kiểm tra mật khẩu mới và mật khẩu xác nhận có khớp không
-            if (newPassword !== confirmNewPassword) {
-                alert("Mật khẩu mới và xác nhận mật khẩu không khớp.");
-                return false; // Không cho phép gửi form
-            }
-
-            // Kiểm tra mật khẩu cũ phải khác mật khẩu mới
-            if (oldPassword === newPassword) {
-                alert("Mật khẩu cũ không được giống mật khẩu mới.");
-                return false; // Không cho phép gửi form
-            }
-
-            // Kiểm tra mật khẩu mới có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số
-            var passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-            if (!passwordPattern.test(newPassword)) {
-                alert("Mật khẩu mới cần có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
-                return false; // Không cho phép gửi form
-            }
-
-
-            // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
-            return true;
+        // Reset lại thông tin modal khi đóng hoặc khi mở modal mới
+        function resetModal() {
+            // Reset lại các trường thông tin trong modal
+            document.getElementById("modalResult").innerText = "";
+            document.getElementById("productSelect").value = ""; // Reset chọn sản phẩm
+            document.getElementById("selectedProductImage").src = ""; // Reset hình ảnh
+            document.getElementById("selectedProductName").textContent = ""; // Reset tên sản phẩm
+            document.getElementById("selectedProductInfo").style.display = "none"; // Ẩn thông tin sản phẩm
+            document.getElementById("hiddenProductID").value = ""; // Reset productID
         }
-    </script>
-    <script>
-        function validateProfileForm() {
-            // Lấy giá trị số điện thoại từ ô nhập liệu
-            var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
 
-            // Kiểm tra số điện thoại có đúng 10 chữ số
-            var phonePattern = /^\d{10}$/;
-            if (!phonePattern.test(phoneNumber)) {
-                alert("Số điện thoại phải gồm 10 chữ số.");
-                return false; // Không cho phép gửi form nếu không đúng định dạng
+        // Đóng modal khi bấm vào nút X
+        document.querySelector(".close").addEventListener("click", function () {
+            $('#reviewModal').modal('hide');
+            resetModal(); // Reset thông tin modal khi đóng
+        });
+
+        // Đóng modal khi bấm ra ngoài
+        window.onclick = function (event) {
+            var modal = document.getElementById("reviewModal");
+            if (event.target === modal) {
+                $('#reviewModal').modal('hide');
+                resetModal(); // Reset thông tin modal khi đóng
             }
+        };
 
-            // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
-            return true;
-        }
-    </script>
+        // Reset padding-right khi đóng modal
+        $('#reviewModal').on('hidden.bs.modal', function () {
+            $('body').css('padding-right', ''); // Xóa padding-right khi modal đóng
+        });
+    });
+</script>
+
+<script>
+    document.querySelector('.file-input').addEventListener('change', function (event) {
+        var files = event.target.files;  // Lấy tất cả các file được chọn
+        var mediaTypes = [];  // Mảng lưu loại media (image, video, or other)
+
+        // Duyệt qua từng file và xác định loại
+        Array.from(files).forEach(file => {
+            var fileType = file.type;
+
+            // Kiểm tra kiểu file và thêm vào mảng mediaTypes
+            if (fileType.startsWith('image/')) {
+                mediaTypes.push('image');
+            } else if (fileType.startsWith('video/')) {
+                mediaTypes.push('video');
+            } else {
+                mediaTypes.push('other'); // Nếu là loại file khác
+            }
+        });
+        console.log('Media Types:', mediaTypes);
+        // Cập nhật giá trị vào input ẩn (dùng để gửi qua form)
+        document.getElementById('mediaType').value = JSON.stringify(mediaTypes);  // Chuyển mảng thành JSON string
+    });
+</script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+        <script>
+            var citis = document.getElementById("city");
+            var districts = document.getElementById("district");
+            var wards = document.getElementById("ward");
+            var Parameter = {
+                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+                method: "GET",
+                responseType: "application/json",
+            };
+            var promise = axios(Parameter);
+            promise.then(function (result) {
+                renderCity(result.data);
+            });
+            function renderCity(data) {
+                for (const x of data) {
+                    // Đặt value thành tên thay vì ID
+                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
+                }
+                citis.onchange = function () {
+                    districts.length = 1;
+                    wards.length = 1;
+                    if (this.value != "") {
+                        const result = data.filter(n => n.Name === this.value);
+                        for (const k of result[0].Districts) {
+                            // Đặt value thành tên thay vì ID
+                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                        }
+                    }
+                };
+                districts.onchange = function () {
+                    wards.length = 1;
+                    const dataCity = data.filter((n) => n.Name === citis.value);
+                    if (this.value != "") {
+                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+                        for (const w of dataWards) {
+                            // Đặt value thành tên thay vì ID
+                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
+                        }
+                    }
+                };
+            }
+        </script>
+        <script>
+            document.getElementById('profileImage').addEventListener('change', function () {
+                const form = this.closest('form'); // Lấy form bao quanh
+                form.submit(); // Gửi form
+            });
+        </script>
+        <script>
+            function validatePasswordChange() {
+                // Lấy các giá trị từ các ô nhập liệu
+                var oldPassword = document.getElementsByName("password")[0].value;
+                var newPassword = document.getElementsByName("newPassword")[0].value;
+                var confirmNewPassword = document.getElementsByName("confirmNewPassword")[0].value;
+                var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
+                // Kiểm tra mật khẩu mới và mật khẩu xác nhận có khớp không
+                if (newPassword !== confirmNewPassword) {
+                    alert("Mật khẩu mới và xác nhận mật khẩu không khớp.");
+                    return false; // Không cho phép gửi form
+                }
+
+                // Kiểm tra mật khẩu cũ phải khác mật khẩu mới
+                if (oldPassword === newPassword) {
+                    alert("Mật khẩu cũ không được giống mật khẩu mới.");
+                    return false; // Không cho phép gửi form
+                }
+
+                // Kiểm tra mật khẩu mới có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số
+                var passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+                if (!passwordPattern.test(newPassword)) {
+                    alert("Mật khẩu mới cần có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
+                    return false; // Không cho phép gửi form
+                }
 
 
+                // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
+                return true;
+            }
+        </script>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/slick.min.js"></script>
-    <script src="js/nouislider.min.js"></script>
-    <script src="js/jquery.zoom.min.js"></script>
-    <script src="js/main.js"></script>
+        <script>
+            function validateProfileForm() {
+                // Lấy giá trị số điện thoại từ ô nhập liệu
+                var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
+                // Kiểm tra số điện thoại có đúng 10 chữ số
+                var phonePattern = /^\d{10}$/;
+                if (!phonePattern.test(phoneNumber)) {
+                    alert("Số điện thoại phải gồm 10 chữ số.");
+                    return false; // Không cho phép gửi form nếu không đúng định dạng
+                }
+                // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
+                return true;
+            }
+        </script>
 
-</body>
+        <script>
+            $(document).ready(function () {
+                $('#loginModal').modal('show');
+                $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
+            });
+        </script>
+        <!-- jQuery -->
+        <script src='https://code.jquery.com/jquery-3.3.1.slim.min.js'></script>
+        <!-- Popper JS -->
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'></script>
+        <!-- Bootstrap JS -->
+        <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
+
+        <script>
+            const stars = document.querySelectorAll('.star');
+            const ratingInput = document.getElementById('ratingValue');
+            stars.forEach(star => {
+                star.addEventListener('click', function () {
+                    const value = this.getAttribute('data-value');
+                    ratingInput.value = value;
+                    stars.forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                    for (let i = 0; i < value; i++) {
+                        stars[i].classList.add('active');
+                    }
+                });
+                star.addEventListener('mouseover', function () {
+                    const value = this.getAttribute('data-value');
+                    stars.forEach((s, index) => {
+                        if (index < value)
+                            s.classList.add('active');
+                        else
+                            s.classList.remove('active');
+                    });
+                });
+                star.addEventListener('mouseout', function () {
+                    stars.forEach(s => s.classList.remove('active'));
+                    const currentRating = ratingInput.value;
+                    if (currentRating) {
+                        for (let i = 0; i < currentRating; i++) {
+                            stars[i].classList.add('active');
+                        }
+                    }
+                });
+            });
+        </script>
+
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/slick.min.js"></script>
+        <script src="js/nouislider.min.js"></script>
+        <script src="js/jquery.zoom.min.js"></script>
+        <script src="js/main.js"></script>
+
+    </body>
 </html>

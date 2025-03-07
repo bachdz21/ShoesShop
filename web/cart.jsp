@@ -104,11 +104,6 @@
                 <ul class="main-nav nav navbar-nav">
                         <li><a href="./home">Trang Chủ</a></li>
                         <li><a href="./product">Danh Mục</a></li>
-                        <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
-                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                            </c:if>
                     </ul>
                 <!-- /NAV -->
             </div>
@@ -120,7 +115,7 @@
     <a href="trashCart" class="product-add-link">Sản Phẩm Đã Xoá</a>
     <!-- CART -->
     <div class="container shopee-fake">
-        <form action="getOrderItemUpdateQuantity" method="POST">
+        <form action="getCartItemUpdateQuantity" method="POST">
             <main class="GO0LDV" style="margin-bottom: 0px;">
                 <h2 class="a11y-hidden">Product List Section</h2>
                 <div class="Za1N64">
@@ -205,7 +200,7 @@
                                         </div>
                                     </div>
                                     <div class="HRvCAv total-amount">
-                                        <span class="total-price">0 $</span> <!-- Phần tử hiển thị tổng số tiền -->
+                                        <span class="total-price">${p.getProduct().getPrice()}</span> <!-- Phần tử hiển thị tổng số tiền -->
                                     </div>
                                     <div class="bRSn43 TvSDdG">
                                         <a class="lSrQtj" href="deleteCartItem?productId=${p.getProduct().getProductID()}">Xóa</a>

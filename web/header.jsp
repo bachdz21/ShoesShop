@@ -18,7 +18,7 @@
     if (cartItems != null) {
         for (CartItem item : cartItems) {
             totalQuantity += item.getQuantity();
-            subtotal += item.getProduct().getPrice() * item.getQuantity();
+            subtotal += item.getProduct().getSalePrice() * item.getQuantity();
         }
     }
     // Lấy danh sách wishlist từ session
@@ -88,10 +88,10 @@
                                 </div>
                                 <ul id="list" class="dropdown-list">
                                     <li class="dropdown-list-item" value="">All</li>
-                                    <li class="dropdown-list-item" value="Laptop">Sneakers</li>
-                                    <li class="dropdown-list-item" value="Smartphone">Oxford</li>
-                                    <li class="dropdown-list-item" value="Camera">Boot</li>
-                                    <li class="dropdown-list-item" value="Accessory">Sandals</li>
+                                    <li class="dropdown-list-item" value="Sneaker">Sneaker</li>
+                                    <li class="dropdown-list-item" value="Oxford">Oxford</li>
+                                    <li class="dropdown-list-item" value="Boot">Boot</li>
+                                    <li class="dropdown-list-item" value="Sandal">Sandal</li>
                                 </ul>
                             </div>
                             <div class="search-box">

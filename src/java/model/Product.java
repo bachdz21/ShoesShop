@@ -19,11 +19,11 @@ public class Product {
     private String productName;
     private String description;
     private double price;
-    private int stock; // Thêm thuộc tính stock
+    private int stock; 
     private String categoryName;
     private String imageURL;
     private List<String> imageURLDetail;
-    private int sale; // Thêm thuộc tính sale
+    private int sale; 
     private Date createdDate;
     private String brand;
     private double salePrice = price;
@@ -175,11 +175,11 @@ public class Product {
         this.price = price;
     }
 
-    public int getStock() { // Getter cho stock
+    public int getStock() {
         return stock;
     }
 
-    public void setStock(int stock) { // Setter cho stock
+    public void setStock(int stock) {
         this.stock = stock;
     }
 
@@ -199,7 +199,7 @@ public class Product {
         this.imageURL = imageURL;
     }
 
-    public int getSale() { // Getter cho sale
+    public int getSale() { 
         return sale;
     }
 

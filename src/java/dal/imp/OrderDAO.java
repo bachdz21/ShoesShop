@@ -250,7 +250,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
     }
 
     @Override
-    public List<Product> getProductForDetailOrdersByOderId(int oderId) {
+    public List<Product> getProductForDetailOrdersByOderId(int orderId) {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT p.ProductName, p.ImageURL, c.CategoryName, od.Price, od.Quantity, (od.Quantity * od.Price) AS TotalPrice  FROM OrderDetails od\n"
                 + "  LEFT JOIN OrderContacts oc ON od.OrderID = oc.OrderID\n"
@@ -259,7 +259,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
                 + "  WHERE od.OrderID = ?";
 
         try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setInt(1, oderId);
+            ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -300,6 +300,39 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         return order; // Trả về đối tượng Order
     }
 
+    @Override
+    public List<Product> getProductsByOrderID(int orderID) {
+        List<Product> products = new ArrayList<>();
+        try {
+            String query = "SELECT \n"
+                    + "    p.ProductID,"
+                    + "    p.ProductName,\n"
+                    + "    p.ImageURL\n"
+                    + "FROM \n"
+                    + "    [ProjectSWP].[dbo].[OrderDetails] od\n"
+                    + "INNER JOIN \n"
+                    + "    [ProjectSWP].[dbo].[Products] p ON od.ProductID = p.ProductID\n"
+                    + "WHERE \n"
+                    + "    od.OrderID = ?;";
+            PreparedStatement ps = c.prepareStatement(query);
+            ps.setInt(1, orderID);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductID(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setImageURL(rs.getString("ImageURL"));
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+
+
     public List<OrderDetail> getOrderDetailByOderId(int orderId) {
         List<OrderDetail> orderDetails = new ArrayList<>();
         String query = "SELECT od.OrderDetailID, od.OrderID, od.Quantity, od.Price, p.ProductID, p.ProductName, p.Price as ProductPrice, p.ImageURL "
@@ -332,15 +365,9 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         }
 
         return orderDetails; // Trả về danh sách OrderDetails
-    }
+    
+    
 
-    public static void main(String[] args) {
-        IOrderDAO o = new OrderDAO();
-//        o.checkout(12, "Nguyen Tien A", "a13@gmail.com", "0123456789", "VietNam", "Cash","AAAAAAA");
-        List<Order> list = o.getAllOrders();
-        for (Order order : list) {
-            System.out.println(order.toString());
-        }
-
-    }
+    
+}
 }

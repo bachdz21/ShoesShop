@@ -1,7 +1,8 @@
-<!DOCTYPE html>
+
 <html lang="vi">
     <head>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,19 +11,7 @@
 
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
-
-        <!-- Bootstrap -->
-        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
-
-        <!-- Slick -->
-        <link type="text/css" rel="stylesheet" href="css/slick.css"/>
-        <link type="text/css" rel="stylesheet" href="css/slick-theme.css"/>
-
-        <!-- nouislider -->
-        <link type="text/css" rel="stylesheet" href="css/nouislider.min.css"/>
-
-        <!-- Font Awesome Icon -->
-        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
@@ -34,66 +23,6 @@
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
-    <%@page import="model.User"%>
-    <%@page import="model.CartItem"%>
-    <%@ page import="java.util.List" %>
-
-    <%@page import="jakarta.servlet.http.HttpSession"%>
-    <%
-        // Sử dụng biến session từ request mà không cần khai báo lại
-        User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
-    %>
-    <% 
-    // Lấy danh sách sản phẩm trong giỏ hàng từ session
-    List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
-    int totalQuantity = 0;
-    double subtotal = 0.0;
-    if (cartItems != null) {
-        for (CartItem item : cartItems) {
-            totalQuantity += item.getQuantity();
-            subtotal += item.getProduct().getPrice() * item.getQuantity();
-        }
-    }
-    %>
-    <body>
-        <!-- HEADER -->
-        <jsp:include page="header.jsp" />
-        <!-- /HEADER -->
-
-        <!-- NAVIGATION -->
-        <nav id="navigation">
-            <!-- container -->
-            <div class="container">
-                <!-- responsive-nav -->
-                <div id="responsive-nav">
-                    <!-- NAV -->
-                    <ul class="main-nav nav navbar-nav">
-                        <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
-                        <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
-                        <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
-                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                            </c:if>
-                    </ul>
-                    <!-- /NAV -->
-                </div>
-                <!-- /responsive-nav -->
-            </div>
-            <!-- /container -->
-        </nav>
-        <!-- /NAVIGATION -->
-
-        <!-- THÔNG BÁO ĐẶT HÀNG THÀNH CÔNG -->
-        <div class="container" style="margin-top: 50px; margin-bottom: 50px; text-align: center;">
-            <h1>Đặt hàng thành công!</h1>
-            <p>Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất có thể.</p>
-            <p>Mã đơn hàng của bạn là: <strong>${requestScope.orderCode}</strong></p>
-            <a href="./home" style="background-color: #D10024; border-color: #D10024" class="btn btn-success">Quay Lại Trang Chủ</a>
-            <a href="#" style="background-color: #D10024; border-color: #D10024" class="btn btn-success">Xem Danh Sách Đơn Hàng</a>
-        </div>
-        <!-- /THÔNG BÁO ĐẶT HÀNG THÀNH CÔNG -->
-
         <!-- FOOTER -->
         <footer id="footer">
             <!-- top footer -->
@@ -191,14 +120,3 @@
             <!-- /bottom footer -->
         </footer>
         <!-- /FOOTER -->
-
-        <!-- jQuery Plugins -->
-        <script src="js/jquery.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
-        <script src="js/slick.min.js"></script>
-        <script src="js/nouislider.min.js"></script>
-        <script src="js/jquery.zoom.min.js"></script>
-        <script src="js/main.js"></script>
-
-    </body>
-</html>

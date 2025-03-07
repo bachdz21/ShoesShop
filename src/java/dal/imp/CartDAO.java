@@ -348,17 +348,6 @@ public class CartDAO extends DBConnect implements ICartDAO {
 
     public static void main(String[] args) {
         CartDAO cd = new CartDAO();
-//        cd.addCartItem(13, 2, 3);
-//        cd.deleteCartItem(12, 11);
-//        cd.restoreProduct(12, 11);
-//        cd.restoreProduct(12, 6);
-//        cd.restoreProduct(2, 3);
-////        
-//        cd.deleteTrashCartItem(12, 3);
-//        List<CartItem> listTrash = cd.getCartItemsTrash(12);
-//        for (CartItem cartItem : listTrash) {
-//            System.out.println(cartItem.toString());
-//        }
         cd.restoreCartItemTrash(12, 15);
     }
 

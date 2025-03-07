@@ -82,7 +82,7 @@
             <div id="responsive-nav">
                 <!-- NAV -->
                 <ul class="main-nav nav navbar-nav">
-                    <li><a href="/ShoesStoreWed/home">Trang Chủ</a></li>
+                    <li><a href="./home">Trang Chủ</a></li>
                     <li class="active"><a href="/ShoesStoreWed/product">Danh Mục</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                         <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
@@ -319,9 +319,13 @@
                                             <i class="fa fa-star"></i>
                                         </div>
                                     </div>
-                                    <div class="add-to-cart">
-                                        <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-                                    </div>
+                                    <form action="addCartQuick" method="GET">
+                                                <div class="add-to-cart">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <input type="hidden" name="productID" value="${i.productID}"> <!-- Gửi productID -->
+                                                    <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
+                                                </div>
+                                            </form>
                                 </div>
                             </div>
                         </c:forEach>
