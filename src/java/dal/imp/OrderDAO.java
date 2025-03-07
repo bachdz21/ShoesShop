@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Random;
 import model.CartItem;
 import model.Order;
-import model.OrderDetail;
 import model.Product;
 
 public class OrderDAO extends DBConnect implements IOrderDAO {
@@ -177,7 +176,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         }
         return orders;
     }
-
+    
     @Override
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
@@ -274,66 +273,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         }
         return products;
     }
-
-    public Order getOrdersByOrderId(int orderId) {
-        Order order = null;
-        String query = "SELECT * FROM Orders WHERE OrderID = ?"; // Câu lệnh SQL
-
-        try (PreparedStatement pstmt = c.prepareStatement(query)) {
-            pstmt.setInt(1, orderId); // Gán giá trị cho tham số
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                order = new Order();
-                order.setOrderId(rs.getInt("OrderID"));
-                order.setUserId(rs.getInt("UserID"));
-                order.setOrderDate(rs.getString("OrderDate"));
-                order.setTotalAmount(rs.getDouble("TotalAmount"));
-                order.setOrderStatus(rs.getString("OrderStatus"));
-                order.setPaymentMethod(rs.getString("PaymentMethod"));
-                order.setShippingAddress(rs.getString("ShippingAddress"));
-                order.setOrderCode(rs.getString("orderCode"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace(); // Xử lý ngoại lệ
-        }
-        return order; // Trả về đối tượng Order
-    }
-
-    public List<OrderDetail> getOrderDetailByOderId(int orderId) {
-        List<OrderDetail> orderDetails = new ArrayList<>();
-        String query = "SELECT od.OrderDetailID, od.OrderID, od.Quantity, od.Price, p.ProductID, p.ProductName, p.Price as ProductPrice, p.ImageURL "
-                + "FROM OrderDetails od "
-                + "JOIN Products p ON od.ProductID = p.ProductID "
-                + "WHERE od.OrderID = ?"; // Câu lệnh SQL
-
-        try (PreparedStatement pstmt = c.prepareStatement(query)) {
-            pstmt.setInt(1, orderId); // Gán giá trị cho tham số
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setOrderDetailId(rs.getInt("OrderDetailID"));
-                orderDetail.setOrderId(rs.getInt("OrderID"));
-                orderDetail.setQuantity(rs.getInt("Quantity"));
-                orderDetail.setPrice(rs.getInt("Price"));
-
-                Product product = new Product();
-//                product.setProductId(rs.getInt("ProductID"));
-                product.setProductName(rs.getString("ProductName"));
-                product.setPrice(rs.getDouble("ProductPrice"));
-                product.setImageURL(rs.getString("ImageURL"));
-
-                orderDetail.setProduct(product); // Gán đối tượng Product vào OrderDetail
-                orderDetails.add(orderDetail); // Thêm vào danh sách
-            }
-        } catch (SQLException e) {
-            e.printStackTrace(); // Xử lý ngoại lệ
-        }
-
-        return orderDetails; // Trả về danh sách OrderDetails
-    }
-
+    
     public static void main(String[] args) {
         IOrderDAO o = new OrderDAO();
 //        o.checkout(12, "Nguyen Tien A", "a13@gmail.com", "0123456789", "VietNam", "Cash","AAAAAAA");
@@ -341,6 +281,6 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         for (Order order : list) {
             System.out.println(order.toString());
         }
-
+        
     }
 }

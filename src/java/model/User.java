@@ -1,6 +1,6 @@
+
 package model;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -20,27 +20,6 @@ public class User {
     private String profileImageURL;
     private Date registrationDate;
     private String avatarUrl;
-    private ArrayList<Order> orders = new ArrayList<>();
-    private int locked; // Thêm thuộc tính locked (1 - bị ban, 0 - chưa bị ban)
-    private int deliveredCount;
-    private int cancelledCount;
-
-    // Getter và Setter cho deliveredCount và cancelledCount
-    public int getDeliveredCount() {
-        return deliveredCount;
-    }
-
-    public void setDeliveredCount(int deliveredCount) {
-        this.deliveredCount = deliveredCount;
-    }
-
-    public int getCancelledCount() {
-        return cancelledCount;
-    }
-
-    public void setCancelledCount(int cancelledCount) {
-        this.cancelledCount = cancelledCount;
-    }
 
     public User() {
     }
@@ -146,25 +125,11 @@ public class User {
         this.avatarUrl = avatarUrl;
     }
 
-    public ArrayList<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(ArrayList<Order> orders) {
-        this.orders = orders;
-    }
-
-    public int getLocked() {
-        return locked;
-    }
-
-    public void setLocked(int locked) {
-        this.locked = locked;
-    }
-
     @Override
     public String toString() {
         return "User{" + "userId=" + userId + ", username=" + username + ", password=" + password + ", fullName=" + fullName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", address=" + address + ", role=" + role + ", profileImageURL=" + profileImageURL + ", registrationDate=" + registrationDate + '}';
     }
+
+    
 
 }
