@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>User Profile</title>
+        <title>Electro - HTML Ecommerce Template</title>
 
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
@@ -285,7 +285,7 @@
             }
 
             .table-responsive {
-                max-height: 200px; /* Chiều cao tối đa của bảng */
+                max-height: 283px; /* Chiều cao tối đa của bảng */
                 overflow-y: auto; /* Thêm thanh cuộn dọc khi vượt quá chiều cao tối đa */
                 overflow-x: hidden; /* Ẩn thanh cuộn ngang (tuỳ chọn) */
             }
@@ -359,282 +359,178 @@
                 margin-top: 10px;
             }
 
-            table, th, td {
-                border: 1px solid #dee2e6;
-            }
-
-            table tr:hover {
-                background-color: #e9ecef;
-            }
-
-            .table th, .table td {
-                text-align: left;
-                vertical-align: middle;
-                padding: 12px;
-            }
-
-            .table thead {
-                background-color: #e12d39;
-                color: white;
-            }
-            .nav-tabs .nav-item .nav-link {
-                color: black;
-                font-weight: bold;
-                padding: 10px 20px;
-                border-radius: 5px 5px 0 0;
-                border: 1px solid #ddd;
-            }
-
-            .nav-tabs .nav-item .nav-link.active {
-                background-color: red;
-                color: white;
-            }
-
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 10px;
-            }
-
-            th, td {
-                border: 1px solid #ddd;
-                padding: 10px;
-                text-align: center;
-            }
-
-            th {
-                background-color: red;
-                color: white;
-                font-weight: bold;
-            }
-
-            .status-pending {
-                color: orange;
-                font-weight: bold;
-            }
-            .status-shipped {
-                color: blue;
-                font-weight: bold;
-            }
-            .status-delivered {
-                color: green;
-                font-weight: bold;
-            }
-            .status-cancelled {
-                color: red;
-                font-weight: bold;
-            }
-
-            .tab-content {
-                border: 1px solid #ddd;
-                padding: 20px;
-                border-top: none;
-            }
-            .container-fluid {
-                background-color: #f4f4f4;
-                padding: 30px;
-            }
-
-            .bg-secondary {
-                background-color: #343a40;
-                padding: 20px;
-                border-radius: 8px;
-            }
-            
-             .text-center {
-                text-align: center;
-            }
-
-            .text-start {
-                text-align: left;
-            }
-
-
-            .table {
-                width: 100%;
-                border-collapse: collapse;
-                border-radius: 8px;
-                overflow: hidden;
-            }
-
-            .table th, .table td {
-                padding: 12px;
-                text-align: center;
-                border: 1px solid #ddd;
-            }
-
-            .table th {
-                background-color: #dc3545;
-                color: white;
-                font-weight: bold;
-            }
-
-            .table td {
-                background-color: #f8f9fa;
-            }
-
-            .table img {
-                border-radius: 4px;
-            }
-
-            .mt-4 {
-                margin-top: 20px;
-            }
-             div.mt-4 {
-                margin-top: 30px;
-            }
         </style>
-        <%@ include file="header.jsp" %>
     </head>
-    
+    <%@page import="model.User"%>
+    <%@page import="model.CartItem"%>
+    <%@ page import="java.util.List" %>
+
+    <%@page import="jakarta.servlet.http.HttpSession"%>
+    <%
+        // Sử dụng biến session từ request mà không cần khai báo lại
+        User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
+    %>
+    <% 
+    // Lấy danh sách sản phẩm trong giỏ hàng từ session
+    List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
+    int totalQuantity = 0;
+    double subtotal = 0.0;
+    if (cartItems != null) {
+        for (CartItem item : cartItems) {
+            totalQuantity += item.getQuantity();
+            subtotal += item.getProduct().getPrice() * item.getQuantity();
+        }
+    }
+    %>
     <body>
+        <!-- HEADER -->
+        <header>
+            <!-- TOP HEADER -->
+            <div id="top-header">
+                <div class="container">
+                    <ul class="header-links pull-left">
+                        <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
+                        <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
+                        <li><a href="#"><i class="fa fa-map-marker"></i> SE1881 - PRJ301</a></li>
+                    </ul>
+                    <ul class="header-links pull-right">
+                        <% if (user == null) { %>
+                        <li><a href="login.jsp"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
+                            <% } else { %>
+                        <li><a href="#"><i class="fa fa-dollar"></i> Chào Mừng, <%= user.getUsername() %></a></li>
+                        <li><a href="logout"><i class="fa fa-user-o"></i> Đăng Xuất</a></li>
+                            <% } %>
+                    </ul>
+                </div>
+            </div>
+            <!-- /TOP HEADER -->
+        </header>
+
+        <!-- /TOP HEADER -->
+
+
+        <!-- MAIN HEADER -->
+        <div id="header">
+            <!-- container -->
+            <div class="container">
+                <!-- row -->
+                <div class="row">
+                    <!-- LOGO -->
+                    <div class="col-md-3">
+                        <div class="header-logo">
+                            <a href="/ProjectPRJ301/home" class="logo">
+                                <img src="./img/logo.png" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /LOGO -->
+
+                    <!-- SEARCH BAR -->
+                    <div class="col-md-6">
+                        <div class="header-search">
+                            <form action="search" method="get">
+                                <select class="input-select" name="category">
+                                    <option value="">Tất cả</option>
+                                    <option value="Laptop">Laptop</option>
+                                    <option value="Smartphone">Điện Thoại</option>
+                                    <option value="Camera">Máy Ảnh</option>
+                                    <option value="Accessory">Phụ Kiện</option>
+                                    <!-- Thêm các loại sản phẩm khác nếu cần -->
+                                </select>
+                                <input class="input" name="query" placeholder="Search here">
+                                <button type="submit" class="search-btn">Tìm kiếm</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /SEARCH BAR -->
+
+                    <!-- ACCOUNT -->
+                    <div class="col-md-3 clearfix">
+                        <div class="header-ctn">
+
+                            <!-- Cart -->
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <span>Giỏ Hàng</span>
+                                    <div class="qty"><%= totalQuantity %></div>
+                                </a>
+                                <div class="cart-dropdown">
+                                    <div class="cart-list">
+                                        <% if (cartItems != null && !cartItems.isEmpty()) { %>
+                                        <% for (CartItem item : cartItems) { %>
+                                        <div class="product-widget">
+                                            <div class="product-img">
+                                                <img src="<%= item.getProduct().getImageURL() %>" alt="">
+                                            </div>
+                                            <div class="product-body">
+                                                <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
+                                                <h4 class="product-price"><span class="qty"><%= item.getQuantity() %>x</span>$<%= item.getProduct().getSalePrice() %></h4>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                        <% } else { %>
+                                        <p>Giỏ hàng của bạn đang trống</p>
+                                        <% } %>
+                                    </div>
+                                    <div class="cart-summary">
+                                        <small><%= totalQuantity %> sản phẩm</small>
+                                        <h5>Tổng: $<%= subtotal %></h5>
+                                    </div>
+                                    <div class="cart-btns">
+                                        <a href="cartItem">Xem Giỏ Hàng</a>
+                                        <a href="getOrderItem">Thanh Toán <i class="fa fa-arrow-circle-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Cart -->
+                            <!-- Menu Toogle -->
+                            <div class="menu-toggle">
+                                <a href="#">
+                                    <i class="fa fa-bars"></i>
+                                    <span>Menu</span>
+                                </a>
+                            </div>
+                            <!-- /Menu Toogle -->
+                        </div>
+                    </div>
+                    <!-- /ACCOUNT -->
+                </div>
+                <!-- row -->
+            </div>
+            <!-- container -->
+        </div>
+        <!-- /MAIN HEADER -->
+    </header>
+    <!-- /HEADER -->
+
+    <!-- NAVIGATION -->
+    <nav id="navigation">
+        <!-- container -->
+        <div class="container">
+            <!-- responsive-nav -->
+            <div id="responsive-nav">
+                <!-- NAV -->
+                <ul class="main-nav nav navbar-nav">
+                    <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
+                    <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
+                        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                        <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                        <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
+                        </c:if>
+                </ul>
+                <!-- /NAV -->
+            </div>
+            <!-- /responsive-nav -->
+        </div>
+        <!-- /container -->
+    </nav>
+    <!-- /NAVIGATION -->
+
+
     <div class="container user-profile">
         <div class="main-body">
             <div class="row" style="margin-top: 30px; margin-bottom: 30px">
-                
-                
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="list-product">
-                            <h2 class="product-title">Danh Sách Đơn Hàng</h2>
-
-                            <!-- Tabs điều hướng -->
-                            <ul class="nav nav-tabs">
-                                <li class="nav-item">
-                                    <a class="nav-link " data-toggle="tab" href="#pending">Chờ xác nhận</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#shipped">Đang vận chuyển</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#delivered">Đã giao</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#cancelled">Đã hủy</a>
-                                </li>
-                            </ul>
-
-                            <div class="tab-content">
-                                <!-- Chờ xác nhận -->
-                                <div id="pending" class=" tab-pane active table-responsive">
-                                    <table>
-                                        <tr>
-                                            <th>Mã Đơn Hàng</th>
-                                            <th>Ngày Đặt Hàng</th>
-                                            <th>Tổng Số Tiền</th>
-                                            <th>Trạng Thái</th>
-                                            <th>Phương Thức Thanh Toán</th>
-                                            <th>Địa Chỉ Giao Hàng</th>
-                                            <th>Chi Tiết</th>
-                                        </tr>
-                                        <c:forEach var="order" items="${orders}">
-                                            <c:if test="${order.orderStatus eq 'Pending'}">
-                                                <tr>
-                                                    <td>${order.orderCode}</td>
-                                                    <td>${order.orderDate}</td>
-                                                    <td>${order.totalAmount}</td>
-                                                    <td class="status-pending">Chờ xác nhận</td>
-                                                    <td>${order.paymentMethod}</td>
-                                                    <td>${order.shippingAddress}</td>
-                                                    <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
-                                                </tr>
-                                            </c:if>
-                                        </c:forEach>
-                                    </table>
-                                </div>
-
-                                <!-- Đang vận chuyển -->
-                                <div id="shipped" class=" tab-pane fade table-responsive">
-                                    <table>
-                                        <tr>
-                                            <th>Mã Đơn Hàng</th>
-                                            <th>Ngày Đặt Hàng</th>
-                                            <th>Tổng Số Tiền</th>
-                                            <th>Trạng Thái</th>
-                                            <th>Phương Thức Thanh Toán</th>
-                                            <th>Địa Chỉ Giao Hàng</th>
-                                            <th>Chi Tiết</th>
-                                        </tr>
-                                        <c:forEach var="order" items="${orders}">
-                                            <c:if test="${order.orderStatus eq 'Shipped'}">
-                                                <tr>
-                                                    <td>${order.orderCode}</td>
-                                                    <td>${order.orderDate}</td>
-                                                    <td>${order.totalAmount}</td>
-                                                    <td class="status-shipped">Đang vận chuyển</td>
-                                                    <td>${order.paymentMethod}</td>
-                                                    <td>${order.shippingAddress}</td>
-                                                    <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
-                                                </tr>
-                                            </c:if>
-                                        </c:forEach>
-                                    </table>
-                                </div>
-
-                                <!-- Đã giao -->
-                                <div id="delivered" class=" tab-pane fade table-responsive">
-                                    <table>
-                                        <tr>
-                                            <th>Mã Đơn Hàng</th>
-                                            <th>Ngày Đặt Hàng</th>
-                                            <th>Tổng Số Tiền</th>
-                                            <th>Trạng Thái</th>
-                                            <th>Phương Thức Thanh Toán</th>
-                                            <th>Địa Chỉ Giao Hàng</th>
-                                            <th>Chi Tiết</th>
-                                        </tr>
-                                        <c:forEach var="order" items="${orders}">
-                                            <c:if test="${order.orderStatus eq 'Delivered'}">
-                                                <tr>
-                                                    <td>${order.orderCode}</td>
-                                                    <td>${order.orderDate}</td>
-                                                    <td>${order.totalAmount}</td>
-                                                    <td class="status-delivered">Đã giao</td>
-                                                    <td>${order.paymentMethod}</td>
-                                                    <td>${order.shippingAddress}</td>
-                                                    <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
-                                                </tr>
-                                            </c:if>
-                                        </c:forEach>
-                                    </table>
-                                </div>
-
-                                <!-- Đã hủy -->
-                                <div id="cancelled" class=" tab-pane fade table-responsive">
-                                    <table>
-                                        <tr>
-                                            <th>Mã Đơn Hàng</th>
-                                            <th>Ngày Đặt Hàng</th>
-                                            <th>Tổng Số Tiền</th>
-                                            <th>Trạng Thái</th>
-                                            <th>Phương Thức Thanh Toán</th>
-                                            <th>Địa Chỉ Giao Hàng</th>
-                                            <th>Chi Tiết</th>
-                                        </tr>
-                                        <c:forEach var="order" items="${orders}">
-                                            <c:if test="${order.orderStatus eq 'Cancelled'}">
-                                                <tr>
-                                                    <td>${order.orderCode}</td>
-                                                    <td>${order.orderDate}</td>
-                                                    <td>${order.totalAmount}</td>
-                                                    <td class="status-cancelled">Đã hủy</td>
-                                                    <td>${order.paymentMethod}</td>
-                                                    <td>${order.shippingAddress}</td>
-                                                    <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
-                                                </tr>
-                                            </c:if>
-                                        </c:forEach>
-                                    </table>
-                                </div>
-                            </div> <!-- Kết thúc tab-content -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-                
                 <div class="col-lg-4">
                     <div class="card">
                         <div class="card-body">
@@ -662,40 +558,39 @@
                             </div>
                             <hr class="my-4">
                             <ul class="list-group list-group-flush">
-                                <h2 class="product-title">Đổi mật khẩu</h2>
-                                <form action="changePassword" method="POST" onsubmit="return validatePasswordChange()">
+                                <h2 class="product-title">Change Password</h2>
+                                <form action="changePassword" method="POST">
                                     <div class="row mb-3">
-                                        <div class="col-sm-12">
-                                            <h6 class="mb-0">Mật khẩu cũ</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Password</h6>
                                         </div>
-                                        <div class="col-sm-12 text-secondary">
-                                            <input type="password" class="form-control" name="password" required>
+                                        <div class="col-sm-9 text-secondary">
+                                            <input type="password" class="form-control" name="password">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-12">
-                                            <h6 class="mb-0">Mật khẩu mới</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">New Password</h6>
                                         </div>
-                                        <div class="col-sm-12 text-secondary">
-                                            <input type="password" class="form-control" name="newPassword" required>
+                                        <div class="col-sm-9 text-secondary">
+                                            <input type="password" class="form-control" name="newPassword">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-12">
-                                            <h6 class="mb-0">Xác nhận mật khẩu mới</h6>
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Confirm New Passwords</h6>
                                         </div>
-                                        <div class="col-sm-12 text-secondary">
-                                            <input type="password" class="form-control" name="confirmNewPassword" required>
+                                        <div class="col-sm-9 text-secondary">
+                                            <input type="password" class="form-control" name="confirmNewPassword">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-3"></div>
-                                        <div class="col-sm-9 text-secondary " style="margin-top: 10px">
-                                            <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+                                        <div class="col-sm-9 text-secondary">
+                                            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
                                         </div>
                                     </div>
                                 </form>
-
                                 <c:if test="${not empty message}">
                                     <p class="${message == 'Đổi mật khẩu thành công.' ? 'message-success' : 'message-error'}">
                                         ${message}
@@ -709,17 +604,17 @@
 
                 <div class="col-lg-8">
 
-                    <form action="updateProfile" method="POST" onsubmit="return validateProfileForm()">
+                    <form action="updateProfile" method="POST">         
                         <div class="card">
                             <hr>
-                            <h2 class="product-title">Hồ sơ của tôi</h2>
+                            <h2 class="product-title">User Profile</h2>
                             <div class="card-body">
                                 <div class="row mb-3">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">Tên</h6>
+                                        <h6 class="mb-0">Full Name</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="fullName" value="${user.fullName}" required>
+                                        <input type="text" class="form-control" name="fullName" value="${user.fullName}">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -727,63 +622,90 @@
                                         <h6 class="mb-0">Email</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="email" class="form-control" name="email" value="${user.email}" required>
+                                        <input type="text" class="form-control" name="email" value="${user.email}">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">Số điện thoại</h6>
+                                        <h6 class="mb-0">Phone</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber}" required>
+                                        <input type="text" class="form-control" name="phoneNumber" value="${user.phoneNumber}">
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">Địa chỉ</h6>
+                                        <h6 class="mb-0">Address</h6>
                                     </div>
                                     <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
-                                        <option value="${address != null && address.size() > 3 ? address.get(3) : ''}" selected>Tỉnh Thành</option>
+                                        <option value="" selected>${address.get(3) != null ? address.get(3) : "Tỉnh Thành"}</option>           
                                     </select>
 
                                     <select name="district" class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm">
-                                        <option value="${address != null && address.size() > 2 ? address.get(2) : ''}" selected>Quận Huyện</option>
+                                        <option value="" selected>${address.get(2) != null ? address.get(2) : "Quận Huyện"}</option>
                                     </select>
 
                                     <select name="ward" class="form-select form-select-sm" id="ward" aria-label=".form-select-sm">
-                                        <option value="${address != null && address.size() > 1 ? address.get(1) : ''}" selected>Xã Phường</option>
+                                        <option value="" selected>${address.get(1) != null ? address.get(1) : "Xã Phường"}</option>
                                     </select>
                                 </div>
 
                                 <div class="row mb-3">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">Địa chỉ cụ thể</h6>
+                                        <h6 class="mb-0">Address Detail</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" class="form-control" name="addressDetail" value="${address != null && address.size() > 0 ? address.get(0) : ""}" required>
+                                        <input type="text" class="form-control" name="addressDetail" value="${address.get(0)}">
                                     </div>
                                 </div>
 
                                 <div class="row" style="margin-top: 10px">
                                     <div class="col-sm-3"></div>
                                     <div class="col-sm-9 text-secondary">
-                                        <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
-                                    </div>
-                                    <div class="col-sm-6 text-secondary">
-                                        <c:if test="${not empty message1}">
-                                            <p class="${message1 == 'Cập nhật hồ sơ thành công.' ? 'message-success' : 'message-error'}">
-                                                ${message1}
-                                            </p>
-                                        </c:if>
+                                        <button type="submit" class="btn btn-primary px-4">Save Changes</button>
                                     </div>
                                 </div>
                                 <hr>
                             </div>
                         </div>
-                    </form>
 
-                    
+                    </form>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="list-product">
+                                        <h2 class="product-title">Danh Sách Đơn Hàng</h2>
+                                        <div class="table-responsive">
+                                            <table border="1">
+                                                <tr>
+                                                    <th>Mã Đơn Hàng</th>
+                                                    <th>Ngày Đặt Hàng</th>
+                                                    <th>Tổng Số Tiền</th>
+                                                    <th>Trạng Thái</th>
+                                                    <th>Phương Thức Thanh Toán</th>
+                                                    <th>Địa Chỉ Giao Hàng</th>
+                                                    <th>Chi Tiết</th>
+                                                </tr>
+                                                <c:forEach var="order" items="${orders}">
+                                                    <tr>
+                                                        <td>${order.orderCode}</td>
+                                                        <td>${order.orderDate}</td>
+                                                        <td>${order.totalAmount}</td>
+                                                        <td>${order.orderStatus}</td>
+                                                        <td>${order.paymentMethod}</td>
+                                                        <td>${order.shippingAddress}</td>
+                                                        <td><a href="orderDetail?id=${order.orderId}">Chi Tiết</a></td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -792,10 +714,106 @@
 
 
     <!-- FOOTER -->
-    <%@ include file="blank.jsp" %>
+    <footer id="footer">
+        <!-- top footer -->
+        <div class="section">
+            <!-- container -->
+            <div class="container">
+                <!-- row -->
+                <div class="row">
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">About Us</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
+                            <ul class="footer-links">
+                                <li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
+                                <li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
+                                <li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">Categories</h3>
+                            <ul class="footer-links">
+                                <li><a href="#">Hot deals</a></li>
+                                <li><a href="#">Laptops</a></li>
+                                <li><a href="#">Smartphones</a></li>
+                                <li><a href="#">Cameras</a></li>
+                                <li><a href="#">Accessories</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="clearfix visible-xs"></div>
+
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">Information</h3>
+                            <ul class="footer-links">
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Orders and Returns</a></li>
+                                <li><a href="#">Terms & Conditions</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">Service</h3>
+                            <ul class="footer-links">
+                                <li><a href="#">My Account</a></li>
+                                <li><a href="#">View Cart</a></li>
+                                <li><a href="#">Wishlist</a></li>
+                                <li><a href="#">Track My Order</a></li>
+                                <li><a href="#">Help</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- /row -->
+            </div>
+            <!-- /container -->
+        </div>
+        <!-- /top footer -->
+
+        <!-- bottom footer -->
+        <div id="bottom-footer" class="section">
+            <div class="container">
+                <!-- row -->
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <ul class="footer-payments">
+                            <li><a href="#"><i class="fa fa-cc-visa"></i></a></li>
+                            <li><a href="#"><i class="fa fa-credit-card"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-paypal"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-mastercard"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-discover"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-amex"></i></a></li>
+                        </ul>
+                        <span class="copyright">
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        </span>
+
+
+                    </div>
+                </div>
+                <!-- /row -->
+            </div>
+            <!-- /container -->
+        </div>
+        <!-- /bottom footer -->
+    </footer>
     <!-- /FOOTER -->
 
-    
+    <!-- jQuery Plugins -->
+    <!-- jQuery -->
+    <!-- Bootstrap Bundle JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script>
                                 var citis = document.getElementById("city");
@@ -848,57 +866,6 @@
             form.submit(); // Gửi form
         });
     </script>
-    <script>
-        function validatePasswordChange() {
-            // Lấy các giá trị từ các ô nhập liệu
-            var oldPassword = document.getElementsByName("password")[0].value;
-            var newPassword = document.getElementsByName("newPassword")[0].value;
-            var confirmNewPassword = document.getElementsByName("confirmNewPassword")[0].value;
-            var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
-
-            // Kiểm tra mật khẩu mới và mật khẩu xác nhận có khớp không
-            if (newPassword !== confirmNewPassword) {
-                alert("Mật khẩu mới và xác nhận mật khẩu không khớp.");
-                return false; // Không cho phép gửi form
-            }
-
-            // Kiểm tra mật khẩu cũ phải khác mật khẩu mới
-            if (oldPassword === newPassword) {
-                alert("Mật khẩu cũ không được giống mật khẩu mới.");
-                return false; // Không cho phép gửi form
-            }
-
-            // Kiểm tra mật khẩu mới có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số
-            var passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-            if (!passwordPattern.test(newPassword)) {
-                alert("Mật khẩu mới cần có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
-                return false; // Không cho phép gửi form
-            }
-
-
-            // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
-            return true;
-        }
-    </script>
-    <script>
-        function validateProfileForm() {
-            // Lấy giá trị số điện thoại từ ô nhập liệu
-            var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
-
-            // Kiểm tra số điện thoại có đúng 10 chữ số
-            var phonePattern = /^\d{10}$/;
-            if (!phonePattern.test(phoneNumber)) {
-                alert("Số điện thoại phải gồm 10 chữ số.");
-                return false; // Không cho phép gửi form nếu không đúng định dạng
-            }
-
-            // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
-            return true;
-        }
-    </script>
-
-
-
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/slick.min.js"></script>
