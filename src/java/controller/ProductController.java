@@ -37,7 +37,7 @@ import java.util.Collection;
 public class ProductController extends HttpServlet {
 
     IProductDAO productDAO = new ProductDAO();
-    private static final String IMAGE_UPLOAD_DIR = "C:\\java&netbeans\\JavaWeb\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
+    private static final String IMAGE_UPLOAD_DIR = "C:\\Users\\nvhoa\\OneDrive\\Documents\\GitHub\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
