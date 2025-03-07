@@ -120,18 +120,6 @@
     width: 1850px;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color: #eb1616;
-  font-weight: 700;
-  margin: 0 0 10px;
-}
-
-a {
-  color: #eb1616;
-  font-weight: 500;
-  -webkit-transition: 0.2s color;
-  transition: 0.2s color;
-}
         </style>
     </head>
         <%@page import="model.User"%>
@@ -407,6 +395,10 @@ a {
                 <!-- Footer End -->
             </div>
             <!-- Content End -->
+
+
+            <!-- Back to Top -->
+            <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
         </div>
         <!-- JavaScript Libraries -->
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

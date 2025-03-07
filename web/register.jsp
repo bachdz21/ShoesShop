@@ -1,9 +1,3 @@
-<%-- 
-    Document   : register
-    Created on : Oct 10, 2024, 12:32:38 AM
-    Author     : nguye
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
