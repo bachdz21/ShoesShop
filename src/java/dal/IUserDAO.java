@@ -32,5 +32,6 @@ public interface IUserDAO {
     void isLocked(int userId);
     void isUnlocked(int userId);
     List<User> filterUsers(String username, String fullName, String email, String phone, String registrationDate);
+    List<User> filterBanUsers(String username, String fullName, String email, String phone, String registrationDate);
 
 }

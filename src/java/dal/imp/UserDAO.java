@@ -486,6 +486,80 @@ public class UserDAO extends DBConnect implements IUserDAO {
 
         return users;
     }
+    
+    @Override
+    public List<User> filterBanUsers(String username, String fullName, String email, String phone, String registrationDate) {
+        List<User> users = new ArrayList<>();
+
+        // Bắt đầu xây dựng câu truy vấn SQL với điều kiện cơ bản là lọc người dùng chưa bị khóa
+        StringBuilder query = new StringBuilder("SELECT * FROM Users WHERE locked = 1");
+
+        // Thêm các điều kiện tìm kiếm vào câu truy vấn
+        if (username != null && !username.isEmpty()) {
+            query.append(" AND Username LIKE ?");
+        }
+        if (fullName != null && !fullName.isEmpty()) {
+            query.append(" AND FullName LIKE ?");
+        }
+        if (email != null && !email.isEmpty()) {
+            query.append(" AND Email LIKE ?");
+        }
+        if (phone != null && !phone.isEmpty()) {
+            query.append(" AND PhoneNumber LIKE ?");
+        }
+        if (registrationDate != null && !registrationDate.isEmpty()) {
+            query.append(" AND  CAST(registrationDate AS DATE) =  ?");
+        }
+
+        try (PreparedStatement stmt = c.prepareStatement(query.toString())) {
+
+            int paramIndex = 1; // Chỉ số tham số cho PreparedStatement
+
+            // Gán các tham số vào PreparedStatement
+            if (username != null && !username.isEmpty()) {
+                stmt.setString(paramIndex++, "%" + username + "%");
+            }
+            if (fullName != null && !fullName.isEmpty()) {
+                stmt.setString(paramIndex++, "%" + fullName + "%");
+            }
+            if (email != null && !email.isEmpty()) {
+                stmt.setString(paramIndex++, "%" + email + "%");
+            }
+            if (phone != null && !phone.isEmpty()) {
+                stmt.setString(paramIndex++, "%" + phone + "%");
+            }
+            if (registrationDate != null && !registrationDate.isEmpty()) {
+                stmt.setString(paramIndex++, registrationDate); // Định dạng ngày theo kiểu yyyy-mm-dd
+            }
+
+            // Thực hiện truy vấn và lấy kết quả
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User();
+                    user.setUserId(rs.getInt("UserID"));
+                    user.setUsername(rs.getString("Username"));
+                    user.setPassword(rs.getString("Password"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setPhoneNumber(rs.getString("PhoneNumber"));
+                    user.setAddress(rs.getString("Address"));
+                    user.setRole(rs.getString("Role"));
+                    user.setRegistrationDate(rs.getDate("RegistrationDate"));
+                    user.setLocked(rs.getInt("locked")); // Lưu trạng thái locked
+
+                    // Lấy danh sách đơn hàng của người dùng và gán vào thuộc tính 'orders'
+                    ArrayList<Order> orders = getOrdersByUserId(user.getUserId());
+                    user.setOrders(orders);
+
+                    users.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // In ra lỗi nếu có
+        }
+
+        return users;
+    }
 
     public static void main(String[] args) {
         Encryption e = new Encryption();

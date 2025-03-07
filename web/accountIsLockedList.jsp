@@ -160,7 +160,7 @@
         <h1></h1>
 
         <!-- Form tìm kiếm -->
-        <form action="filterUser" method="get" class="form-inline">
+        <form action="filterBanUser" method="get" class="form-inline">
             <input type="text" name="username" class="form-control mb-2 mr-sm-2" placeholder="Tài khoản"
                    value="<c:out value='${param.username}' />">
             <input type="text" name="fullName" class="form-control mb-2 mr-sm-2" placeholder="Tên"
@@ -193,12 +193,11 @@
             <c:remove var="message"/>
         </c:if>
 
-
         <div class="tab-content">
             <!-- Tab Khách hàng -->
             <div id="Customer" class="container tab-pane active"><br>
-                <h3>Danh sách Khách hàng</h3>
-                <h4>Tổng số khách hàng: <c:out value="${totalCustomers}" /></h4>
+                <h3>Danh sách Tài khoản khách hàng bị khóa</h3>
+                <h4>Tổng số tài khoản: <c:out value="${totalCustomers}" /></h4>
 
                 <table class="table table-bordered">
                     <thead>
@@ -211,7 +210,7 @@
                             <th>Đơn mua</th>
                             <th>Đơn hủy</th>
                             <th>Hành động</th>
-                        </tr>   
+                        </tr>
                     </thead>
                     <tbody>
                         <c:forEach var="user" items="${customers}">
@@ -224,8 +223,7 @@
                                 <td>${user.deliveredCount}</td>
                                 <td>${user.cancelledCount}</td>
                                 <td>
-                                    <a href="emailReminder?userId=${user.userId}&pageStr1=${currentPageCustomer}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Mail cảnh báo</a> | 
-                                    <a href="banUser?userId=${user.userId}&pageStr1=${currentPageCustomer}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Khóa</a>
+                                    <a href="restoreUser?userId=${user.userId}&pageStr1=${currentPageCustomer}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Khôi phục</a>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -235,7 +233,7 @@
                 <!-- Phân trang cho khách hàng -->
                 <div class="pagination">
                     <c:if test="${currentPageCustomer > 1}">
-                        <a href="filterUser?pageStr1=1&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; First</a>
+                        <a href="filterBanUser?pageStr1=1&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; First</a>
                     </c:if>
 
                     <c:if test="${currentPageCustomer > 3}">
@@ -244,13 +242,13 @@
 
                     <!-- Chỉ hiển thị "Prev" nếu không phải trang đầu tiên -->
                     <c:if test="${currentPageCustomer > 1}">
-                        <a href="filterUser?pageStr1=${currentPageCustomer - 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; Prev</a>
+                        <a href="filterBanUser?pageStr1=${currentPageCustomer - 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; Prev</a>
                     </c:if>
 
                     <!-- Hiển thị trang hiện tại và các trang xung quanh -->
                     <c:forEach var="i" begin="${currentPageCustomer - 1}" end="${currentPageCustomer + 1}" varStatus="status">
                         <c:if test="${i > 0 && i <= totalPagesCustomer}">
-                            <a href="filterUser?pageStr1=${i}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}" class="<c:if test='${i == currentPageCustomer}'>active</c:if>">
+                            <a href="filterBanUser?pageStr1=${i}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}" class="<c:if test='${i == currentPageCustomer}'>active</c:if>">
                                 ${i}
                             </a>
                         </c:if>
@@ -261,11 +259,11 @@
                     </c:if>
 
                     <c:if test="${currentPageCustomer < totalPagesCustomer}">
-                        <a href="filterUser?pageStr1=${currentPageCustomer + 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Next &raquo;</a>
+                        <a href="filterBanUser?pageStr1=${currentPageCustomer + 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Next &raquo;</a>
                     </c:if>
 
                     <c:if test="${currentPageCustomer < totalPagesCustomer}">
-                        <a href="filterUser?pageStr1=${totalPagesCustomer}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Last &raquo;</a>
+                        <a href="filterBanUser?pageStr1=${totalPagesCustomer}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Last &raquo;</a>
                     </c:if>
                 </div>
 
@@ -275,8 +273,8 @@
 
             <!-- Tab Nhân viên -->
             <div id="Admin" class="container tab-pane fade"><br>
-                <h3>Danh sách Nhân viên</h3>
-                <h4>Tổng số nhân viên: <c:out value="${totalEmployees}" /></h4>
+                <h3>Danh sách tài khoản nhân viên bị khóa</h3>
+                <h4>Tổng số tài khoản: <c:out value="${totalEmployees}" /></h4>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -301,8 +299,7 @@
                                 <td>${user.deliveredCount}</td>
                                 <td>${user.cancelledCount}</td>
                                 <td>
-                                    <a href="emailReminder?userId=${user.userId}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Mail cảnh báo</a> | 
-                                    <a href="banUser?userId=${user.userId}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Khóa</a>
+                                    <a href="restoreUser?userId=${user.userId}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Khôi phục</a>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -312,7 +309,7 @@
                 <!-- Phân trang cho nhân viên -->
                 <div class="pagination">
                     <c:if test="${currentPageEmployee > 1}">
-                        <a href="filterUser?pageStr2=1&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; First</a>
+                        <a href="filterBanUser?pageStr2=1&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; First</a>
                     </c:if>
 
                     <c:if test="${currentPageEmployee > 3}">
@@ -321,13 +318,13 @@
 
                     <!-- Chỉ hiển thị "Prev" nếu không phải trang đầu tiên -->
                     <c:if test="${currentPageEmployee > 1}">
-                        <a href="filterUser?pageStr2=${currentPageEmployee - 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; Prev</a>
+                        <a href="filterBanUser?pageStr2=${currentPageEmployee - 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; Prev</a>
                     </c:if>
 
                     <!-- Hiển thị trang hiện tại và các trang xung quanh -->
                     <c:forEach var="i" begin="${currentPageEmployee - 1}" end="${currentPageEmployee + 1}" varStatus="status">
                         <c:if test="${i > 0 && i <= totalPagesEmployee}">
-                            <a href="filterUser?pageStr2=${i}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}" class="<c:if test='${i == currentPageEmployee}'>active</c:if>">
+                            <a href="filterBanUser?pageStr2=${i}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}" class="<c:if test='${i == currentPageEmployee}'>active</c:if>">
                                 ${i}
                             </a>
                         </c:if>
@@ -338,11 +335,11 @@
                     </c:if>
 
                     <c:if test="${currentPageEmployee < totalPagesEmployee}">
-                        <a href="filterUser?pageStr2=${currentPageEmployee + 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Next &raquo;</a>
+                        <a href="filterBanUser?pageStr2=${currentPageEmployee + 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Next &raquo;</a>
                     </c:if>
 
                     <c:if test="${currentPageEmployee < totalPagesEmployee}">
-                        <a href="filterUser?pageStr2=${totalPagesEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Last &raquo;</a>
+                        <a href="filterBanUser?pageStr2=${totalPagesEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Last &raquo;</a>
                     </c:if>
                 </div>
 
