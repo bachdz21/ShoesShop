@@ -8,7 +8,7 @@ package model;
  *
  * @author nguye
  */
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 public class ReviewReply {
 
@@ -16,14 +16,13 @@ public class ReviewReply {
     private int reviewId;
     private int userId;
     private String replyText;
-    private LocalDateTime replyDate;
+    private Timestamp replyDate;
 
     // Constructors
     public ReviewReply() {
     }
 
-    public ReviewReply(int replyId, int reviewId, int userId,
-            String replyText, LocalDateTime replyDate) {
+    public ReviewReply(int replyId, int reviewId, int userId, String replyText, Timestamp replyDate) {
         this.replyId = replyId;
         this.reviewId = reviewId;
         this.userId = userId;
@@ -64,11 +63,17 @@ public class ReviewReply {
         this.replyText = replyText;
     }
 
-    public LocalDateTime getReplyDate() {
+    public Timestamp getReplyDate() {
         return replyDate;
     }
 
-    public void setReplyDate(LocalDateTime replyDate) {
+    public void setReplyDate(Timestamp replyDate) {
         this.replyDate = replyDate;
     }
+
+    @Override
+    public String toString() {
+        return "ReviewReply{" + "replyId=" + replyId + ", reviewId=" + reviewId + ", userId=" + userId + ", replyText=" + replyText + ", replyDate=" + replyDate + '}';
+    }
+
 }

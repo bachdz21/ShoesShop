@@ -59,58 +59,70 @@ public class ReviewController extends HttpServlet {
             return;
         }
 
-        // Lấy thông tin từ form
-        int userId = user.getUserId();
-        int productId = Integer.parseInt(request.getParameter("productID"));
-        int rating = Integer.parseInt(request.getParameter("rating"));
-        String comment = request.getParameter("review");
+        try {
+            // Lấy thông tin từ form
+            int userId = user.getUserId();
+            int productId = Integer.parseInt(request.getParameter("productID"));
+            int rating = Integer.parseInt(request.getParameter("rating"));
+            String comment = request.getParameter("review");
 
-        // Tạo đối tượng Review
-        Review review = new Review(productId, userId, rating, comment);
+            // Tạo đối tượng Review
+            Review review = new Review(productId, userId, rating, comment);
 
-        // Gọi phương thức addReview để thêm vào database
-        int reviewId = reviewDAO.addReview(review);
+            // Gọi phương thức addReview để thêm vào database
+            int reviewId = reviewDAO.addReview(review);
 
-        if (reviewId > 0) {
-            // Lấy mảng loại file từ request (giải mã JSON)
-            String mediaTypeString = request.getParameter("mediaType");
-            List<String> mediaTypes = new ArrayList<>();
+            if (reviewId > 0) {
+                // Lấy mảng loại file từ request (giải mã JSON)
+                String mediaTypeString = request.getParameter("mediaType");
+                List<String> mediaTypes = new ArrayList<>();
 
-            if (mediaTypeString != null && !mediaTypeString.isEmpty()) {
-                mediaTypes = new Gson().fromJson(mediaTypeString, List.class);
-            }
-
-            // Đường dẫn thư mục lưu trữ file media
-
-            // Xử lý các phần media (hình ảnh hoặc video)
-            Collection<Part> fileParts = request.getParts();
-            List<String> mediaUrls = new ArrayList<>();
-
-            int mediaIndex = 0;  // Chỉ số dùng để duyệt qua các loại media
-            for (Part filePart : fileParts) {
-                if (filePart.getName().equals("media") && filePart.getSize() > 0) {
-                    // Tạo tên file duy nhất
-                    String fileName = UUID.randomUUID().toString() + getFileExtension(filePart);
-                    File mediaFile = new File(IMAGE_UPLOAD_DIR, fileName);
-                    filePart.write(mediaFile.getAbsolutePath());
-
-                    // Lấy URL của media đã lưu
-                    String mediaUrl = "/img/" + fileName;
-                    mediaUrls.add(mediaUrl);
-
-                    // Lưu loại media (ảnh, video, hoặc loại khác)
-                    String mediaType = mediaTypes.size() > mediaIndex ? mediaTypes.get(mediaIndex) : "other";
-
-                    // Thêm media vào database (nếu có)
-                    reviewDAO.addReviewMedia(reviewId, mediaUrl, mediaType);
-                    mediaIndex++;
+                if (mediaTypeString != null && !mediaTypeString.isEmpty()) {
+                    mediaTypes = new Gson().fromJson(mediaTypeString, List.class);
                 }
-            }
 
-            // Điều hướng đến trang userProfile
-            response.sendRedirect("userProfile");
-        } else {
-            response.sendRedirect("reviewError.jsp");
+                // Xử lý các phần media (hình ảnh hoặc video)
+                Collection<Part> fileParts = request.getParts();
+                List<String> mediaUrls = new ArrayList<>();
+
+                int mediaIndex = 0;
+                for (Part filePart : fileParts) {
+                    if (filePart.getName().equals("media") && filePart.getSize() > 0) {
+                        // Tạo tên file duy nhất
+                        String fileName = UUID.randomUUID().toString() + getFileExtension(filePart);
+                        File mediaFile = new File(IMAGE_UPLOAD_DIR, fileName);
+                        filePart.write(mediaFile.getAbsolutePath());
+
+                        // Lấy URL của media đã lưu
+                        String mediaUrl = "img/" + fileName;
+                        mediaUrls.add(mediaUrl);
+
+                        // Lưu loại media
+                        String mediaType = mediaTypes.size() > mediaIndex ? mediaTypes.get(mediaIndex) : "other";
+                        reviewDAO.addReviewMedia(reviewId, mediaUrl, mediaType);
+                        mediaIndex++;
+                    }
+                }
+
+                // Thành công thì chuyển hướng về userProfile
+                response.sendRedirect("userProfile");
+            } else {
+                // Gửi thông báo lỗi trực tiếp
+                response.setContentType("text/html;charset=UTF-8");
+                PrintWriter out = response.getWriter();
+                out.println("<script type=\"text/javascript\">");
+                out.println("alert('Thêm review thất bại. Vui lòng thử lại!');");
+                out.println("window.location='reviewForm.jsp';"); // Quay lại form review
+                out.println("</script>");
+            }
+        } catch (Exception e) {
+            // Xử lý các lỗi bất ngờ
+            response.setContentType("text/html;charset=UTF-8");
+            PrintWriter out = response.getWriter();
+            out.println("<script type=\"text/javascript\">");
+            out.println("alert('Đã xảy ra lỗi: " + e.getMessage() + "');");
+            out.println("window.location='reviewForm.jsp';"); // Quay lại form review
+            out.println("</script>");
         }
     }
 
