@@ -258,7 +258,7 @@
                             </ul>
                             <h2 class="text-uppercase">GIẢM GIÁ SỐC TRONG TUẦN</h2>
                             <p>Khuyến Mãi Lên Đến 50%</p>
-                            <a class="primary-btn cta-btn" href="/ProjectPRJ301/product">Mua Ngay</a>
+                            <a class="primary-btn cta-btn" href="./product">Mua Ngay</a>
                         </div>
                     </div>
                 </div>

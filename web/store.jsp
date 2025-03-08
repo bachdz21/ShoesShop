@@ -82,8 +82,8 @@
             <div id="responsive-nav">
                 <!-- NAV -->
                 <ul class="main-nav nav navbar-nav">
-                    <li><a href="/ShoesStoreWed/home">Trang Chủ</a></li>
-                    <li class="active"><a href="/ShoesStoreWed/product">Danh Mục</a></li>
+                    <li><a href="./home">Trang Chủ</a></li>
+                    <li class="active"><a href="./product">Danh Mục</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                         <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
                         <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
@@ -287,7 +287,7 @@
                         <c:forEach var="i" items="${requestScope.listProducts}">
                             <div class="col-md-4 col-xs-6">
                                 <div class="product">
-                                    <a href="productDetail?id=${i.productID}">
+                                    <a href="productDetail?id=${i.productID}&category=${i.categoryName}">
                                         <div class="product-img">
                                             <img src="${i.imageURL}" alt="">
                                             <c:choose>

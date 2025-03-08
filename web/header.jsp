@@ -41,8 +41,8 @@
         <div class="container">
             <ul class="header-links pull-left">
                 <li><a href="#"><i class="fa fa-phone"></i> 0812843609</a></li>
-                <li><a href="#"><i class="fa fa-envelope-o"></i> nguyenphuong9824@gmail.com</a></li>
-                <li><a href="#"><i class="fa fa-map-marker"></i> SE1881 - PRJ301</a></li>
+                <li><a href="#"><i class="fa fa-envelope-o"></i> abcd@gmail.com</a></li>
+                <li><a href="#"><i class="fa fa-map-marker"></i> SE1872 - SWP391</a></li>
             </ul>
             <ul class="header-links pull-right">
                 <% if (user == null) { %>

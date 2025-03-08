@@ -22,15 +22,10 @@ public interface IProductDAO {
     List<Product> getProductsByPage(int offset, int limit, String orderBy, String[] categories, String[] brands, double priceMin, double priceMax);
     int getTotalProducts(String[] categories, String[] brands, double priceMin, double priceMax);
     List<Product> searchProducts(String query, String category);
-    void addProduct(Product product);
     Product getProductById(int id);
     int getTotalProductSold(int productID);
     int getCategoryIdByName(String categoryName);
-    void updateProduct(Product product);
-    void deleteProduct(int id);
-    List<Product> getDeletedProducts();
-    void restoreProduct(int productId);
-    void deleteTrash(int productId);
+    
     List<Product> getRelativeProducts(String category);
    
 }
