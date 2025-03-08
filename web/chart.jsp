@@ -75,8 +75,8 @@ a {
   transition: 0.2s color;
 }
             body{
+                overflow-x: hidden; 
                 background-color: #191c24
-                
             }
     </style>
     </head>
@@ -144,7 +144,7 @@ a {
                 <!-- Chart Start -->
                 <div class="container-fluid pt-4 px-4">
                     <div class="row g-4">
-                        <div style="margin-bottom: 120px" class="col-sm-12 col-xl-6" style="width: 100%; position: relative;">
+                        <div style="margin-bottom: 77px" class="col-sm-12 col-xl-6" style="width: 100%; position: relative;">
                             <div class="bg-white rounded h-100 p-4">
                                 <h6 class="mb-4">Revenue in: </h6>
 

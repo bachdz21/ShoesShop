@@ -97,6 +97,7 @@
         <%@ page import="java.util.List" %>
         <%@ page import="java.util.Calendar" %>
         <%@page import="jakarta.servlet.http.HttpSession"%>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%
             // Sử dụng biến session từ request mà không cần khai báo lại
             User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
@@ -164,7 +165,7 @@
                                 <i class="fa fa-chart-line fa-3x text-primary"></i>
                                 <div class="ms-3">
                                     <p class="mb-2">Đã bán hôm nay</p>
-                                    <h6 class="mb-0">${requestScope.todaySale}</h6>
+                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.todaySale}" type="number" maxFractionDigits="0" /></h6>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +174,7 @@
                                 <i class="fa fa-chart-bar fa-3x text-primary"></i>
                                 <div class="ms-3">
                                     <p class="mb-2">Tổng số đã bán</p>
-                                    <h6 class="mb-0">${requestScope.totalSale}</h6>
+                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.totalSale}" type="number" maxFractionDigits="0" /></h6>
                                 </div>
                             </div>
                         </div>
@@ -226,7 +227,7 @@
                             <div style="border-style: solid; border-width: 2px" class="bg-gradient text-center rounded p-4">
                                 <div class="d-flex align-items-center justify-content-between mb-4">
                                     <h6 class="mb-0">Doanh thu các mặt hàng</h6>
-                                    <a href="getRevenueLastNDays?numberOfDays=7">Xem tất cả</a>
+<!--                                    <a href="getRevenueLastNDays?numberOfDays=7">Xem tất cả</a>-->
                                 </div>
                                 <canvas id="worldwide-sales"></canvas>
                             </div>

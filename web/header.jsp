@@ -50,7 +50,7 @@
                     <% } else { %>
                     <% if ("Admin".equals(user.getRole())) { %>
                 <li>
-                    <a href="/ShoesStoreWeb/revenue?year=2025&month=3">
+                    <a href="/ShoesStoreWeb/revenue?year=<%= currentYear %>&month=<%= currentMonth %>">
                         <i class="fa fa-dashboard"></i> Dashboard
                     </a>
                 </li>
