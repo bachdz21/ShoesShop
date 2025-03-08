@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Electro - HTML Ecommerce Template</title>
+        <title>User Profile</title>
 
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
@@ -286,7 +286,7 @@
             }
 
             .table-responsive {
-                max-height: 283px; /* Chiều cao tối đa của bảng */
+                max-height: 200px; /* Chiều cao tối đa của bảng */
                 overflow-y: auto; /* Thêm thanh cuộn dọc khi vượt quá chiều cao tối đa */
                 overflow-x: hidden; /* Ẩn thanh cuộn ngang (tuỳ chọn) */
             }
@@ -360,105 +360,136 @@
                 margin-top: 10px;
             }
 
-            .review-form {
-                background-color: #fff;
-                padding: 20px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
+            table, th, td {
+                border: 1px solid #dee2e6;
             }
-            .form-group {
-                margin-bottom: 15px;
+
+            table tr:hover {
+                background-color: #e9ecef;
             }
-            .form-group label {
-                display: block;
-                margin-bottom: 5px;
-                color: #666;
-                font-size: 14px;
+
+            .table th, .table td {
+                text-align: left;
+                vertical-align: middle;
+                padding: 12px;
             }
-            .product-info {
-                margin-bottom: 20px;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
+
+            .table thead {
+                background-color: #e12d39;
+                color: white;
             }
-            .product-image {
-                max-width: 200px;
-                height: auto;
-                margin-bottom: 10px;
-            }
-            .star-rating {
-                display: flex;
-                gap: 5px;
-                margin-bottom: 10px;
-            }
-            .star {
-                font-size: 24px;
-                color: #ccc;
-                cursor: pointer;
-                transition: color 0.3s ease;
-            }
-            .star.active {
-                color: #ffd700;
-            }
-            textarea {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                box-sizing: border-box;
-                font-size: 14px;
-                height: 100px;
-                resize: vertical;
-            }
-            .file-input {
-                margin-top: 5px;
-            }
-            .submit-btn {
-                background-color: #ffd700;
-                color: #fff;
+            .nav-tabs .nav-item .nav-link {
+                color: black;
+                font-weight: bold;
                 padding: 10px 20px;
-                border: none;
-                border-radius: 4px;
-                font-size: 16px;
-                cursor: pointer;
+                border-radius: 5px 5px 0 0;
+                border: 1px solid #ddd;
+            }
+
+            .nav-tabs .nav-item .nav-link.active {
+                background-color: red;
+                color: white;
+            }
+
+            table {
                 width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
             }
-            .submit-btn:hover {
-                background-color: #e0a400;
+
+            th, td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: center;
             }
-            .note {
-                color: #888;
-                font-size: 12px;
-                margin-bottom: 15px;
+
+            th {
+                background-color: red;
+                color: white;
+                font-weight: bold;
+            }
+
+            .status-pending {
+                color: orange;
+                font-weight: bold;
+            }
+            .status-shipped {
+                color: blue;
+                font-weight: bold;
+            }
+            .status-delivered {
+                color: green;
+                font-weight: bold;
+            }
+            .status-cancelled {
+                color: red;
+                font-weight: bold;
+            }
+
+            .tab-content {
+                border: 1px solid #ddd;
+                padding: 20px;
+                border-top: none;
+            }
+            .container-fluid {
+                background-color: #f4f4f4;
+                padding: 30px;
+            }
+
+            .bg-secondary {
+                background-color: #343a40;
+                padding: 20px;
+                border-radius: 8px;
+            }
+
+            .text-center {
+                text-align: center;
+            }
+
+            .text-start {
+                text-align: left;
+            }
+
+
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .table th, .table td {
+                padding: 12px;
+                text-align: center;
+                border: 1px solid #ddd;
+            }
+
+            .table th {
+                background-color: #dc3545;
+                color: white;
+                font-weight: bold;
+            }
+
+            .table td {
+                background-color: #f8f9fa;
+            }
+
+            .table img {
+                border-radius: 4px;
+            }
+
+            .mt-4 {
+                margin-top: 20px;
+            }
+            div.mt-4 {
+                margin-top: 30px;
             }
         </style>
+        
     </head>
-    <%@page import="model.User"%>
-    <%@page import="model.CartItem"%>
-    <%@ page import="java.util.List" %>
 
-    <%@page import="jakarta.servlet.http.HttpSession"%>
-    <%
-        // Sử dụng biến session từ request mà không cần khai báo lại
-        User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
-    %>
-    <% 
-    // Lấy danh sách sản phẩm trong giỏ hàng từ session
-    List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
-    int totalQuantity = 0;
-    double subtotal = 0.0;
-    if (cartItems != null) {
-        for (CartItem item : cartItems) {
-            totalQuantity += item.getQuantity();
-            subtotal += item.getProduct().getPrice() * item.getQuantity();
-        }
-    }
-    %>
     <body>
-        <!-- HEADER -->
-        <jsp:include page="header.jsp"/>
-        <!-- /HEADER -->
-
+        <%@ include file="header.jsp" %>
         <!-- NAVIGATION -->
         <nav id="navigation">
             <!-- container -->
@@ -482,10 +513,161 @@
         </nav>
         <!-- /NAVIGATION -->
 
+    <div class="container user-profile">
+        <div class="main-body">
+            <div class="row" style="margin-top: 30px; margin-bottom: 30px">
+                
+                
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="list-product">
+                            <h2 class="product-title">Danh Sách Đơn Hàng</h2>
 
-        <div class="container user-profile">
-            <div class="main-body">
-                <div class="row" style="margin-top: 30px; margin-bottom: 30px">
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="list-product">
+                                        <h2 class="product-title">Danh Sách Đơn Hàng</h2>
+
+                                        <!-- Tabs điều hướng -->
+                                        <ul class="nav nav-tabs">
+                                            <li class="nav-item">
+                                                <a class="nav-link " data-toggle="tab" href="#pending">Chờ xác nhận</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-toggle="tab" href="#shipped">Đang vận chuyển</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-toggle="tab" href="#delivered">Đã giao</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-toggle="tab" href="#cancelled">Đã hủy</a>
+                                            </li>
+                                        </ul>
+
+                                        <div class="tab-content">
+                                            <!-- Chờ xác nhận -->
+                                            <div id="pending" class=" tab-pane active table-responsive">
+                                                <table>
+                                                    <tr>
+                                                        <th>Mã Đơn Hàng</th>
+                                                        <th>Ngày Đặt Hàng</th>
+                                                        <th>Tổng Số Tiền</th>
+                                                        <th>Trạng Thái</th>
+                                                        <th>Phương Thức Thanh Toán</th>
+                                                        <th>Địa Chỉ Giao Hàng</th>
+                                                        <th>Chi Tiết</th>
+                                                    </tr>
+                                                    <c:forEach var="order" items="${orders}">
+                                                        <c:if test="${order.orderStatus eq 'Pending'}">
+                                                            <tr>
+                                                                <td>${order.orderCode}</td>
+                                                                <td>${order.orderDate}</td>
+                                                                <td>${order.totalAmount}</td>
+                                                                <td class="status-pending">Chờ xác nhận</td>
+                                                                <td>${order.paymentMethod}</td>
+                                                                <td>${order.shippingAddress}</td>
+                                                                <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                            </tr>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </table>
+                                            </div>
+
+                                            <!-- Đang vận chuyển -->
+                                            <div id="shipped" class=" tab-pane fade table-responsive">
+                                                <table>
+                                                    <tr>
+                                                        <th>Mã Đơn Hàng</th>
+                                                        <th>Ngày Đặt Hàng</th>
+                                                        <th>Tổng Số Tiền</th>
+                                                        <th>Trạng Thái</th>
+                                                        <th>Phương Thức Thanh Toán</th>
+                                                        <th>Địa Chỉ Giao Hàng</th>
+                                                        <th>Chi Tiết</th>
+                                                    </tr>
+                                                    <c:forEach var="order" items="${orders}">
+                                                        <c:if test="${order.orderStatus eq 'Shipped'}">
+                                                            <tr>
+                                                                <td>${order.orderCode}</td>
+                                                                <td>${order.orderDate}</td>
+                                                                <td>${order.totalAmount}</td>
+                                                                <td class="status-shipped">Đang vận chuyển</td>
+                                                                <td>${order.paymentMethod}</td>
+                                                                <td>${order.shippingAddress}</td>
+                                                                <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                            </tr>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </table>
+                                            </div>
+
+                                            <!-- Đã giao -->
+                                            <div id="delivered" class=" tab-pane fade table-responsive">
+                                                <table>
+                                                    <tr>
+                                                        <th>Mã Đơn Hàng</th>
+                                                        <th>Ngày Đặt Hàng</th>
+                                                        <th>Tổng Số Tiền</th>
+                                                        <th>Trạng Thái</th>
+                                                        <th>Phương Thức Thanh Toán</th>
+                                                        <th>Địa Chỉ Giao Hàng</th>
+                                                        <th>Chi Tiết</th>
+                                                    </tr>
+                                                    <c:forEach var="order" items="${orders}">
+                                                        <c:if test="${order.orderStatus eq 'Delivered'}">
+                                                            <tr>
+                                                                <td>${order.orderCode}</td>
+                                                                <td>${order.orderDate}</td>
+                                                                <td>${order.totalAmount}</td>
+                                                                <td class="status-delivered">Đã giao</td>
+                                                                <td>${order.paymentMethod}</td>
+                                                                <td>${order.shippingAddress}</td>
+                                                                <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                            </tr>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </table>
+                                            </div>
+
+                                            <!-- Đã hủy -->
+                                            <div id="cancelled" class=" tab-pane fade table-responsive">
+                                                <table>
+                                                    <tr>
+                                                        <th>Mã Đơn Hàng</th>
+                                                        <th>Ngày Đặt Hàng</th>
+                                                        <th>Tổng Số Tiền</th>
+                                                        <th>Trạng Thái</th>
+                                                        <th>Phương Thức Thanh Toán</th>
+                                                        <th>Địa Chỉ Giao Hàng</th>
+                                                        <th>Chi Tiết</th>
+                                                    </tr>
+                                                    <c:forEach var="order" items="${orders}">
+                                                        <c:if test="${order.orderStatus eq 'Cancelled'}">
+                                                            <tr>
+                                                                <td>${order.orderCode}</td>
+                                                                <td>${order.orderDate}</td>
+                                                                <td>${order.totalAmount}</td>
+                                                                <td class="status-cancelled">Đã hủy</td>
+                                                                <td>${order.paymentMethod}</td>
+                                                                <td>${order.shippingAddress}</td>
+                                                                <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                            </tr>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </table>
+                                            </div>
+                                        </div> <!-- Kết thúc tab-content -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-lg-4">
                         <div class="card">
                             <div class="card-body">
@@ -547,10 +729,13 @@
                                         </div>
                                     </form>
 
-                                    <c:if test="${not empty message}">
-                                        <p class="${message == 'Đổi mật khẩu thành công.' ? 'message-success' : 'message-error'}">
-                                            ${message}
-                                        </p>
+                                    <%-- Hiển thị thông báo messageChangePassword thành công nếu có --%>
+                                    <c:if test="${not empty sessionScope.messageChangePassword}">
+                                        <div class="alert alert-success" role="alert">
+                                            ${sessionScope.messageChangePassword}
+                                        </div>
+                                        <%-- Xóa thông báo sau khi đã hiển thị --%>
+                                        <c:remove var="messageChangePassword"/>
                                     </c:if>
                                 </ul>
                             </div>
@@ -578,7 +763,7 @@
                                             <h6 class="mb-0">Email</h6>
                                         </div>
                                         <div class="col-sm-9 text-secondary">
-                                            <input type="email" class="form-control" name="email" value="${user.email}" required>
+                                            <input type="email" class="form-control" name="email" value="${user.email}" readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -621,11 +806,14 @@
                                         <div class="col-sm-9 text-secondary">
                                             <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
                                         </div>
-                                        <div class="col-sm-6 text-secondary">
-                                            <c:if test="${not empty message1}">
-                                                <p class="${message1 == 'Cập nhật hồ sơ thành công.' ? 'message-success' : 'message-error'}">
-                                                    ${message1}
-                                                </p>
+                                        <div class="col-sm-6 text-secondary d-flex justify-content-center" style="margin-top: 20px;">
+                                            <%-- Hiển thị thông báo messageUpdateProfile thành công nếu có --%>
+                                            <c:if test="${not empty sessionScope.messageUpdateProfile}">
+                                                <div class="alert alert-success" role="alert">
+                                                    ${sessionScope.messageUpdateProfile}
+                                                </div>
+                                                <%-- Xóa thông báo sau khi đã hiển thị --%>
+                                                <c:remove var="messageUpdateProfile"/>
                                             </c:if>
                                         </div>
                                     </div>
@@ -633,6 +821,13 @@
                                 </div>
                             </div>
                         </form>
+
+
+                    </div>
+
+                </div>
+
+    
 
                         <div class="row">
                             <div class="col-sm-12">
@@ -662,12 +857,15 @@
                                                             <td>${order.shippingAddress}</td>
                                                             <td><a href="orderDetail?id=${order.orderId}">Chi Tiết</a></td>
                                                             <td>
-                                                                <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#loginModal">
+                                                                <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#reviewModal" 
+                                                                        data-orderid="${order.orderId}" 
+                                                                        ${order.orderStatus != 'Delivered' ? 'disabled' : ''}>
                                                                     Đánh Giá
                                                                 </button>
                                                             </td>
                                                         </tr>
                                                     </c:forEach>
+
                                                 </table>
                                             </div>
                                         </div>
@@ -681,7 +879,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header border-bottom-0">
@@ -692,13 +890,22 @@
                     <div class="modal-body">
                         <div class="form-title text-center">
                             <h4>Đánh Giá Sản Phẩm</h4>
+                            <p id="modalResult"></p>
                         </div>
                         <div class="d-flex flex-column text-center">
-                            <form class="review-form" enctype="multipart/form-data" style="text-align: start">
+                            <form action="addReview" method="POST" class="review-form" enctype="multipart/form-data" style="text-align: start">
                                 <div class="form-group product-info">
-                                    <label>Product Information:</label>
-                                    <img src="path/to/product/image.jpg" alt="Product Image" class="product-image">
-                                    <p>Product Name: [Product Name Here]</p>
+                                    <label>Chọn sản phẩm để đánh giá:</label>
+                                    <select name="productID" id="productSelect" required>
+                                        <option value="" disabled selected>Chọn một sản phẩm</option>
+                                        <!-- Danh sách sản phẩm sẽ được thêm bằng JS -->
+                                    </select>
+                                    <!-- Input ẩn cho productID -->
+
+                                    <div class="selected-product-info" id="selectedProductInfo" style="display: none;">
+                                        <img id="selectedProductImage" src="" alt="Selected Product" class="product-image">
+                                        <p id="selectedProductName"></p>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">
@@ -715,19 +922,19 @@
 
                                 <div class="form-group">
                                     <label for="review">Your Review * :</label>
-                                    <textarea id="review" name="review" required></textarea>
+                                    <textarea id="review" name="review"></textarea>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Upload Media (Optional):</label>
-                                    <input type="file" name="media" class="file-input" accept="image/*,video/*">
+                                    <input type="file" name="media" class="file-input" accept="image/*,video/*" multiple>
+                                    <input type="hidden" name="mediaType" id="mediaType">
                                 </div>
 
                                 <button type="submit" class="submit-btn">Leave Your Review</button>
                             </form>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -739,51 +946,162 @@
         <!-- jQuery Plugins -->
         <!-- jQuery -->
         <!-- Bootstrap Bundle JS -->
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll(".btn-info"); // Nút "Đánh Giá"
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                event.preventDefault(); // Ngăn chặn hành động mặc định
+
+                // Lấy orderID từ data attribute của nút
+                var orderID = button.getAttribute('data-orderid');
+
+                // Gửi request AJAX
+                fetch("getProductsByOrderID", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "orderID=" + orderID
+                })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                alert("Error: " + data.error);
+                            } else {
+                                // Làm sạch danh sách sản phẩm trong select trước khi thêm sản phẩm mới
+                                const productSelect = document.getElementById("productSelect");
+                                productSelect.innerHTML = '<option value="" disabled selected>Chọn một sản phẩm</option>'; // reset
+
+                                // Duyệt qua danh sách sản phẩm và thêm các option vào select
+                                data.forEach(product => {
+                                    let option = document.createElement("option");
+                                    option.value = product.productID;  // Sử dụng productID
+                                    option.textContent = product.productName;  // Hiển thị tên sản phẩm
+                                    productSelect.appendChild(option);
+                                });
+
+                                // Hiển thị thông tin và gán productID khi chọn sản phẩm
+                                productSelect.addEventListener('change', function () {
+                                    const selectedProductId = productSelect.value;
+                                    const selectedProduct = data.find(p => p.productID == selectedProductId);
+
+                                    if (selectedProduct) {
+                                        // Hiển thị hình ảnh và tên sản phẩm đã chọn
+                                        document.getElementById("selectedProductImage").src = selectedProduct.imageURL;
+                                        document.getElementById("selectedProductName").textContent = selectedProduct.productName;
+                                        document.getElementById("selectedProductInfo").style.display = "block";
+                                    }
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            alert("Có lỗi xảy ra!");
+                        });
+            });
+        });
+
+        // Reset lại thông tin modal khi đóng hoặc khi mở modal mới
+        function resetModal() {
+            // Reset lại các trường thông tin trong modal
+            document.getElementById("modalResult").innerText = "";
+            document.getElementById("productSelect").value = ""; // Reset chọn sản phẩm
+            document.getElementById("selectedProductImage").src = ""; // Reset hình ảnh
+            document.getElementById("selectedProductName").textContent = ""; // Reset tên sản phẩm
+            document.getElementById("selectedProductInfo").style.display = "none"; // Ẩn thông tin sản phẩm
+            document.getElementById("hiddenProductID").value = ""; // Reset productID
+        }
+
+        // Đóng modal khi bấm vào nút X
+        document.querySelector(".close").addEventListener("click", function () {
+            $('#reviewModal').modal('hide');
+            resetModal(); // Reset thông tin modal khi đóng
+        });
+
+        // Đóng modal khi bấm ra ngoài
+        window.onclick = function (event) {
+            var modal = document.getElementById("reviewModal");
+            if (event.target === modal) {
+                $('#reviewModal').modal('hide');
+                resetModal(); // Reset thông tin modal khi đóng
+            }
+        };
+
+        // Reset padding-right khi đóng modal
+        $('#reviewModal').on('hidden.bs.modal', function () {
+            $('body').css('padding-right', ''); // Xóa padding-right khi modal đóng
+        });
+    });
+</script>
+
+<script>
+    document.querySelector('.file-input').addEventListener('change', function (event) {
+        var files = event.target.files;  // Lấy tất cả các file được chọn
+        var mediaTypes = [];  // Mảng lưu loại media (image, video, or other)
+
+        // Duyệt qua từng file và xác định loại
+        Array.from(files).forEach(file => {
+            var fileType = file.type;
+
+            // Kiểm tra kiểu file và thêm vào mảng mediaTypes
+            if (fileType.startsWith('image/')) {
+                mediaTypes.push('image');
+            } else if (fileType.startsWith('video/')) {
+                mediaTypes.push('video');
+            } else {
+                mediaTypes.push('other'); // Nếu là loại file khác
+            }
+        });
+        console.log('Media Types:', mediaTypes);
+        // Cập nhật giá trị vào input ẩn (dùng để gửi qua form)
+        document.getElementById('mediaType').value = JSON.stringify(mediaTypes);  // Chuyển mảng thành JSON string
+    });
+</script>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
         <script>
-                            var citis = document.getElementById("city");
-                            var districts = document.getElementById("district");
-                            var wards = document.getElementById("ward");
-                            var Parameter = {
-                                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
-                                method: "GET",
-                                responseType: "application/json",
-                            };
-                            var promise = axios(Parameter);
-                            promise.then(function (result) {
-                                renderCity(result.data);
-                            });
-
-                            function renderCity(data) {
-                                for (const x of data) {
-                                    // Đặt value thành tên thay vì ID
-                                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
-                                }
-                                citis.onchange = function () {
-                                    districts.length = 1;
-                                    wards.length = 1;
-                                    if (this.value != "") {
-                                        const result = data.filter(n => n.Name === this.value);
-
-                                        for (const k of result[0].Districts) {
-                                            // Đặt value thành tên thay vì ID
-                                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
-                                        }
-                                    }
-                                };
-                                districts.onchange = function () {
-                                    wards.length = 1;
-                                    const dataCity = data.filter((n) => n.Name === citis.value);
-                                    if (this.value != "") {
-                                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
-
-                                        for (const w of dataWards) {
-                                            // Đặt value thành tên thay vì ID
-                                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
-                                        }
-                                    }
-                                };
-                            }
+            var citis = document.getElementById("city");
+            var districts = document.getElementById("district");
+            var wards = document.getElementById("ward");
+            var Parameter = {
+                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+                method: "GET",
+                responseType: "application/json",
+            };
+            var promise = axios(Parameter);
+            promise.then(function (result) {
+                renderCity(result.data);
+            });
+            function renderCity(data) {
+                for (const x of data) {
+                    // Đặt value thành tên thay vì ID
+                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
+                }
+                citis.onchange = function () {
+                    districts.length = 1;
+                    wards.length = 1;
+                    if (this.value != "") {
+                        const result = data.filter(n => n.Name === this.value);
+                        for (const k of result[0].Districts) {
+                            // Đặt value thành tên thay vì ID
+                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                        }
+                    }
+                };
+                districts.onchange = function () {
+                    wards.length = 1;
+                    const dataCity = data.filter((n) => n.Name === citis.value);
+                    if (this.value != "") {
+                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+                        for (const w of dataWards) {
+                            // Đặt value thành tên thay vì ID
+                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
+                        }
+                    }
+                };
+            }
         </script>
         <script>
             document.getElementById('profileImage').addEventListener('change', function () {
@@ -798,7 +1116,6 @@
                 var newPassword = document.getElementsByName("newPassword")[0].value;
                 var confirmNewPassword = document.getElementsByName("confirmNewPassword")[0].value;
                 var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
-
                 // Kiểm tra mật khẩu mới và mật khẩu xác nhận có khớp không
                 if (newPassword !== confirmNewPassword) {
                     alert("Mật khẩu mới và xác nhận mật khẩu không khớp.");
@@ -823,18 +1140,17 @@
                 return true;
             }
         </script>
+
         <script>
             function validateProfileForm() {
                 // Lấy giá trị số điện thoại từ ô nhập liệu
                 var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
-
                 // Kiểm tra số điện thoại có đúng 10 chữ số
                 var phonePattern = /^\d{10}$/;
                 if (!phonePattern.test(phoneNumber)) {
                     alert("Số điện thoại phải gồm 10 chữ số.");
                     return false; // Không cho phép gửi form nếu không đúng định dạng
                 }
-
                 // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
                 return true;
             }
@@ -854,22 +1170,20 @@
         <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'></script>
         <!-- Bootstrap JS -->
         <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
+
         <script>
             const stars = document.querySelectorAll('.star');
             const ratingInput = document.getElementById('ratingValue');
-
             stars.forEach(star => {
                 star.addEventListener('click', function () {
                     const value = this.getAttribute('data-value');
                     ratingInput.value = value;
-
                     stars.forEach(s => s.classList.remove('active'));
                     this.classList.add('active');
                     for (let i = 0; i < value; i++) {
                         stars[i].classList.add('active');
                     }
                 });
-
                 star.addEventListener('mouseover', function () {
                     const value = this.getAttribute('data-value');
                     stars.forEach((s, index) => {
@@ -879,7 +1193,6 @@
                             s.classList.remove('active');
                     });
                 });
-
                 star.addEventListener('mouseout', function () {
                     stars.forEach(s => s.classList.remove('active'));
                     const currentRating = ratingInput.value;
@@ -891,6 +1204,7 @@
                 });
             });
         </script>
+
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/slick.min.js"></script>
