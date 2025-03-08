@@ -5,6 +5,7 @@
 package dal;
 
 import java.util.List;
+import model.OrderContact;
 import model.User;
 
 /**
@@ -12,6 +13,7 @@ import model.User;
  * @author nguye
  */
 public interface IUserDAO {
+
     List<String> getAllEmails();
     List<String> getAllUsernames();
     List<String> getAllPhoneNumbers();
@@ -33,5 +35,5 @@ public interface IUserDAO {
     void isUnlocked(int userId);
     List<User> filterUsers(String username, String fullName, String email, String phone, String registrationDate);
     List<User> filterBanUsers(String username, String fullName, String email, String phone, String registrationDate);
-
+    public OrderContact getOrderContactsByOrderID(int orderID);
 }
