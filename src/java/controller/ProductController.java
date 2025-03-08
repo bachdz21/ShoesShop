@@ -1,4 +1,3 @@
-
 package controller;
 
 import dal.ICategoryDAO;
@@ -6,6 +5,7 @@ import dal.IProductDAO;
 import dal.IUserDAO;
 import dal.imp.CategoryDAO;
 import dal.imp.ProductDAO;
+import dal.imp.ReviewDAO;
 import dal.imp.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,7 +26,10 @@ import jakarta.servlet.http.HttpSession;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import model.Review;
 
 @WebServlet(name = "ProductController", urlPatterns = {"/product", "/home", "/search", "/list", "/add", "/edit", "/update",
     "/deleteProduct", "/trash", "/restore", "/deleteTrash", "/productDetail", "/deleteMultipleProducts", "/productAction", "/sortProduct"})
@@ -34,6 +37,7 @@ import java.util.Collection;
 public class ProductController extends HttpServlet {
 
     IProductDAO productDAO = new ProductDAO();
+    ReviewDAO reviewDAO = new ReviewDAO();
     private static final String IMAGE_UPLOAD_DIR = "D:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
 
     @Override
@@ -394,12 +398,47 @@ public class ProductController extends HttpServlet {
             throws ServletException, IOException {
         int productId = Integer.parseInt(request.getParameter("id"));
         Product product = productDAO.getProductById(productId);
-        int totalSold = productDAO.getTotalProductSold(productId); // Lấy số lượng đã bán
+        int totalSold = productDAO.getTotalProductSold(productId);
         String category = request.getParameter("category");
         List<Product> productRelative = productDAO.getRelativeProducts(category);
+        List<Review> reviews = reviewDAO.getReviewsByProductID(productId);
+        List<Integer> ratings = productDAO.getProductRatings(productId);
+        List<Integer> ratingLevels = Arrays.asList(5, 4, 3, 2, 1);
+        int totalRating = reviews.stream().mapToInt(Review::getRating).sum();
+        Collections.reverse(ratings);
+
+        // Lấy số trang hiện tại từ request, mặc định là trang 1
+        int page = 1;
+        int pageSize = 5; // Số lượng review mỗi trang
+
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (NumberFormatException e) {
+                page = 1; // Nếu có lỗi, quay về trang 1
+            }
+        }
+
+        // Tính số trang tổng cộng
+        int totalReviews = reviews.size();
+        int totalPages = (int) Math.ceil((double) totalReviews / pageSize);
+
+        // Cắt danh sách review theo trang
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalReviews);
+        List<Review> paginatedReviews = reviews.subList(start, end);
+
+        // Gửi dữ liệu về JSP
         request.setAttribute("product", product);
-        request.setAttribute("totalSold", totalSold); // Truyền totalSold vào request
+        request.setAttribute("totalSold", totalSold);
         request.setAttribute("productRelative", productRelative);
+        request.setAttribute("ratings", ratings);
+        request.setAttribute("ratingLevels", ratingLevels);
+        request.setAttribute("totalReviews", totalReviews);
+        request.setAttribute("reviews", paginatedReviews); // Gửi danh sách đã cắt
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", page);
+
         request.getRequestDispatcher("productDetail.jsp").forward(request, response);
     }
 
@@ -445,7 +484,7 @@ public class ProductController extends HttpServlet {
         } else if (request.getServletPath().equals("/productAction")) {
             getAction(request, response);
         } else {
-                request.getRequestDispatcher("/home").forward(request, response);
+            request.getRequestDispatcher("/home").forward(request, response);
         }
 
     }

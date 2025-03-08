@@ -569,7 +569,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     @Override
     public Product getProductById(int id) {
         Product product = null;
-        String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.Brand, p.Sale, p.CreatedDate "
+        String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.Brand, p.Sale, p.CreatedDate, p.AverageRating "
                 + "FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE p.ProductID = ?";
         try {
             PreparedStatement ps = c.prepareStatement(query);
@@ -587,6 +587,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setBrand(rs.getString("Brand"));
                 product.setSale(rs.getInt("Sale"));
                 product.setCreatedDate(rs.getDate("CreatedDate")); // Sử dụng Date cho createdDate
+                product.setAverageRating(rs.getDouble("AverageRating"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
                     product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Làm tròn đến 2 chữ số thập phân
@@ -602,6 +603,44 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     }
     // Phương thức để lấy hình ảnh của sản phẩm theo ID
 
+    @Override
+    public List<Integer> getProductRatings(int productID) {
+        List<Integer> ratingsCount = new ArrayList<>();
+        
+        // SQL để đếm số lượng đánh giá cho từng rating (1, 2, 3, 4, 5)
+        String sql = "SELECT "
+                   + "SUM(CASE WHEN Rating = 1 THEN 1 ELSE 0 END) AS Rating1Count, "
+                   + "SUM(CASE WHEN Rating = 2 THEN 1 ELSE 0 END) AS Rating2Count, "
+                   + "SUM(CASE WHEN Rating = 3 THEN 1 ELSE 0 END) AS Rating3Count, "
+                   + "SUM(CASE WHEN Rating = 4 THEN 1 ELSE 0 END) AS Rating4Count, "
+                   + "SUM(CASE WHEN Rating = 5 THEN 1 ELSE 0 END) AS Rating5Count "
+                   + "FROM [ProjectSWP].[dbo].[Reviews] "
+                   + "WHERE ProductID = ? "
+                   + "GROUP BY ProductID";
+        
+        try (PreparedStatement stmt = c.prepareStatement(sql)) {
+            
+            // Set parameter for the SQL query
+            stmt.setInt(1, productID);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // Add each rating count to the list
+                    ratingsCount.add(rs.getInt("Rating1Count"));
+                    ratingsCount.add(rs.getInt("Rating2Count"));
+                    ratingsCount.add(rs.getInt("Rating3Count"));
+                    ratingsCount.add(rs.getInt("Rating4Count"));
+                    ratingsCount.add(rs.getInt("Rating5Count"));
+                }
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return ratingsCount;
+    }
+    
     private List<String> getProductImagesById(int productId) {
         List<String> imageUrls = new ArrayList<>();
         String query = "SELECT ImageURL FROM ProductImages WHERE ProductID = ?";
@@ -639,7 +678,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public List<Product> getRelativeProducts(String category) {
         List<Product> products = new ArrayList<>();
         try {
-            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale\n"
+            String query = "SELECT TOP(4) p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale\n"
                     + "FROM Products p\n"
                     + "INNER JOIN Categories c ON p.CategoryID = c.CategoryID\n"
                     + "WHERE c.CategoryName = ?";
@@ -716,7 +755,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
 
     public static void main(String[] args) {
         ProductDAO p = new ProductDAO();
-        List<Product> list = p.getMostSoldProducts("Sneaker");
+        List<Integer> list = p.getProductRatings(1);
         System.out.println(list);
     }
 

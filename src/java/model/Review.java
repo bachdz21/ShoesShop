@@ -8,17 +8,22 @@ package model;
  *
  * @author nguye
  */
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Review {
 
     private int reviewId;
     private int productId;
     private int userId;
+    private String userName;
     private Integer rating;
     private String comment;
-    private LocalDateTime reviewDate;
+    private Timestamp reviewDate;
     private boolean isApproved;
+    List<ReviewMedia> reviewMedia = new ArrayList<>();
+    List<ReviewReply> reviewReply = new ArrayList<>();
 
     // Constructors
     public Review() {
@@ -31,11 +36,11 @@ public class Review {
         this.comment = comment;
     }
 
-    public Review(int reviewId, int productId, int userId, Integer rating,
-            String comment, LocalDateTime reviewDate, boolean isApproved) {
+    public Review(int reviewId, int productId, int userId, String userName, Integer rating, String comment, Timestamp reviewDate, boolean isApproved) {
         this.reviewId = reviewId;
         this.productId = productId;
         this.userId = userId;
+        this.userName = userName;
         this.rating = rating;
         this.comment = comment;
         this.reviewDate = reviewDate;
@@ -83,19 +88,51 @@ public class Review {
         this.comment = comment;
     }
 
-    public LocalDateTime getReviewDate() {
+    public Timestamp getReviewDate() {
         return reviewDate;
     }
 
-    public void setReviewDate(LocalDateTime reviewDate) {
+    public void setReviewDate(Timestamp reviewDate) {
         this.reviewDate = reviewDate;
     }
 
-    public boolean isApproved() {
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public boolean isIsApproved() {
         return isApproved;
     }
 
-    public void setApproved(boolean isApproved) {
+    public void setIsApproved(boolean isApproved) {
         this.isApproved = isApproved;
     }
+
+    public List<ReviewMedia> getReviewMedia() {
+        return reviewMedia;
+    }
+
+    public void setReviewMedia(List<ReviewMedia> reviewMedia) {
+        this.reviewMedia = reviewMedia;
+    }
+
+    public List<ReviewReply> getReviewReply() {
+        return reviewReply;
+    }
+
+    public void setReviewReply(List<ReviewReply> reviewReply) {
+        this.reviewReply = reviewReply;
+    }
+
+    @Override
+    public String toString() {
+        return "Review{" + "reviewId=" + reviewId + ", productId=" + productId + ", userId=" + userId + ", userName=" + userName + ", rating=" + rating + ", comment=" + comment + ", reviewDate=" + reviewDate + ", isApproved=" + isApproved + ", reviewMedia=" + reviewMedia + ", reviewReply=" + reviewReply + '}';
+    }
+
+    
+    
 }

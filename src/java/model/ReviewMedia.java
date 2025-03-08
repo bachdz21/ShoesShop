@@ -58,4 +58,11 @@ public class ReviewMedia {
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
     }
+
+    @Override
+    public String toString() {
+        return "ReviewMedia{" + "mediaId=" + mediaId + ", reviewId=" + reviewId + ", mediaUrl=" + mediaUrl + ", mediaType=" + mediaType + '}';
+    }
+    
+    
 }

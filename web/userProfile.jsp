@@ -641,12 +641,15 @@
                                                             <td>${order.shippingAddress}</td>
                                                             <td><a href="orderDetail?id=${order.orderId}">Chi Tiết</a></td>
                                                             <td>
-                                                                <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#reviewModal" data-orderid="${order.orderId}">
+                                                                <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#reviewModal" 
+                                                                        data-orderid="${order.orderId}" 
+                                                                        ${order.orderStatus != 'Delivered' ? 'disabled' : ''}>
                                                                     Đánh Giá
                                                                 </button>
                                                             </td>
                                                         </tr>
                                                     </c:forEach>
+
                                                 </table>
                                             </div>
                                         </div>
