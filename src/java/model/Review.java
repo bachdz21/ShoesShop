@@ -8,53 +8,68 @@ package model;
  *
  * @author nguye
  */
-import java.util.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Review {
 
-    private int reviewID;
-    private int productID;
-    private int userID;
+    private int reviewId;
+    private int productId;
+    private int userId;
+    private String userName;
     private Integer rating;
     private String comment;
-    private Date reviewDate;
+    private Timestamp reviewDate;
     private boolean isApproved;
-    private boolean isVerifiedPurchase;
+    List<ReviewMedia> reviewMedia = new ArrayList<>();
+    List<ReviewReply> reviewReply = new ArrayList<>();
 
-    // Constructor
-    public Review(int reviewID, int productID, int userID, Integer rating, String comment, Date reviewDate, boolean isApproved, boolean isVerifiedPurchase) {
-        this.reviewID = reviewID;
-        this.productID = productID;
-        this.userID = userID;
+    // Constructors
+    public Review() {
+    }
+
+    public Review(int productId, int userId, Integer rating, String comment) {
+        this.productId = productId;
+        this.userId = userId;
+        this.rating = rating;
+        this.comment = comment;
+    }
+
+    public Review(int reviewId, int productId, int userId, String userName, Integer rating, String comment, Timestamp reviewDate, boolean isApproved) {
+        this.reviewId = reviewId;
+        this.productId = productId;
+        this.userId = userId;
+        this.userName = userName;
         this.rating = rating;
         this.comment = comment;
         this.reviewDate = reviewDate;
         this.isApproved = isApproved;
-        this.isVerifiedPurchase = isVerifiedPurchase;
+    }
+    
+    // Getters and Setters
+    public int getReviewId() {
+        return reviewId;
     }
 
-    public int getReviewID() {
-        return reviewID;
+    public void setReviewId(int reviewId) {
+        this.reviewId = reviewId;
     }
 
-    public void setReviewID(int reviewID) {
-        this.reviewID = reviewID;
+    public int getProductId() {
+        return productId;
     }
 
-    public int getProductID() {
-        return productID;
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
-    public void setProductID(int productID) {
-        this.productID = productID;
+    public int getUserId() {
+        return userId;
     }
 
-    public int getUserID() {
-        return userID;
-    }
-
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public Integer getRating() {
@@ -73,12 +88,20 @@ public class Review {
         this.comment = comment;
     }
 
-    public Date getReviewDate() {
+    public Timestamp getReviewDate() {
         return reviewDate;
     }
 
-    public void setReviewDate(Date reviewDate) {
+    public void setReviewDate(Timestamp reviewDate) {
         this.reviewDate = reviewDate;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public boolean isIsApproved() {
@@ -89,19 +112,27 @@ public class Review {
         this.isApproved = isApproved;
     }
 
-    public boolean isIsVerifiedPurchase() {
-        return isVerifiedPurchase;
+    public List<ReviewMedia> getReviewMedia() {
+        return reviewMedia;
     }
 
-    public void setIsVerifiedPurchase(boolean isVerifiedPurchase) {
-        this.isVerifiedPurchase = isVerifiedPurchase;
+    public void setReviewMedia(List<ReviewMedia> reviewMedia) {
+        this.reviewMedia = reviewMedia;
+    }
+
+    public List<ReviewReply> getReviewReply() {
+        return reviewReply;
+    }
+
+    public void setReviewReply(List<ReviewReply> reviewReply) {
+        this.reviewReply = reviewReply;
     }
 
     @Override
     public String toString() {
-        return "Review{" + "reviewID=" + reviewID + ", productID=" + productID + ", userID=" + userID + ", rating=" + rating + ", comment=" + comment + ", reviewDate=" + reviewDate + ", isApproved=" + isApproved + ", isVerifiedPurchase=" + isVerifiedPurchase + '}';
+        return "Review{" + "reviewId=" + reviewId + ", productId=" + productId + ", userId=" + userId + ", userName=" + userName + ", rating=" + rating + ", comment=" + comment + ", reviewDate=" + reviewDate + ", isApproved=" + isApproved + ", reviewMedia=" + reviewMedia + ", reviewReply=" + reviewReply + '}';
     }
 
+    
+    
 }
-
-  
