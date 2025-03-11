@@ -19,16 +19,15 @@ public class Product {
     private String productName;
     private String description;
     private double price;
-    private int stock; 
+    private int stock; // Thêm thuộc tính stock
     private String categoryName;
     private String imageURL;
     private List<String> imageURLDetail;
-    private int sale; 
+    private int sale; // Thêm thuộc tính sale
     private Date createdDate;
     private String brand;
     private double salePrice = price;
     private int quantitySold;
-    private double averageRating;
     // Constructor
 
     public Product() {
@@ -176,11 +175,11 @@ public class Product {
         this.price = price;
     }
 
-    public int getStock() {
+    public int getStock() { // Getter cho stock
         return stock;
     }
 
-    public void setStock(int stock) {
+    public void setStock(int stock) { // Setter cho stock
         this.stock = stock;
     }
 
@@ -200,7 +199,7 @@ public class Product {
         this.imageURL = imageURL;
     }
 
-    public int getSale() { 
+    public int getSale() { // Getter cho sale
         return sale;
     }
 
@@ -248,19 +247,13 @@ public class Product {
         this.quantitySold = quantitySold;
     }
 
-    public double getAverageRating() {
-        return averageRating;
-    }
-
-    public void setAverageRating(double averageRating) {
-        this.averageRating = averageRating;
-    }
-
+    
     @Override
     public String toString() {
-        return "Product{" + "productID=" + productID + ", productName=" + productName + ", description=" + description + ", price=" + price + ", stock=" + stock + ", categoryName=" + categoryName + ", imageURL=" + imageURL + ", imageURLDetail=" + imageURLDetail + ", sale=" + sale + ", createdDate=" + createdDate + ", brand=" + brand + ", salePrice=" + salePrice + ", quantitySold=" + quantitySold + ", averageRating=" + averageRating + '}';
+        return "Product{" + "productID=" + productID + ", productName=" + productName + ", description=" + description
+                + ", price=" + price + ", stock=" + stock + ", categoryName=" + categoryName + ", imageURL=" + imageURL
+                + ", imageURLDetail=" + imageURLDetail + ", sale=" + sale + ", createdDate=" + createdDate + ", brand="
+                + brand + ", salePrice=" + salePrice + '}';
     }
-
-    
 
 }

@@ -2,7 +2,6 @@
 <html lang="vi">
     <head>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -24,7 +23,7 @@
 
         <!-- Font Awesome Icon -->
         <link rel="stylesheet" href="css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
 
@@ -53,62 +52,31 @@
             .product-details .add-to-cart {
                 margin-bottom: 0px;
             }
-
-            .product-img {
-                position: relative; /* Đặt vị trí tương đối để .product-label định vị tuyệt đối bên trong */
-                display: block;
-            }
-
-            .product-label {
-                position: absolute;
-                top: 10px; /* Khoảng cách từ đỉnh */
-                right: 10px; /* Khoảng cách từ bên phải */
-                text-align: center;
-            }
-
-            .product-label .sale {
-                background-color: #ff0000; /* Màu nền đỏ cho nổi bật - tùy chỉnh nếu cần */
-                color: #fff; /* Màu chữ trắng */
-                padding: 5px 10px; /* Khoảng đệm */
-                border-radius: 3px; /* Bo góc */
-                font-size: 12px; /* Kích thước chữ */
-            }
-
-            .shop-reply {
-                margin-top: 15px;
-                padding-left: 20px;
-                border-left: 2px solid #ddd;
-            }
-
-            .shop-reply-title {
-                font-size: 14px;
-                font-weight: bold;
-                color: #555;
-            }
-
-            .review-media {
-                display: flex; /* Sử dụng flexbox để sắp xếp ngang */
-                gap: 10px; /* Khoảng cách giữa các phần tử */
-                margin-top: 10px;
-            }
-
-            .reviews-pagination li {
-                display: inline-block;
-            }
-
-            .reviews-pagination li a {
-                text-decoration: none;
-                color: #000;
-            }
-
-            .reviews-pagination li.active a {
-                color: #fff;
-            }
         </style>
     </head>
+    <%@page import="model.User"%>
+    <%@page import="model.CartItem"%>
+    <%@ page import="java.util.List" %>
+    <%@page import="jakarta.servlet.http.HttpSession"%>
+    <%
+        // Sử dụng biến session từ request mà không cần khai báo lại
+        User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
+    %>
+    <% 
+    // Lấy danh sách sản phẩm trong giỏ hàng từ session
+    List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
+    int totalQuantity = 0;
+    double subtotal = 0.0;
+    if (cartItems != null) {
+        for (CartItem item : cartItems) {
+            totalQuantity += item.getQuantity();
+            subtotal += item.getProduct().getPrice() * item.getQuantity();
+        }
+    }
+    %>
     <body>
         <!-- HEADER -->
-        <jsp:include page="header.jsp"/>
+        <jsp:include page="header.jsp" />
         <!-- /HEADER -->
 
         <!-- NAVIGATION -->
@@ -119,8 +87,13 @@
                 <div id="responsive-nav">
                     <!-- NAV -->
                     <ul class="main-nav nav navbar-nav">
-                        <li><a href="./home">Trang Chủ</a></li>
-                        <li class="active"><a href="./product">Danh Mục</a></li>
+                        <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
+                        <li class="active"><a href="/ProjectPRJ301/product">Danh Mục</a></li>
+                        <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
+                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
+                            </c:if>
 
                     </ul>
                     <!-- /NAV -->
@@ -333,264 +306,333 @@
                                     <div class="col-md-3">
                                         <div id="rating">
                                             <div class="rating-avg">
-                                                <!-- Hiển thị rating trung bình (ở đây là ví dụ 4.5, bạn cần thay thế bằng giá trị thực tế từ backend) -->
-                                                <span>${product.averageRating}</span> <!-- averageRating sẽ là giá trị trung bình bạn tính từ backend -->
+                                                <span>4.5</span>
                                                 <div class="rating-stars">
-                                                    <!-- Tạo sao dựa trên giá trị trung bình (4.5 sẽ có 4 sao đầy và 1 sao rỗng) -->
-                                                    <c:forEach var="i" begin="1" end="${product.averageRating}">
-                                                        <i class="fa fa-star"></i>
-                                                    </c:forEach>
-                                                    <c:forEach var="i" begin="${product.averageRating + 1}" end="5">
-                                                        <i class="fa fa-star-o"></i>
-                                                    </c:forEach>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star-o"></i>
                                                 </div>
                                             </div>
                                             <ul class="rating">
-                                                <c:forEach var="level" items="${ratingLevels}" varStatus="loop">
-                                                    <li>
-                                                        <div class="rating-stars">
-                                                            <c:forEach var="i" begin="1" end="${level}">
-                                                                <i class="fa fa-star"></i>
-                                                            </c:forEach>
-                                                            <c:forEach var="i" begin="${level + 1}" end="5">
-                                                                <i class="fa fa-star-o"></i>
-                                                            </c:forEach>
-                                                        </div>
-                                                        <div class="rating-progress">
-                                                            <c:set var="ratingCount" value="${ratings[loop.index]}" />
-                                                            <c:set var="progressWidth" value="${totalReviews > 0 ? (ratingCount / totalReviews) * 100 : 0}" />
-                                                            <div style="width: ${progressWidth}%; max-width: 100%"></div>
-                                                        </div>
-                                                        <span class="sum">${ratingCount}</span> <!-- Hiển thị số lượng rating -->
-                                                    </li>
-                                                </c:forEach>
+                                                <li>
+                                                    <div class="rating-stars">
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                    </div>
+                                                    <div class="rating-progress">
+                                                        <div style="width: 80%;"></div>
+                                                    </div>
+                                                    <span class="sum">3</span>
+                                                </li>
+                                                <li>
+                                                    <div class="rating-stars">
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                    </div>
+                                                    <div class="rating-progress">
+                                                        <div style="width: 60%;"></div>
+                                                    </div>
+                                                    <span class="sum">2</span>
+                                                </li>
+                                                <li>
+                                                    <div class="rating-stars">
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                    </div>
+                                                    <div class="rating-progress">
+                                                        <div></div>
+                                                    </div>
+                                                    <span class="sum">0</span>
+                                                </li>
+                                                <li>
+                                                    <div class="rating-stars">
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                    </div>
+                                                    <div class="rating-progress">
+                                                        <div></div>
+                                                    </div>
+                                                    <span class="sum">0</span>
+                                                </li>
+                                                <li>
+                                                    <div class="rating-stars">
+                                                        <i class="fa fa-star"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                        <i class="fa fa-star-o"></i>
+                                                    </div>
+                                                    <div class="rating-progress">
+                                                        <div></div>
+                                                    </div>
+                                                    <span class="sum">0</span>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
                                     <!-- /Rating -->
 
                                     <!-- Reviews -->
-                                    <div class="col-md-9">
+                                    <div class="col-md-6">
                                         <div id="reviews">
-
                                             <ul class="reviews">
-                                                <!-- Duyệt qua các đánh giá -->
-                                                <c:forEach var="review" items="${reviews}">
-                                                    <li>
-                                                        <div class="review-heading">
-                                                            <h5 class="name">${review.userName}</h5>
-                                                            <p class="date">
-                                                                <fmt:formatDate value="${review.reviewDate}" pattern="dd/MM/yyyy HH:mm" />
-                                                            </p>
-                                                            <div class="review-rating">
-                                                                <c:forEach var="i" begin="1" end="${review.rating}">
-                                                                    <i class="fa fa-star"></i>
-                                                                </c:forEach>
-                                                                <c:forEach var="i" begin="${review.rating + 1}" end="5">
-                                                                    <i class="fa fa-star-o empty"></i>
-                                                                </c:forEach>
-                                                            </div>
+                                                <li>
+                                                    <div class="review-heading">
+                                                        <h5 class="name">John</h5>
+                                                        <p class="date">27 DEC 2018, 8:0 PM</p>
+                                                        <div class="review-rating">
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star-o empty"></i>
                                                         </div>
-                                                        <div class="review-body" style="min-height: unset">
-                                                            <p>${review.comment}</p>
+                                                    </div>
+                                                    <div class="review-body">
+                                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="review-heading">
+                                                        <h5 class="name">John</h5>
+                                                        <p class="date">27 DEC 2018, 8:0 PM</p>
+                                                        <div class="review-rating">
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star-o empty"></i>
                                                         </div>
-
-                                                        <!-- Hiển thị ảnh/video -->
-                                                        <div class="review-media">
-                                                            <!-- Ví dụ ảnh -->
-                                                            <c:forEach var="media" items="${review.reviewMedia}">
-                                                                <c:choose>
-                                                                    <c:when test="${media.mediaType == 'image'}">
-                                                                        <!-- Lightbox -->
-                                                                        <a href="${media.mediaUrl}" data-lightbox="review-image" data-title="${review.userName}">
-                                                                            <img src="${media.mediaUrl}" alt="Review Image" class="review-image" style="max-width: 200px; height: auto;" />
-                                                                        </a>
-                                                                    </c:when>
-                                                                    <c:when test="${media.mediaType == 'video'}">
-                                                                        <video controls class="review-video" style="max-width: 200px; height: auto;">
-                                                                            <source src="${media.mediaUrl}" type="video/mp4">
-                                                                            Your browser does not support the video tag.
-                                                                        </video>
-                                                                    </c:when>
-                                                                </c:choose>
-                                                            </c:forEach>
+                                                    </div>
+                                                    <div class="review-body">
+                                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="review-heading">
+                                                        <h5 class="name">John</h5>
+                                                        <p class="date">27 DEC 2018, 8:0 PM</p>
+                                                        <div class="review-rating">
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star"></i>
+                                                            <i class="fa fa-star-o empty"></i>
                                                         </div>
-
-                                                        <!-- Hiển thị Shop Reply -->
-                                                        <div class="shop-reply">
-                                                            <c:forEach var="reply" items="${review.reviewReply}">
-                                                                <h6 class="shop-reply-title">Shop Reply</h6>
-                                                                <p class="shop-reply-text">${reply.replyText}</p>
-                                                                <p class="shop-reply-date">
-                                                                    <fmt:formatDate value="${reply.replyDate}" pattern="dd/MM/yyyy HH:mm" />
-                                                                </p>
-                                                            </c:forEach>
-                                                        </div>
-                                                    </li>
-                                                    <hr>
-                                                </c:forEach>
+                                                    </div>
+                                                    <div class="review-body">
+                                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+                                                    </div>
+                                                </li>
                                             </ul>
-
-                                            <!-- Pagination -->
                                             <ul class="reviews-pagination">
-                                                <c:if test="${currentPage > 1}">
-                                                    <li>
-                                                        <a href="productDetail?id=${product.productID}&page=${currentPage - 1}">
-                                                            <i class="fa fa-angle-left"></i>
-                                                        </a>
-                                                    </li>
-                                                </c:if>
-
-                                                <c:forEach var="i" begin="1" end="${totalPages}">
-                                                    <li class="${i == currentPage ? 'active' : ''}">
-                                                        <a href="productDetail?id=${product.productID}&page=${i}">${i}</a>
-                                                    </li>
-                                                </c:forEach>
-
-                                                <c:if test="${currentPage < totalPages}">
-                                                    <li>
-                                                        <a href="productDetail?id=${product.productID}&page=${currentPage + 1}">
-                                                            <i class="fa fa-angle-right"></i>
-                                                        </a>
-                                                    </li>
-                                                </c:if>
+                                                <li class="active">1</li>
+                                                <li><a href="#">2</a></li>
+                                                <li><a href="#">3</a></li>
+                                                <li><a href="#">4</a></li>
+                                                <li><a href="#"><i class="fa fa-angle-right"></i></a></li>
                                             </ul>
-
-                                            <!-- /Reviews -->
-
-
                                         </div>
                                     </div>
-                                    <!-- /tab3  -->
-                                </div>
-                                <!-- /product tab content  -->
-                            </div>
-                        </div>
-                        <!-- /product tab -->
-                    </div>
-                    <!-- /row -->
-                </div>
-                <!-- /container -->
-            </div>
-            <!-- /SECTION -->
+                                    <!-- /Reviews -->
 
-            <!-- Section -->
-            <div class="section">
-                <!-- container -->
-                <div class="container">
-                    <!-- row -->
-                    <div class="row">
-
-                        <div class="col-md-12">
-                            <div class="section-title text-center">
-                                <h3 class="title">Related Products</h3>
-                            </div>
-                        </div>
-
-                        <!-- Product Relative -->
-                        <c:forEach var="pr" items="${requestScope.productRelative}">
-                            <div class="col-md-3 col-xs-6">
-                                <div class="product">
-                                    <a href="productDetail?id=${pr.productID}&category=${pr.categoryName}" class="product-img">
-                                        <img src="${pr.imageURL}" alt="">
-                                        <c:choose>
-                                            <c:when test="${pr.salePrice > 0}">
-                                                <div class="product-label">
-                                                    <span class="sale">-${pr.sale}%</span>
+                                    <!-- Review Form -->
+                                    <div class="col-md-3">
+                                        <div id="review-form">
+                                            <form class="review-form">
+                                                <input class="input" type="text" placeholder="Your Name">
+                                                <input class="input" type="email" placeholder="Your Email">
+                                                <textarea class="input" placeholder="Your Review"></textarea>
+                                                <div class="input-rating">
+                                                    <span>Your Rating: </span>
+                                                    <div class="stars">
+                                                        <input id="star5" name="rating" value="5" type="radio"><label for="star5"></label>
+                                                        <input id="star4" name="rating" value="4" type="radio"><label for="star4"></label>
+                                                        <input id="star3" name="rating" value="3" type="radio"><label for="star3"></label>
+                                                        <input id="star2" name="rating" value="2" type="radio"><label for="star2"></label>
+                                                        <input id="star1" name="rating" value="1" type="radio"><label for="star1"></label>
+                                                    </div>
                                                 </div>
-                                            </c:when>
-                                        </c:choose>
-                                    </a>
-
-                                    <div class="product-body">
-                                        <p class="product-category">${pr.categoryName}</p>
-                                        <h3 class="product-name"><a href="productDetail?id=${pr.productID}&category=${pr.categoryName}">${pr.productName}</a></h3>
-                                            <c:choose>
-                                                <c:when test="${pr.salePrice > 0}">
-                                                <h4 class="product-price">${pr.salePrice} <del class="product-old-price">${pr.price}</del></h4>
-                                                </c:when>
-                                                <c:otherwise>
-                                                <h4 class="product-price">${pr.price}</h4>
-                                            </c:otherwise>
-                                        </c:choose>
-                                        <div class="product-rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <!-- Kiểm tra nếu sản phẩm đã có trong wishlist -->
-                                        <c:set var="isInWishlist" value="false" />
-                                        <c:forEach var="item" items="${sessionScope.wishlist}">
-                                            <c:if test="${item.product.productID == i.productID}">
-                                                <c:set var="isInWishlist" value="true" />
-                                            </c:if>
-                                        </c:forEach>
-
-                                        <form action="addWishlist" method="GET" style="display: inline-block">
-                                            <input type="hidden" name="productID" value="${i.productID}">
-                                            <div class="product-btns">
-                                                <!-- Hiển thị icon trái tim đỏ nếu đã có trong wishlist, nếu không thì hiển thị trái tim trắng -->
-                                                <button class="add-to-wishlist">
-                                                    <i class="${isInWishlist ? 'fa fa-heart text-danger' : 'far fa-heart'}"></i>
-                                                    <span class="tooltipp">${isInWishlist ? 'Đã có trong wishlist' : 'Thêm vào wishlist'}</span>
-                                                </button>
-                                            </div>
-                                        </form>
-
-                                        <div class="product-btns" style="display: inline-block">
-                                            <button class="quick-view"><i class="fa-regular fa-eye"></i><span class="tooltipp">quick view</span></button>
+                                                <button class="primary-btn">Submit</button>
+                                            </form>
                                         </div>
                                     </div>
-
-                                    <form action="addCartQuick" method="GET">
-                                        <div class="add-to-cart">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <input type="hidden" name="productID" value="${pr.productID}">
-                                            <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
-                                        </div>
-                                    </form>
+                                    <!-- /Review Form -->
                                 </div>
                             </div>
-                        </c:forEach>
-
+                            <!-- /tab3  -->
+                        </div>
+                        <!-- /product tab content  -->
                     </div>
-                    <!-- Product Relative -->
-
                 </div>
-                <!-- /row -->
+                <!-- /product tab -->
             </div>
-            <!-- /container -->
+            <!-- /row -->
         </div>
-        <!-- /Section -->
+        <!-- /container -->
+    </div>
+    <!-- /SECTION -->
 
-        <!-- NEWSLETTER -->
-        <div id="newsletter" class="section">
+    <!-- Section -->
+    <div class="section">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="section-title text-center">
+                        <h3 class="title">Related Products</h3>
+                    </div>
+                </div>
+                <!-- product -->
+                <div class="col-md-3 col-xs-6" style="display: flex">
+                    <c:forEach var="pr" items="${requestScope.productRelative}">
+                        <div class="product" style="padding: 30px">
+                            <a href="productDetail?id=${pr.productID}&category=${pr.categoryName}" class="product-img">
+                                <img src="${pr.imageURL}" alt="">
+                                <c:choose>
+                                    <c:when test="${pr.salePrice > 0}">
+                                        <div class="product-label">
+                                            <span class="sale">-${pr.sale}%</span>
+                                            <span class="new">NEW</span>
+                                        </div>
+                                    </c:when>
+                                </c:choose>
+                            </a>
+                            <div class="product-body">
+                                <p class="product-category">${pr.categoryName}</p>
+                                <h3 class="product-name"><a href="productDetail?id=${pr.productID}&category=${pr.categoryName}">${pr.productName}</a></h3>
+                                    <c:choose>
+                                        <c:when test="${pr.salePrice > 0}">
+                                        <h4 class="product-price">${pr.salePrice} <del class="product-old-price">${pr.price}</del></h4>
+                                        </c:when>
+                                        <c:otherwise>
+                                        <h4 class="product-price">${pr.price}</h4>
+                                    </c:otherwise>
+                                </c:choose>
+                                <div class="product-rating">
+                                </div>
+                            </div>
+
+                        </div>
+                    </c:forEach>
+                </div>
+               
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /Section -->
+
+    <!-- NEWSLETTER -->
+    <div id="newsletter" class="section">
+        <!-- container -->
+        <div class="container">
+            <!-- row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="newsletter">
+                        <p>Sign Up for the <strong>NEWSLETTER</strong></p>
+                        <form>
+                            <input class="input" type="email" placeholder="Enter Your Email">
+                            <button class="newsletter-btn"><i class="fa fa-envelope"></i> Subscribe</button>
+                        </form>
+                        <ul class="newsletter-follow">
+                            <li>
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="fa fa-instagram"></i></a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="fa fa-pinterest"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /NEWSLETTER -->
+
+    <!-- FOOTER -->
+    <footer id="footer">
+        <!-- top footer -->
+        <div class="section">
             <!-- container -->
             <div class="container">
                 <!-- row -->
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="newsletter">
-                            <p>Sign Up for the <strong>NEWSLETTER</strong></p>
-                            <form>
-                                <input class="input" type="email" placeholder="Enter Your Email">
-                                <button class="newsletter-btn"><i class="fa fa-envelope"></i> Subscribe</button>
-                            </form>
-                            <ul class="newsletter-follow">
-                                <li>
-                                    <a href="#"><i class="fa fa-facebook"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#"><i class="fa fa-twitter"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#"><i class="fa fa-instagram"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#"><i class="fa fa-pinterest"></i></a>
-                                </li>
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">About Us</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
+                            <ul class="footer-links">
+                                <li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
+                                <li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
+                                <li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">Categories</h3>
+                            <ul class="footer-links">
+                                <li><a href="#">Hot deals</a></li>
+                                <li><a href="#">Laptops</a></li>
+                                <li><a href="#">Smartphones</a></li>
+                                <li><a href="#">Cameras</a></li>
+                                <li><a href="#">Accessories</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="clearfix visible-xs"></div>
+
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">Information</h3>
+                            <ul class="footer-links">
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Orders and Returns</a></li>
+                                <li><a href="#">Terms & Conditions</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-xs-6">
+                        <div class="footer">
+                            <h3 class="footer-title">Service</h3>
+                            <ul class="footer-links">
+                                <li><a href="#">My Account</a></li>
+                                <li><a href="#">View Cart</a></li>
+                                <li><a href="#">Wishlist</a></li>
+                                <li><a href="#">Track My Order</a></li>
+                                <li><a href="#">Help</a></li>
                             </ul>
                         </div>
                     </div>
@@ -599,20 +641,45 @@
             </div>
             <!-- /container -->
         </div>
-        <!-- /NEWSLETTER -->
+        <!-- /top footer -->
 
-        <!-- FOOTER -->
-        <jsp:include page="footer.jsp" />
-        <!-- /FOOTER -->
+        <!-- bottom footer -->
+        <div id="bottom-footer" class="section">
+            <div class="container">
+                <!-- row -->
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <ul class="footer-payments">
+                            <li><a href="#"><i class="fa fa-cc-visa"></i></a></li>
+                            <li><a href="#"><i class="fa fa-credit-card"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-paypal"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-mastercard"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-discover"></i></a></li>
+                            <li><a href="#"><i class="fa fa-cc-amex"></i></a></li>
+                        </ul>
+                        <span class="copyright">
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        </span>
+                    </div>
+                </div>
+                <!-- /row -->
+            </div>
+            <!-- /container -->
+        </div>
+        <!-- /bottom footer -->
+    </footer>
+    <!-- /FOOTER -->
 
-        <!-- jQuery Plugins -->
+    <!-- jQuery Plugins -->
 
-        <script src="js/jquery.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
-        <script src="js/slick.min.js"></script>
-        <script src="js/nouislider.min.js"></script>
-        <script src="js/jquery.zoom.min.js"></script>
-        <script src="js/main.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/slick.min.js"></script>
+    <script src="js/nouislider.min.js"></script>
+    <script src="js/jquery.zoom.min.js"></script>
+    <script src="js/main.js"></script>
 
-    </body>
+</body>
 </html>

@@ -115,7 +115,7 @@
     <a href="trashCart" class="product-add-link">Sản Phẩm Đã Xoá</a>
     <!-- CART -->
     <div class="container shopee-fake">
-        <form action="getCartItemUpdateQuantity" method="POST">
+        <form action="getOrderItem" method="POST">
             <main class="GO0LDV" style="margin-bottom: 0px;">
                 <h2 class="a11y-hidden">Product List Section</h2>
                 <div class="Za1N64">

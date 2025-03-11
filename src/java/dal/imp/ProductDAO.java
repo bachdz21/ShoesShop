@@ -57,11 +57,13 @@ public class ProductDAO extends DBConnect implements IProductDAO {
             e.printStackTrace();
         }
         return products;
+
     }
 
     @Override
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
+     
         try {
             String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.CreatedDate\n"
                     + "FROM Products p\n"
@@ -77,14 +79,15 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setPrice(rs.getDouble("Price"));
                 product.setStock(rs.getInt("Stock"));
                 product.setImageURL(rs.getString("ImageURL"));
-                product.setCategoryName(rs.getString("CategoryName"));
+                product.setCategoryName(rs.getString("CategoryName")); 
                 product.setBrand(rs.getString("brand"));
                 product.setSale(rs.getInt("Sale"));
                 product.setCreatedDate(rs.getDate("CreatedDate"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
-                    product.setSalePrice(Math.round(salePrice * 100.0) / 100.0);
+                    product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); 
                 }
+               
                 products.add(product);
             }
         } catch (SQLException e) {
@@ -374,25 +377,67 @@ public class ProductDAO extends DBConnect implements IProductDAO {
             e.printStackTrace();
         }
     }
-
-    @Override
     public int getTotalProductSold(int productID) {
-        int totalSold = 0;
-        try {
-            String query = "SELECT COALESCE(SUM(Quantity), 0) AS TotalSold FROM OrderDetails WHERE ProductID = ?";
-            PreparedStatement ps = c.prepareStatement(query);
-            ps.setInt(1, productID);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                totalSold = rs.getInt("TotalSold");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    int totalSold = 0;
+    try {
+        String query = "SELECT COALESCE(SUM(Quantity), 0) AS TotalSold FROM OrderDetails WHERE ProductID = ?";
+        PreparedStatement ps = c.prepareStatement(query);
+        ps.setInt(1, productID);
+        ResultSet rs = ps.executeQuery();
+        
+        if (rs.next()) {
+            totalSold = rs.getInt("TotalSold");
         }
-        return totalSold;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
-
+    return totalSold;
+}
+//    // Phương thức chuyển sản phẩm vào thùng rác
+//    @Override
+//    public void deleteProduct(int productId) {
+//
+//        // Chuyển sản phẩm vào thùng rác
+//        String query = "INSERT INTO DeletedProducts (ProductID, ProductName, Description, Price, Stock, CategoryID, "
+//                + "ImageURL, CreatedDate, Sale, Brand) "
+//                + "SELECT ProductID, ProductName, Description, Price, Stock, CategoryID, ImageURL, CreatedDate, "
+//                + "Sale, Brand FROM Products WHERE ProductID = ?";
+//
+//        // Xóa sản phẩm khỏi bảng Products
+//        String deleteQuery = "DELETE FROM Products WHERE ProductID = ?";
+//
+//        try {
+//            PreparedStatement ps = c.prepareStatement(query);
+//            PreparedStatement deletePs = c.prepareStatement(deleteQuery);
+//
+//            ps.setInt(1, productId);
+//            ps.executeUpdate();
+//
+//            deletePs.setInt(1, productId);
+//            deletePs.executeUpdate();
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // Chuyển hình ảnh vào thùng rác
+//        String queryImgTrash = "INSERT INTO DeletedProductImages (ProductID, ImageURL, DeletedDate) "
+//                + "SELECT ProductID, ImageURL, GETDATE() FROM ProductImages WHERE ProductID = ?";
+//        String deleteImgQuery = "DELETE FROM ProductImages WHERE ProductID = ?";
+//
+//        try {
+//            PreparedStatement psInsertImgTrash = c.prepareStatement(queryImgTrash);
+//            psInsertImgTrash.setInt(1, productId);
+//            psInsertImgTrash.executeUpdate();
+//
+//            PreparedStatement psDeleteImg = c.prepareStatement(deleteImgQuery);
+//            psDeleteImg.setInt(1, productId);
+//            psDeleteImg.executeUpdate();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
+    // Phương thức chuyển sản phẩm vào thùng rác
     @Override
     public void deleteProduct(int productId) {
         String query = "INSERT INTO DeletedProducts (ProductID, ProductName, Description, Price, Stock, CategoryID, "
@@ -566,7 +611,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     @Override
     public Product getProductById(int id) {
         Product product = null;
-        String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.Brand, p.Sale, p.CreatedDate, p.AverageRating "
+        String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.Brand, p.Sale, p.CreatedDate "
                 + "FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE p.ProductID = ?";
         try {
             PreparedStatement ps = c.prepareStatement(query);
@@ -584,7 +629,6 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setBrand(rs.getString("Brand"));
                 product.setSale(rs.getInt("Sale"));
                 product.setCreatedDate(rs.getDate("CreatedDate")); // Sử dụng Date cho createdDate
-                product.setAverageRating(rs.getDouble("AverageRating"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
                     product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Làm tròn đến 2 chữ số thập phân
@@ -600,44 +644,6 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     }
     // Phương thức để lấy hình ảnh của sản phẩm theo ID
 
-    @Override
-    public List<Integer> getProductRatings(int productID) {
-        List<Integer> ratingsCount = new ArrayList<>();
-        
-        // SQL để đếm số lượng đánh giá cho từng rating (1, 2, 3, 4, 5)
-        String sql = "SELECT "
-                   + "SUM(CASE WHEN Rating = 1 THEN 1 ELSE 0 END) AS Rating1Count, "
-                   + "SUM(CASE WHEN Rating = 2 THEN 1 ELSE 0 END) AS Rating2Count, "
-                   + "SUM(CASE WHEN Rating = 3 THEN 1 ELSE 0 END) AS Rating3Count, "
-                   + "SUM(CASE WHEN Rating = 4 THEN 1 ELSE 0 END) AS Rating4Count, "
-                   + "SUM(CASE WHEN Rating = 5 THEN 1 ELSE 0 END) AS Rating5Count "
-                   + "FROM [ProjectSWP].[dbo].[Reviews] "
-                   + "WHERE ProductID = ? "
-                   + "GROUP BY ProductID";
-        
-        try (PreparedStatement stmt = c.prepareStatement(sql)) {
-            
-            // Set parameter for the SQL query
-            stmt.setInt(1, productID);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    // Add each rating count to the list
-                    ratingsCount.add(rs.getInt("Rating1Count"));
-                    ratingsCount.add(rs.getInt("Rating2Count"));
-                    ratingsCount.add(rs.getInt("Rating3Count"));
-                    ratingsCount.add(rs.getInt("Rating4Count"));
-                    ratingsCount.add(rs.getInt("Rating5Count"));
-                }
-            }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        return ratingsCount;
-    }
-    
     private List<String> getProductImagesById(int productId) {
         List<String> imageUrls = new ArrayList<>();
         String query = "SELECT ImageURL FROM ProductImages WHERE ProductID = ?";
@@ -671,11 +677,10 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         return categoryId;
     }
 
-    @Override
     public List<Product> getRelativeProducts(String category) {
         List<Product> products = new ArrayList<>();
         try {
-            String query = "SELECT TOP(4) p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale\n"
+            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale\n"
                     + "FROM Products p\n"
                     + "INNER JOIN Categories c ON p.CategoryID = c.CategoryID\n"
                     + "WHERE c.CategoryName = ?";
@@ -704,56 +709,33 @@ public class ProductDAO extends DBConnect implements IProductDAO {
             e.printStackTrace();
         }
         return products;
-    }
 
-    @Override
-    public List<Product> getMostSoldProducts(String categoryName) {
-        List<Product> products = new ArrayList<>();
-        try {
-            String query = "SELECT TOP(6)\n"
-                    + "    c.CategoryID,\n"
-                    + "    c.CategoryName,\n"
-                    + "    p.ProductID,\n"
-                    + "    p.ProductName,\n"
-                    + "	p.Price, p.Description, p.Price, p.Stock, p.ImageURL, p.brand, p.Sale,\n"
-                    + "    COALESCE(SUM(od.Quantity), 0) AS TotalSold\n"
-                    + "FROM Products p\n"
-                    + "LEFT JOIN Categories c ON p.CategoryID = c.CategoryID\n"
-                    + "LEFT JOIN OrderDetails od ON p.ProductID = od.ProductID\n"
-                    + "WHERE c.CategoryName = ?\n"
-                    + "GROUP BY c.CategoryID, c.CategoryName, p.ProductID, p.ProductName, p.Price, p.Description, p.Price, p.Stock, p.ImageURL, p.brand, p.Sale\n"
-                    + "ORDER BY c.CategoryID, TotalSold DESC;";
-            PreparedStatement ps = c.prepareStatement(query);
-            ps.setString(1, categoryName);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Product product = new Product();
-                product.setProductID(rs.getInt("ProductID"));
-                product.setProductName(rs.getString("ProductName"));
-                product.setDescription(rs.getString("Description"));
-                product.setPrice(rs.getDouble("Price"));
-                product.setStock(rs.getInt("Stock"));
-                product.setImageURL(rs.getString("ImageURL"));
-                product.setCategoryName(rs.getString("CategoryName")); // Kiểm tra cột này
-                product.setBrand(rs.getString("brand"));
-                product.setSale(rs.getInt("Sale"));
-                if (product.getSale() > 0) {
-                    double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
-                    product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Làm tròn đến 2 chữ số thập phân
-                }
-                products.add(product);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return products;
     }
 
     public static void main(String[] args) {
-        ProductDAO p = new ProductDAO();
-        List<Integer> list = p.getProductRatings(1);
-        System.out.println(list);
+        ProductDAO u = new ProductDAO();
+//        String[] category = {"Laptop"};
+//        String[] brand = {""};
+
+//        System.out.println("Product:");
+//        List<String> imageURLDetail = Arrays.asList("Apple.png", "Banana.png", "Cherry.png");
+//        Product product = new Product("abcd", "efgh", 1000, 10, "Laptop", "mainImg", imageURLDetail, 20, "DELL");
+//        u.addProduct(product);
+//        Product product1 = u.getProductById(38);
+//        System.out.println(product1.toString());
+//        for (String string : product1.getImageURLDetail()) {
+//            System.out.println(string);
+//        }
+//        u.deleteProduct(74);
+//        u.restoreProduct(74);
+//        List<String> imageURLDetail = Arrays.asList("./img/produc02.png", "./img/produc03.png", "./img/produc04.png");
+//        Product product = new Product(98, "abcd", "efgh", 1000, 10, "Laptop", "./img/produc01.png", imageURLDetail, 20, "DELL");
+//        u.updateProduct(product);
+        List<Product> relative = u.getRelativeProducts("Laptop");
+        for (Product product : relative) {
+            System.out.println(product.toString());
+
+        }
     }
 
 }

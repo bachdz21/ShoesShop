@@ -6,7 +6,6 @@ import dal.IProductDAO;
 import dal.IUserDAO;
 import dal.imp.CategoryDAO;
 import dal.imp.ProductDAO;
-import dal.imp.ReviewDAO;
 import dal.imp.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,20 +16,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
+import model.Category;
 import model.Product;
 import model.User;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpSession;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import model.Review;
+
 
 @WebServlet(name = "ProductController", urlPatterns = {"/product", "/home", "/search", "/list", "/add", "/edit", "/update",
     "/deleteProduct", "/trash", "/restore", "/deleteTrash", "/productDetail", "/deleteMultipleProducts", "/productAction", "/sortProduct"})
@@ -44,7 +43,7 @@ public class ProductController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (request.getServletPath().equals("/home")) {
-            getHomeProducts(request, response);
+            getSaleProducts(request, response);
         } else if (request.getServletPath().equals("/product")) {
             getFilteredSortedPagedProducts(request, response);
         } else if (request.getServletPath().equals("/search")) {
@@ -77,16 +76,10 @@ public class ProductController extends HttpServlet {
 
     }
 
-    protected void getHomeProducts(HttpServletRequest request, HttpServletResponse response)
+    protected void getSaleProducts(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<Product> listSale = productDAO.getSaleProducts();
-        List<Product> listMostSoldSneakers = productDAO.getMostSoldProducts("Sneaker");
-        List<Product> listMostSoldBoots = productDAO.getMostSoldProducts("Boot");
-        List<Product> listMostSoldSandals = productDAO.getMostSoldProducts("Sandal");
         request.setAttribute("listSaleProducts", listSale);
-        request.setAttribute("listMostSoldSneakers", listMostSoldSneakers);
-        request.setAttribute("listMostSoldBoots", listMostSoldBoots);
-        request.setAttribute("listMostSoldSandals", listMostSoldSandals);
         request.getRequestDispatcher("home.jsp").forward(request, response);
     }
 
@@ -197,7 +190,7 @@ public class ProductController extends HttpServlet {
                 String fileName = UUID.randomUUID().toString() + ".jpg"; // Tên tệp hình ảnh duy nhất
                 File imageFile = new File(IMAGE_UPLOAD_DIR, fileName);
                 filePart.write(imageFile.getAbsolutePath());
-                String imageUrl = "/img/" + fileName;
+                String imageUrl = "/ShoesStoreWeb/img/" + fileName;
 
                 // Thêm vào danh sách ảnh
                 imageUrls.add(imageUrl);
@@ -219,7 +212,7 @@ public class ProductController extends HttpServlet {
         newProduct.setSale(sale);
         newProduct.setBrand(brand);
         productDAO.addProduct(newProduct);
-        response.sendRedirect("./list");
+        response.sendRedirect("/ShoesStoreWeb/list");
     }
 
     protected void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -308,22 +301,18 @@ public class ProductController extends HttpServlet {
     private void deleteImages(Product product) {
         // Xóa ảnh chính nếu tồn tại
         if (product.getImageURL() != null) {
-            Path mainImagePath = Paths.get(IMAGE_UPLOAD_DIR, product.getImageURL().substring(6)); // Bỏ phần "./img/" trong đường dẫn
-            try {
-                Files.deleteIfExists(mainImagePath);
-            } catch (IOException e) {
-                e.printStackTrace(); // Hoặc log lỗi phù hợp
+            File mainImageFile = new File(IMAGE_UPLOAD_DIR, product.getImageURL().substring(6)); // Bỏ phần "./img/" trong đường dẫn
+            if (mainImageFile.exists()) {
+                mainImageFile.delete();
             }
         }
 
         // Xóa ảnh chi tiết nếu có
         if (product.getImageURLDetail() != null) {
             for (String detailImageUrl : product.getImageURLDetail()) {
-                Path detailImagePath = Paths.get(IMAGE_UPLOAD_DIR, detailImageUrl.substring(6)); // Bỏ phần "./img/" trong đường dẫn
-                try {
-                    Files.deleteIfExists(detailImagePath); // Xóa file nếu tồn tại
-                } catch (IOException e) {
-                    System.err.println("Không thể xóa file: " + detailImagePath + " - " + e.getMessage());
+                File detailImageFile = new File(IMAGE_UPLOAD_DIR, detailImageUrl.substring(6)); // Bỏ phần "./img/" trong đường dẫn
+                if (detailImageFile.exists()) {
+                    detailImageFile.delete();
                 }
             }
         }
@@ -398,47 +387,10 @@ public class ProductController extends HttpServlet {
             throws ServletException, IOException {
         int productId = Integer.parseInt(request.getParameter("id"));
         Product product = productDAO.getProductById(productId);
-        int totalSold = productDAO.getTotalProductSold(productId);
         String category = request.getParameter("category");
         List<Product> productRelative = productDAO.getRelativeProducts(category);
-        List<Review> reviews = reviewDAO.getReviewsByProductID(productId);
-        List<Integer> ratings = productDAO.getProductRatings(productId);
-        List<Integer> ratingLevels = Arrays.asList(5, 4, 3, 2, 1);
-        int totalRating = reviews.stream().mapToInt(Review::getRating).sum();
-        Collections.reverse(ratings);
-
-        // Lấy số trang hiện tại từ request, mặc định là trang 1
-        int page = 1;
-        int pageSize = 5; // Số lượng review mỗi trang
-
-        if (request.getParameter("page") != null) {
-            try {
-                page = Integer.parseInt(request.getParameter("page"));
-            } catch (NumberFormatException e) {
-                page = 1; // Nếu có lỗi, quay về trang 1
-            }
-        }
-
-        // Tính số trang tổng cộng
-        int totalReviews = reviews.size();
-        int totalPages = (int) Math.ceil((double) totalReviews / pageSize);
-
-        // Cắt danh sách review theo trang
-        int start = (page - 1) * pageSize;
-        int end = Math.min(start + pageSize, totalReviews);
-        List<Review> paginatedReviews = reviews.subList(start, end);
-
-        // Gửi dữ liệu về JSP
         request.setAttribute("product", product);
-        request.setAttribute("totalSold", totalSold);
         request.setAttribute("productRelative", productRelative);
-        request.setAttribute("ratings", ratings);
-        request.setAttribute("ratingLevels", ratingLevels);
-        request.setAttribute("totalReviews", totalReviews);
-        request.setAttribute("reviews", paginatedReviews); // Gửi danh sách đã cắt
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("currentPage", page);
-
         request.getRequestDispatcher("productDetail.jsp").forward(request, response);
     }
 
@@ -456,7 +408,7 @@ public class ProductController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (request.getServletPath().equals("/home")) {
-            getHomeProducts(request, response);
+            getSaleProducts(request, response);
         } else if (request.getServletPath().equals("/product")) {
             getFilteredSortedPagedProducts(request, response);
         } else if (request.getServletPath().equals("/search")) {
@@ -484,7 +436,7 @@ public class ProductController extends HttpServlet {
         } else if (request.getServletPath().equals("/productAction")) {
             getAction(request, response);
         } else {
-            request.getRequestDispatcher("/home").forward(request, response);
+                request.getRequestDispatcher("/home").forward(request, response);
         }
 
     }

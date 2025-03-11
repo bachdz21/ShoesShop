@@ -20,5 +20,4 @@ public interface IOrderDAO {
     List<Order> getDetailOrderByOderId(int oderId);
     List<Order> getAllOrders();
     boolean updateOrderStatus(int orderId, String orderStatus);
-    List<Product> getProductsByOrderID(int orderID);
 }
