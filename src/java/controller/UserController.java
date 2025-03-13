@@ -32,7 +32,7 @@ import java.util.UUID;
 import model.Order;
 import model.OrderDetail;
 import model.WishlistItem;
-import org.json.JSONObject;
+//import org.json.JSONObject;
 import utils.Encryption;
 
 /**
@@ -65,9 +65,9 @@ public class UserController extends HttpServlet {
             case "/register":
                 getRegister(request, response);//get 
                 break;
-            case "/checkExisting":
-                checkExisting(request, response);//get 
-                break;
+//            case "/checkExisting":
+//                checkExisting(request, response);//get 
+//                break;
             case "/logout":
                 getLogout(request, response);//get
                 break;
@@ -234,22 +234,22 @@ public class UserController extends HttpServlet {
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
-    protected void checkExisting(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String email = request.getParameter("email");
-
-        // Kiểm tra trong cơ sở dữ liệu
-        boolean isUsernameExists = userDAO.checkUsernameExists(username);
-        boolean isEmailExists = userDAO.checkEmailExists(email);
-
-        // Trả kết quả dưới dạng JSON
-        JSONObject result = new JSONObject();
-        result.put("isUsernameExists", isUsernameExists);
-        result.put("isEmailExists", isEmailExists);
-
-        response.setContentType("application/json");
-        response.getWriter().write(result.toString());
-    }
+//    protected void checkExisting(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        String username = request.getParameter("username");
+//        String email = request.getParameter("email");
+//
+//        // Kiểm tra trong cơ sở dữ liệu
+//        boolean isUsernameExists = userDAO.checkUsernameExists(username);
+//        boolean isEmailExists = userDAO.checkEmailExists(email);
+//
+//        // Trả kết quả dưới dạng JSON
+//        JSONObject result = new JSONObject();
+//        result.put("isUsernameExists", isUsernameExists);
+//        result.put("isEmailExists", isEmailExists);
+//
+//        response.setContentType("application/json");
+//        response.getWriter().write(result.toString());
+//    }
 
     protected void postRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
