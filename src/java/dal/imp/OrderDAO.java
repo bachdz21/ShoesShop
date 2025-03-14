@@ -335,7 +335,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
 
     public List<OrderDetail> getOrderDetailByOderId(int orderId) {
         List<OrderDetail> orderDetails = new ArrayList<>();
-        String query = "SELECT od.OrderDetailID, od.OrderID, od.Quantity, od.Price, p.ProductID, p.ProductName, p.Price as ProductPrice, p.ImageURL "
+        String query = "SELECT od.OrderDetailID, od.OrderID, od.Quantity, od.Price, p.ProductID, p.ProductName, p.Price as ProductPrice, p.ImageURL, p.ProductID "
                 + "FROM OrderDetails od "
                 + "JOIN Products p ON od.ProductID = p.ProductID "
                 + "WHERE od.OrderID = ?"; // Câu lệnh SQL
@@ -352,7 +352,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
                 orderDetail.setPrice(rs.getInt("Price"));
 
                 Product product = new Product();
-//                product.setProductId(rs.getInt("ProductID"));
+                product.setProductID(rs.getInt("ProductID"));
                 product.setProductName(rs.getString("ProductName"));
                 product.setPrice(rs.getDouble("ProductPrice"));
                 product.setImageURL(rs.getString("ImageURL"));
