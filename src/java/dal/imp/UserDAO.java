@@ -560,6 +560,32 @@ public class UserDAO extends DBConnect implements IUserDAO {
 
         return users;
     }
+    
+    // Lấy một Employee bất kỳ (dùng cho Customer)
+    public User getEmployee() {
+        String query = "SELECT TOP 1 * FROM Users WHERE Role = 'Employee'";
+        User employee = null;
+        try (PreparedStatement ps = c.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                employee = new User();
+                employee.setUserId(rs.getInt("UserID"));
+                employee.setUsername(rs.getString("Username"));
+                employee.setPassword(rs.getString("Password"));
+                employee.setFullName(rs.getString("FullName"));
+                employee.setEmail(rs.getString("Email"));
+                employee.setPhoneNumber(rs.getString("PhoneNumber"));
+                employee.setAddress(rs.getString("Address"));
+                employee.setRole(rs.getString("Role"));
+                employee.setProfileImageURL(rs.getString("ProfileImageURL"));
+                employee.setRegistrationDate(rs.getTimestamp("RegistrationDate"));
+                employee.setLocked(rs.getInt("locked"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return employee;
+    }
 
     public static void main(String[] args) {
         Encryption e = new Encryption();

@@ -1,13 +1,7 @@
 package controller;
 
 import com.google.gson.Gson;
-import dal.ICategoryDAO;
-import dal.IProductDAO;
-import dal.IUserDAO;
-import dal.imp.CategoryDAO;
-import dal.imp.ProductDAO;
 import dal.imp.ReviewDAO;
-import dal.imp.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,17 +11,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import java.io.File;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
-import model.Product;
 import model.User;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpSession;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import model.Review;
@@ -107,15 +95,6 @@ public class ReviewController extends HttpServlet {
                 // Thành công thì chuyển hướng về userProfile
                 response.sendRedirect("userProfile");
             } 
-//            else {
-//                // Gửi thông báo lỗi trực tiếp
-//                response.setContentType("text/html;charset=UTF-8");
-//                PrintWriter out = response.getWriter();
-//                out.println("<script type=\"text/javascript\">");
-//                out.println("alert('Thêm review thất bại. Vui lòng thử lại!');");
-//                out.println("window.location='viewDetailOrderHistory.jsp';"); // Quay lại form review
-//                out.println("</script>");
-//            }
         } catch (Exception e) {
             // Xử lý các lỗi bất ngờ
             response.setContentType("text/html;charset=UTF-8");

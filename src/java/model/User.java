@@ -3,10 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- *
- * @author NCPC
- */
 public class User {
 
     private int userId;
@@ -45,6 +41,11 @@ public class User {
     public User() {
     }
 
+    public User(int userId, String role) {
+        this.userId = userId;
+        this.role = role;
+    }
+    
     public User(int userId, String username, String password, String fullName, String email, String phoneNumber, String address, String profileImageURL, Date registrationDate, String avatarUrl) {
         this.userId = userId;
         this.username = username;

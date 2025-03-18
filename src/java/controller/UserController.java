@@ -39,9 +39,9 @@ import utils.Encryption;
  *
  * @author nguye
  */
-@WebServlet(name = "UserController", urlPatterns = {"/login", "/register","/checkExisting", 
-    "/forgotPassword", "/resetPassword", "/confirmLink", "/logout", 
-    "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar",  "/orderDetail",
+@WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/checkExisting",
+    "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
+    "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar", "/orderDetail",
     "/filterBanUser", "/emailReminder", "/banUser", "/filterUser", "/restoreUser"})
 @MultipartConfig
 
@@ -178,6 +178,8 @@ public class UserController extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
+            session.setAttribute("userId", user.getUserId());
+            session.setAttribute("role", user.getRole());
             // Lấy thông tin giỏ hàng của người dùng từ database và lưu vào session
             List<CartItem> cartItems = cartDAO.getCartItems(user.getUserId());
             session.setAttribute("cart", cartItems);
@@ -250,7 +252,6 @@ public class UserController extends HttpServlet {
 //        response.setContentType("application/json");
 //        response.getWriter().write(result.toString());
 //    }
-
     protected void postRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Tạo đối tượng DAO để thao tác với cơ sở dữ liệu
