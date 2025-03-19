@@ -130,7 +130,123 @@
                 }
             }
 
+            .review-form {
+                background-color: #fff;
+                padding: 20px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                color: #666;
+                font-size: 14px;
+            }
+            .product-info {
+                margin-bottom: 20px;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            .product-image {
+                max-width: 200px;
+                height: auto;
+                margin-bottom: 10px;
+            }
+            .star-rating {
+                display: flex;
+                gap: 5px;
+                margin-bottom: 10px;
+            }
+            .star {
+                font-size: 24px;
+                color: #ccc;
+                cursor: pointer;
+                transition: color 0.3s ease;
+            }
+            .star.active {
+                color: #ffd700;
+            }
+            textarea {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                box-sizing: border-box;
+                font-size: 14px;
+                height: 100px;
+                resize: vertical;
+            }
+            .file-input {
+                margin-top: 5px;
+            }
+            .submit-btn {
+                background-color: #ffd700;
+                color: #fff;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+                width: 100%;
+            }
+            .submit-btn:hover {
+                background-color: #e0a400;
+            }
+            .note {
+                color: #888;
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+            
+            /* Style cho nút Trở về */
+            .back-btn {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #ff5722; /* Màu đỏ cam đồng bộ với giao diện */
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+                font-size: 16px;
+                font-weight: 500;
+                transition: background-color 0.3s ease;
+                margin-top: 15px;
+                text-align: center;
+            }
+            .back-btn:hover {
+                background-color: #e64a19; /* Màu tối hơn khi hover */
+                color: white;
+                text-decoration: none;
+            }
         </style>
+        <!-- NAVIGATION -->
+        <nav id="navigation">
+            <!-- container -->
+            <div class="container">
+                <!-- responsive-nav -->
+                <div id="responsive-nav">
+                    <!-- NAV -->
+                    <ul class="main-nav nav navbar-nav">
+                        <li><a href="home">Trang Chủ</a></li>
+                        <li><a href="product">Danh Mục</a></li>
+                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
+                            </c:if>
+                    </ul>
+                    <!-- /NAV -->
+                </div>
+                <!-- /responsive-nav -->
+            </div>
+            <!-- /container -->
+        </nav>
+        <!-- /NAVIGATION -->
+        
+        <a href="./userOrder" class="back-btn"><i class="fa fa-arrow-left"></i> Trở về</a>
+        
         <div class="user-profile-page">
             <div class="container user-profile">
                 <h1>Thông tin đơn hàng</h1>
@@ -162,9 +278,19 @@
                                 <td>${orderDetail.product.productName}</td>
                                 <!-- Hiển thị ảnh sản phẩm -->
                                 <td><img src="${orderDetail.product.imageURL}" alt="Product Image" width="100" height="100" /></td>
-                                <td>${orderDetail.product.price} đ</td>
+                                <td>${orderDetail.price} $</td>
                                 <td>${orderDetail.quantity}</td>
-                                <td>${orderDetail.price} đ</td>
+                                <td>${orderDetail.price * orderDetail.quantity} $</td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#reviewModal" 
+                                            data-orderid="${order.orderId}" 
+                                            data-productid="${orderDetail.product.productID}" 
+                                            data-productname="<c:out value='${orderDetail.product.productName}'/>" 
+                                            data-imageurl="${orderDetail.product.imageURL}"
+                                            ${order.orderStatus != 'Delivered' ? 'disabled' : ''}>
+                                        Đánh Giá
+                                    </button>
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>

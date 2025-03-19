@@ -15,8 +15,10 @@ import model.Product;
 public interface IOrderDAO {
     int checkout(int userId, String fullName, String email, String phoneNumber, String shippingAddress, String paymentMethod, String note);
     String getOrderCodeByOrderID(int orderId);
-    List<Order> getOrdersByUserId(int userId);
-    List<Product> getProductForDetailOrdersByOderId(int oderId);
+List<Order> getOrdersByUserId(int userId, String orderCode, String paymentMethod, 
+                                    String fromDate, String toDate, Double minPrice, 
+                                    Double maxPrice, String orderBy);
+List<Product> getProductForDetailOrdersByOderId(int oderId);
     List<Order> getDetailOrderByOderId(int oderId);
     List<Order> getAllOrders();
     boolean updateOrderStatus(int orderId, String orderStatus);
