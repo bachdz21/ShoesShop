@@ -41,7 +41,7 @@ import utils.Encryption;
  */
 @WebServlet(name = "UserController", urlPatterns = {"/login", "/register","/checkExisting", 
     "/forgotPassword", "/resetPassword", "/confirmLink", "/logout", 
-    "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar",  "/orderDetail",
+    "/userProfile","/getAllOrders", "/updateProfile", "/changePassword", "/updateAvatar",  "/orderDetail",
     "/filterBanUser", "/emailReminder", "/banUser", "/filterUser", "/restoreUser"})
 @MultipartConfig
 
@@ -76,6 +76,9 @@ public class UserController extends HttpServlet {
                 break;
             case "/userProfile":
                 userProfile(request, response);//get
+                break;
+                case "/getAllOrders":
+                getAllOrders(request, response);//get
                 break;
             case "/orderDetail":
                 orderDetail(request, response);//get
@@ -396,6 +399,29 @@ public class UserController extends HttpServlet {
         request.setAttribute("user", u);
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển hướng đến trang JSP
+    }
+    
+    //Hiển thị trang hồ sơ người dùng
+    protected void getAllOrders(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy UserID từ session hoặc request
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
+        if (user == null) {
+            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
+            response.sendRedirect("login");
+            return;
+        }
+//        int userId = user.getUserId();
+//        User u = userDAO.getUserById(userId); // Gọi hàm để lấy thông tin người dùng
+
+
+        //Thông tin đơn hàng
+        List<Order> orders = orderDAO.getOrdersByUserId(user.getUserId());
+
+        //Gửi dữ liệu
+//        request.setAttribute("user", u);
+        request.setAttribute("orders", orders);
+        request.getRequestDispatcher("userOrder.jsp").forward(request, response); // Chuyển hướng đến trang JSP
     }
 
     // Cập nhật ảnh đại diện
