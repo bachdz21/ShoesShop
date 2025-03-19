@@ -106,16 +106,15 @@ public class ReviewController extends HttpServlet {
 
                 // Thành công thì chuyển hướng về userProfile
                 response.sendRedirect("userProfile");
-            } 
-//            else {
-//                // Gửi thông báo lỗi trực tiếp
-//                response.setContentType("text/html;charset=UTF-8");
-//                PrintWriter out = response.getWriter();
-//                out.println("<script type=\"text/javascript\">");
-//                out.println("alert('Thêm review thất bại. Vui lòng thử lại!');");
-//                out.println("window.location='viewDetailOrderHistory.jsp';"); // Quay lại form review
-//                out.println("</script>");
-//            }
+            } else {
+                // Gửi thông báo lỗi trực tiếp
+                response.setContentType("text/html;charset=UTF-8");
+                PrintWriter out = response.getWriter();
+                out.println("<script type=\"text/javascript\">");
+                out.println("alert('Thêm review thất bại. Vui lòng thử lại!');");
+                out.println("window.location='reviewForm.jsp';"); // Quay lại form review
+                out.println("</script>");
+            }
         } catch (Exception e) {
             // Xử lý các lỗi bất ngờ
             response.setContentType("text/html;charset=UTF-8");
