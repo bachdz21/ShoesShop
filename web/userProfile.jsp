@@ -520,147 +520,7 @@
                 <div class="row" style="margin-top: 30px; margin-bottom: 30px">
 
 
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="list-product">
-                                        <h2 class="product-title">Danh Sách Đơn Hàng</h2>
-
-                                        <!-- Tabs điều hướng -->
-                                        <ul class="nav nav-tabs">
-                                            <li class="nav-item">
-                                                <a class="nav-link " data-toggle="tab" href="#pending">Chờ xác nhận</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" data-toggle="tab" href="#shipped">Đang vận chuyển</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" data-toggle="tab" href="#delivered">Đã giao</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" data-toggle="tab" href="#cancelled">Đã hủy</a>
-                                            </li>
-                                        </ul>
-
-                                        <div class="tab-content">
-                                            <!-- Chờ xác nhận -->
-                                            <div id="pending" class=" tab-pane active table-responsive">
-                                                <table>
-                                                    <tr>
-                                                        <th>Mã Đơn Hàng</th>
-                                                        <th>Ngày Đặt Hàng</th>
-                                                        <th>Tổng Số Tiền</th>
-                                                        <th>Trạng Thái</th>
-                                                        <th>Phương Thức Thanh Toán</th>
-                                                        <th>Địa Chỉ Giao Hàng</th>
-                                                        <th>Chi Tiết</th>
-                                                    </tr>
-                                                    <c:forEach var="order" items="${orders}">
-                                                        <c:if test="${order.orderStatus eq 'Pending'}">
-                                                            <tr>
-                                                                <td>${order.orderCode}</td>
-                                                                <td>${order.orderDate}</td>
-                                                                <td>${order.totalAmount}</td>
-                                                                <td class="status-pending">Chờ xác nhận</td>
-                                                                <td>${order.paymentMethod}</td>
-                                                                <td>${order.shippingAddress}</td>
-                                                                <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
-                                                            </tr>
-                                                        </c:if>
-                                                    </c:forEach>
-                                                </table>
-                                            </div>
-
-                                            <!-- Đang vận chuyển -->
-                                            <div id="shipped" class=" tab-pane fade table-responsive">
-                                                <table>
-                                                    <tr>
-                                                        <th>Mã Đơn Hàng</th>
-                                                        <th>Ngày Đặt Hàng</th>
-                                                        <th>Tổng Số Tiền</th>
-                                                        <th>Trạng Thái</th>
-                                                        <th>Phương Thức Thanh Toán</th>
-                                                        <th>Địa Chỉ Giao Hàng</th>
-                                                        <th>Chi Tiết</th>
-                                                    </tr>
-                                                    <c:forEach var="order" items="${orders}">
-                                                        <c:if test="${order.orderStatus eq 'Shipped'}">
-                                                            <tr>
-                                                                <td>${order.orderCode}</td>
-                                                                <td>${order.orderDate}</td>
-                                                                <td>${order.totalAmount}</td>
-                                                                <td class="status-shipped">Đang vận chuyển</td>
-                                                                <td>${order.paymentMethod}</td>
-                                                                <td>${order.shippingAddress}</td>
-                                                                <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
-                                                            </tr>
-                                                        </c:if>
-                                                    </c:forEach>
-                                                </table>
-                                            </div>
-
-                                            <!-- Đã giao -->
-                                            <div id="delivered" class=" tab-pane fade table-responsive">
-                                                <table>
-                                                    <tr>
-                                                        <th>Mã Đơn Hàng</th>
-                                                        <th>Ngày Đặt Hàng</th>
-                                                        <th>Tổng Số Tiền</th>
-                                                        <th>Trạng Thái</th>
-                                                        <th>Phương Thức Thanh Toán</th>
-                                                        <th>Địa Chỉ Giao Hàng</th>
-                                                        <th>Chi Tiết</th>
-                                                    </tr>
-                                                    <c:forEach var="order" items="${orders}">
-                                                        <c:if test="${order.orderStatus eq 'Delivered'}">
-                                                            <tr>
-                                                                <td>${order.orderCode}</td>
-                                                                <td>${order.orderDate}</td>
-                                                                <td>${order.totalAmount}</td>
-                                                                <td class="status-delivered">Đã giao</td>
-                                                                <td>${order.paymentMethod}</td>
-                                                                <td>${order.shippingAddress}</td>
-                                                                <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
-                                                            </tr>
-                                                        </c:if>
-                                                    </c:forEach>
-                                                </table>
-                                            </div>
-
-                                            <!-- Đã hủy -->
-                                            <div id="cancelled" class=" tab-pane fade table-responsive">
-                                                <table>
-                                                    <tr>
-                                                        <th>Mã Đơn Hàng</th>
-                                                        <th>Ngày Đặt Hàng</th>
-                                                        <th>Tổng Số Tiền</th>
-                                                        <th>Trạng Thái</th>
-                                                        <th>Phương Thức Thanh Toán</th>
-                                                        <th>Địa Chỉ Giao Hàng</th>
-                                                        <th>Chi Tiết</th>
-                                                    </tr>
-                                                    <c:forEach var="order" items="${orders}">
-                                                        <c:if test="${order.orderStatus eq 'Cancelled'}">
-                                                            <tr>
-                                                                <td>${order.orderCode}</td>
-                                                                <td>${order.orderDate}</td>
-                                                                <td>${order.totalAmount}</td>
-                                                                <td class="status-cancelled">Đã hủy</td>
-                                                                <td>${order.paymentMethod}</td>
-                                                                <td>${order.shippingAddress}</td>
-                                                                <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
-                                                            </tr>
-                                                        </c:if>
-                                                    </c:forEach>
-                                                </table>
-                                            </div>
-                                        </div> <!-- Kết thúc tab-content -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
 
                     <div class="col-lg-4">
                         <div class="card">
@@ -828,6 +688,7 @@
     <!-- Bootstrap Bundle JS -->
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
 
     <script>
         var citis = document.getElementById("city");

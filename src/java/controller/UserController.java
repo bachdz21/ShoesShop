@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.UUID;
 import model.Order;
+import model.OrderContact;
 import model.OrderDetail;
 import model.WishlistItem;
 //import org.json.JSONObject;
@@ -39,9 +40,9 @@ import utils.Encryption;
  *
  * @author nguye
  */
-@WebServlet(name = "UserController", urlPatterns = {"/login", "/register","/checkExisting", 
-    "/forgotPassword", "/resetPassword", "/confirmLink", "/logout", 
-    "/userProfile","/getAllOrders", "/updateProfile", "/changePassword", "/updateAvatar",  "/orderDetail",
+@WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/checkExisting",
+    "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
+    "/userProfile", "/userOrder", "/updateProfile", "/changePassword", "/updateAvatar", "/orderDetail",
     "/filterBanUser", "/emailReminder", "/banUser", "/filterUser", "/restoreUser"})
 @MultipartConfig
 
@@ -65,9 +66,6 @@ public class UserController extends HttpServlet {
             case "/register":
                 getRegister(request, response);//get 
                 break;
-//            case "/checkExisting":
-//                checkExisting(request, response);//get 
-//                break;
             case "/logout":
                 getLogout(request, response);//get
                 break;
@@ -77,8 +75,8 @@ public class UserController extends HttpServlet {
             case "/userProfile":
                 userProfile(request, response);//get
                 break;
-                case "/getAllOrders":
-                getAllOrders(request, response);//get
+            case "/userOrder":
+                userOrder(request, response);//get
                 break;
             case "/orderDetail":
                 orderDetail(request, response);//get
@@ -253,7 +251,6 @@ public class UserController extends HttpServlet {
 //        response.setContentType("application/json");
 //        response.getWriter().write(result.toString());
 //    }
-
     protected void postRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Tạo đối tượng DAO để thao tác với cơ sở dữ liệu
@@ -393,37 +390,79 @@ public class UserController extends HttpServlet {
         }
 
         //Thông tin đơn hàng
-        List<Order> orders = orderDAO.getOrdersByUserId(user.getUserId());
-
+//        List<Order> orders = orderDAO.getOrdersByUserId(user.getUserId());
         //Gửi dữ liệu
         request.setAttribute("user", u);
-        request.setAttribute("orders", orders);
+//        request.setAttribute("orders", orders);
         request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển hướng đến trang JSP
     }
-    
-    //Hiển thị trang hồ sơ người dùng
-    protected void getAllOrders(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy UserID từ session hoặc request
+
+    protected void userOrder(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy UserID từ session
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
+        User user = (User) session.getAttribute("user");
         if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login");
             return;
         }
-//        int userId = user.getUserId();
-//        User u = userDAO.getUserById(userId); // Gọi hàm để lấy thông tin người dùng
 
+        // Lấy các tham số từ form
+        String orderCode = request.getParameter("orderCode");
+        String paymentMethod = request.getParameter("paymentMethod");
+        String sortBy = request.getParameter("sortBy");
+        String fromDate = request.getParameter("fromDate");
+        String toDate = request.getParameter("toDate");
+        String minPriceStr = request.getParameter("minPrice");
+        String maxPriceStr = request.getParameter("maxPrice");
 
-        //Thông tin đơn hàng
-        List<Order> orders = orderDAO.getOrdersByUserId(user.getUserId());
+        // Xử lý giá trị minPrice và maxPrice
+        Double minPrice = (minPriceStr != null && !minPriceStr.isEmpty()) ? Double.parseDouble(minPriceStr) : null;
+        Double maxPrice = (maxPriceStr != null && !maxPriceStr.isEmpty()) ? Double.parseDouble(maxPriceStr) : null;
 
-        //Gửi dữ liệu
-//        request.setAttribute("user", u);
+        // Xử lý phương thức thanh toán
+        String selectedPaymentMethod = null;
+        if ("Chuyển Khoản Ngân Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Chuyển Khoản Ngân Hàng";
+        } else if ("Thẻ Tín Dụng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Thẻ Tín Dụng";
+        } else if ("Tiền Mặt Khi Nhận Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Tiền Mặt Khi Nhận Hàng";
+        }
+
+        // Xử lý sắp xếp
+        String orderBy = null;
+        if ("priceDesc".equals(sortBy)) {
+            orderBy = "TotalAmount DESC";
+        } else if ("priceAsc".equals(sortBy)) {
+            orderBy = "TotalAmount ASC";
+        } else {
+            orderBy = "OrderDate DESC";
+        }
+
+        // Lấy danh sách đơn hàng với các điều kiện lọc
+        List<Order> orders = orderDAO.getOrdersByUserId(
+                user.getUserId(),
+                orderCode,
+                selectedPaymentMethod,
+                fromDate,
+                toDate,
+                minPrice,
+                maxPrice,
+                orderBy
+        );
+
+        // Gửi dữ liệu sang JSP (bao gồm các giá trị đã nhập)
         request.setAttribute("orders", orders);
-        request.getRequestDispatcher("userOrder.jsp").forward(request, response); // Chuyển hướng đến trang JSP
-    }
+        request.setAttribute("orderCode", orderCode);
+        request.setAttribute("paymentMethod", paymentMethod);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("fromDate", fromDate);
+        request.setAttribute("toDate", toDate);
+        request.setAttribute("minPrice", minPriceStr); // Giữ nguyên chuỗi để hiển thị
+        request.setAttribute("maxPrice", maxPriceStr); // Giữ nguyên chuỗi để hiển thị
 
+        request.getRequestDispatcher("userOrder.jsp").forward(request, response);
+    }
     // Cập nhật ảnh đại diện
     private static final String IMAGE_UPLOAD_DIR = "D:\\DH_FPT\\Semester5\\SWP301\\pj_swp\\ShoesShop\\web\\img";
 
@@ -494,7 +533,7 @@ public class UserController extends HttpServlet {
         User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
         if (user == null) {
             // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("login");
             return;
         }
         int userId = user.getUserId();
@@ -516,15 +555,22 @@ public class UserController extends HttpServlet {
     }
 
     protected void orderDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy UserID từ session hoặc request
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
+        if (user == null) {
+            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
+            response.sendRedirect("login.jsp");
+            return;
+        }
         int orderId = Integer.parseInt(request.getParameter("orderId"));
 
         Order o = orderDAO.getOrdersByOrderId(orderId);
 
         List<OrderDetail> orderDetails = orderDAO.getOrderDetailByOderId(orderId);
+        OrderContact orderContact = userDAO.getOrderContactsByOrderID(orderId);
 
-        request.setAttribute("user", user);
+        request.setAttribute("orderContact", orderContact);
         request.setAttribute("order", o);// tính tổng tiền, phương thức thanh toán,trạng thái
         request.setAttribute("orderDetails", orderDetails);
         request.getRequestDispatcher("viewDetailOrderHistory.jsp").forward(request, response);

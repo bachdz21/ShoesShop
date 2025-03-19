@@ -201,7 +201,52 @@
                 font-size: 12px;
                 margin-bottom: 15px;
             }
+            
+            /* Style cho nút Trở về */
+            .back-btn {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #ff5722; /* Màu đỏ cam đồng bộ với giao diện */
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+                font-size: 16px;
+                font-weight: 500;
+                transition: background-color 0.3s ease;
+                margin-top: 15px;
+                text-align: center;
+            }
+            .back-btn:hover {
+                background-color: #e64a19; /* Màu tối hơn khi hover */
+                color: white;
+                text-decoration: none;
+            }
         </style>
+        <!-- NAVIGATION -->
+        <nav id="navigation">
+            <!-- container -->
+            <div class="container">
+                <!-- responsive-nav -->
+                <div id="responsive-nav">
+                    <!-- NAV -->
+                    <ul class="main-nav nav navbar-nav">
+                        <li><a href="home">Trang Chủ</a></li>
+                        <li><a href="product">Danh Mục</a></li>
+                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
+                            </c:if>
+                    </ul>
+                    <!-- /NAV -->
+                </div>
+                <!-- /responsive-nav -->
+            </div>
+            <!-- /container -->
+        </nav>
+        <!-- /NAVIGATION -->
+        
+        <a href="./userOrder" class="back-btn"><i class="fa fa-arrow-left"></i> Trở về</a>
+        
         <div class="user-profile-page">
             <div class="container user-profile">
                 <h1>Thông tin đơn hàng</h1>
@@ -234,9 +279,9 @@
                                 <td>${orderDetail.product.productName}</td>
                                 <!-- Hiển thị ảnh sản phẩm -->
                                 <td><img src="${orderDetail.product.imageURL}" alt="Product Image" width="100" height="100" /></td>
-                                <td>${orderDetail.product.price} $</td>
-                                <td>${orderDetail.quantity}</td>
                                 <td>${orderDetail.price} $</td>
+                                <td>${orderDetail.quantity}</td>
+                                <td>${orderDetail.price * orderDetail.quantity} $</td>
                                 <td>
                                     <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#reviewModal" 
                                             data-orderid="${order.orderId}" 
