@@ -4,6 +4,7 @@
  */
 package dal;
 
+import java.util.List;
 import model.Review;
 
 /**
@@ -12,4 +13,5 @@ import model.Review;
  */
 public interface IReviewDAO {
     int addReview(Review review);
+    List<Review> getReviewsByProductID(int productID);
 }

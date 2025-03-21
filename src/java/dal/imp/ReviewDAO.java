@@ -68,6 +68,7 @@ public class ReviewDAO extends DBConnect implements IReviewDAO {
         }
     }
 
+    @Override
     // Hàm lấy danh sách Review theo ProductID
     public List<Review> getReviewsByProductID(int productID) {
         List<Review> reviews = new ArrayList<>();
