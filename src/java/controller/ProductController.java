@@ -1,3 +1,4 @@
+
 package controller;
 
 import dal.ICategoryDAO;
@@ -37,8 +38,7 @@ import model.Review;
 public class ProductController extends HttpServlet {
 
     IProductDAO productDAO = new ProductDAO();
-    ReviewDAO reviewDAO = new ReviewDAO();
-    private static final String IMAGE_UPLOAD_DIR = "D:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
+    private static final String IMAGE_UPLOAD_DIR = "C:\\Users\\nvhoa\\OneDrive\\Documents\\GitHub\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -166,7 +166,7 @@ public class ProductController extends HttpServlet {
             return;
         }
         request.setAttribute("list", list);
-        request.getRequestDispatcher("productList.jsp").forward(request, response);
+        request.getRequestDispatcher("productList2.jsp").forward(request, response);
     }
 
     protected void addProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

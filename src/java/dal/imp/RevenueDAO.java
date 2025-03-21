@@ -118,11 +118,11 @@ public class RevenueDAO extends DBConnect {
                 + "LEFT JOIN Orders o ON od.OrderID = o.OrderID\n"
                 + "GROUP BY c.CategoryName\n"
                 + "ORDER BY \n"
-                + "    CASE WHEN c.CategoryName = 'Sneaker' THEN 1\n"
-                + "         WHEN c.CategoryName = 'Oxford' THEN 2\n"
+                + "    CASE WHEN c.CategoryName = 'Other' THEN 1\n"
+                + "         WHEN c.CategoryName = 'Sandal' THEN 2\n"
                 + "         WHEN c.CategoryName = 'Boot' THEN 3\n"
-                + "         WHEN c.CategoryName = 'Sandal' THEN 4\n"
-                + "         WHEN c.CategoryName = 'Other' THEN 5\n"
+                + "         WHEN c.CategoryName = 'Oxford' THEN 4\n"
+                + "         WHEN c.CategoryName = 'Sneakers' THEN 5\n"
                 + "         ELSE 6 \n"
                 + "	END";
 
@@ -225,20 +225,12 @@ public class RevenueDAO extends DBConnect {
             revenueList.add(revenue);
         }
 
-        String query = "SELECT \n"
-                + "    [Day], \n"
-                + "    [Month], \n"
-                + "    [Year], \n"
-                + "    SUM(TotalRevenue) AS DailyRevenue\n"
-                + "FROM \n"
-                + "    [ProjectSWP].[dbo].[DailyRevenue]\n"
-                + "WHERE \n"
-                + "    (CAST(CONCAT([Year], '-', [Month], '-', [Day]) AS DATE) >= CAST(DATEADD(DAY, -?, GETDATE()) AS DATE)\n"
-                + "    AND CAST(CONCAT([Year], '-', [Month], '-', [Day]) AS DATE) <= CAST(GETDATE() AS DATE))\n"
-                + "GROUP BY \n"
-                + "    [Day], [Month], [Year]\n"
-                + "ORDER BY \n"
-                + "    [Year] DESC, [Month] DESC, [Day] DESC;";
+        String query = "SELECT [Day], [Month], [Year], SUM(TotalRevenue) AS DailyRevenue " +
+                       "FROM [ProjectSWP].[dbo].[DailyRevenue] " +
+                       "WHERE CAST(CONCAT([Year], '-', [Month], '-', [Day]) AS DATE) >= CAST(DATEADD(DAY, -?, GETDATE()) AS DATE) " +
+                       "AND CAST(CONCAT([Year], '-', [Month], '-', [Day]) AS DATE) <= CAST(GETDATE() AS DATE) " +
+                       "GROUP BY [Day], [Month], [Year] " +
+                       "ORDER BY [Year] DESC, [Month] DESC, [Day] DESC;";
 
         try (PreparedStatement ps = c.prepareStatement(query)) {
             ps.setInt(1, n - 1);

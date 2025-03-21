@@ -19,7 +19,6 @@ import model.Product;
 import model.User;
 import java.util.HashMap;
 import java.util.Map;
-
 /**
  *
  * @author nguye
@@ -63,7 +62,6 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     @Override
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
-
         try {
             String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.CreatedDate\n"
                     + "FROM Products p\n"
@@ -87,7 +85,6 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
                     product.setSalePrice(Math.round(salePrice * 100.0) / 100.0);
                 }
-
                 products.add(product);
             }
         } catch (SQLException e) {
