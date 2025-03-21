@@ -474,7 +474,8 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         List<Product> deletedProducts = new ArrayList<>();
         String query = "SELECT d.ProductID, d.ProductName, d.Description, d.Price, d.Stock, c.CategoryName, d.ImageURL, d.CreatedDate, d.Sale, d.Brand \n"
                 + "FROM DeletedProducts d\n"
-                + "JOIN Categories c ON d.CategoryID = c.CategoryID ";
+                + "JOIN Categories c ON d.CategoryID = c.CategoryID "
+                + "ORDER by d.CreatedDate DESC";
 
         try {
             PreparedStatement stmt = c.prepareStatement(query);
@@ -757,6 +758,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
             StringBuilder sql = new StringBuilder("SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, "
                     + "c.CategoryName, p.Brand, p.Sale, p.Price * (1 - p.Sale / 100.0) AS SalePrice "
                     + "FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID"
+                    + "ORDER by p.CreatedDate DESC"
             );
             
             List<Object> params = new ArrayList<>();
@@ -821,23 +823,21 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         return products;
     }
 
-    public List<Product> searchProducts2(int offset, int limit, String[] categories, String[] brands, String search) {
+    public List<Product> searchProductsByTable(String tableName, int offset, int limit, String[] categories, String[] brands, String search) {
         List<Product> products = new ArrayList<>();
         try {
             StringBuilder sql = new StringBuilder("SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, "
-                    + "c.CategoryName, p.Brand, p.Sale, p.Price * (1 - p.Sale / 100.0) AS SalePrice "
-                    + "FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
+                    + "c.CategoryName, p.Brand, p.Sale, p.CreatedDate, p.Price * (1 - p.Sale / 100.0) AS SalePrice "
+                    + "FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
 
             List<Object> params = new ArrayList<>();
 
-            // Add search condition
             if (search != null && !search.isEmpty()) {
                 sql.append(" AND (p.ProductName LIKE ? OR p.Description LIKE ?)");
                 params.add("%" + search + "%");
                 params.add("%" + search + "%");
             }
 
-            // Add category filter
             if (categories != null && categories.length > 0) {
                 sql.append(" AND UPPER(c.CategoryName) IN (");
                 for (int i = 0; i < categories.length; i++) {
@@ -847,7 +847,6 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 sql.append(")");
             }
 
-            // Add brand filter
             if (brands != null && brands.length > 0) {
                 sql.append(" AND p.Brand IN (");
                 for (int i = 0; i < brands.length; i++) {
@@ -857,12 +856,10 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 sql.append(")");
             }
 
-            // Add pagination
-            sql.append(" ORDER BY p.ProductID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            sql.append(" ORDER BY p.CreatedDate DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
             params.add(offset);
             params.add(limit);
 
-            // Prepare and execute the query
             PreparedStatement ps = c.prepareStatement(sql.toString());
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
@@ -880,17 +877,16 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setCategoryName(rs.getString("CategoryName"));
                 product.setBrand(rs.getString("Brand"));
                 product.setSale(rs.getInt("Sale"));
-
-                // Calculate sale price
                 if (product.getSale() > 0) {
                     double salePrice = rs.getDouble("SalePrice");
-                    product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Round to 2 decimal places
+                    product.setSalePrice(Math.round(salePrice * 100.0) / 100.0);
                 } else {
                     product.setSalePrice(product.getPrice());
                 }
-
+                product.setCreatedDate(rs.getDate("CreatedDate"));
                 products.add(product);
             }
+            System.out.println("SQL: " + sql.toString() + ", Offset: " + offset + ", Limit: " + limit + ", Products returned: " + products.size());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -898,27 +894,23 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     }
     
     // Count total products for pagination
-    public int countProducts(String category, String brand, String search) {
+    public int countProductsByTable(String tableName, String category, String brand, String search) {
         int count = 0;
         try {
-            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
-
+            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
             List<Object> params = new ArrayList<>();
 
-            // Add search condition
             if (search != null && !search.isEmpty()) {
                 sql.append(" AND (p.ProductName LIKE ? OR p.Description LIKE ?)");
                 params.add("%" + search + "%");
                 params.add("%" + search + "%");
             }
 
-            // Add category filter
             if (category != null && !category.isEmpty()) {
                 sql.append(" AND UPPER(c.CategoryName) = UPPER(?)");
                 params.add(category);
             }
 
-            // Add brand filter
             if (brand != null && !brand.isEmpty()) {
                 sql.append(" AND UPPER(p.Brand) = UPPER(?)");
                 params.add(brand);

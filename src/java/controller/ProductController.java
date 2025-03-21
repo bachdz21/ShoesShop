@@ -50,8 +50,6 @@ public class ProductController extends HttpServlet {
             getFilteredSortedPagedProducts(request, response);
         } else if (request.getServletPath().equals("/search")) {
             search(request, response);
-        } else if (request.getServletPath().equals("/list")) {
-            getAllProduct(request, response);
         } else if (request.getServletPath().equals("/add")) {
             addProduct(request, response);
         } else if (request.getServletPath().equals("/edit")) {
@@ -72,7 +70,7 @@ public class ProductController extends HttpServlet {
             deleteMultipleProducts(request, response);
         } else if (request.getServletPath().equals("/productAction")) {
             getAction(request, response);
-        } else if (request.getServletPath().equals("/searchAdmin")) {
+        } else if (request.getServletPath().equals("/list")) {
             filterProductList(request, response);      
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
@@ -156,19 +154,6 @@ public class ProductController extends HttpServlet {
 
         // Chuyển hướng đến store.jsp để hiển thị kết quả
         request.getRequestDispatcher("store.jsp").forward(request, response);
-    }
-
-    protected void getAllProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        List<Product> list = productDAO.getAllProducts();
-        User user = (User) session.getAttribute("user");
-
-        if (user == null || !user.getRole().equals("Admin")) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-        request.setAttribute("list", list);
-        request.getRequestDispatcher("productList2.jsp").forward(request, response);
     }
 
     protected void addProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -523,10 +508,56 @@ public class ProductController extends HttpServlet {
         response.sendRedirect("trash");
     }
 
-    private void showTrash(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        List<Product> deletedProducts = productDAO.getDeletedProducts();
+    private ProductDAO productDAO2 = new ProductDAO();
+
+    protected void showTrash(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.getRole().equals("Admin")) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        int page = 1;
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+                if (page < 1) page = 1;
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
+
+        int pageSize = 10;
+        String category = request.getParameter("category");
+        String brand = request.getParameter("brand");
+        String search = request.getParameter("search");
+
+        category = (category != null && !category.trim().isEmpty()) ? category : null;
+        brand = (brand != null && !brand.trim().isEmpty()) ? brand : null;
+        search = (search != null && !search.trim().isEmpty()) ? search : null;
+
+        int totalProducts = productDAO2.countProductsByTable("DeletedProducts", category, brand, search);
+        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+        if (totalProducts == 0) page = 1;
+        else if (page > totalPages) page = totalPages;
+
+        int offset = (page - 1) * pageSize;
+        String[] categories = category != null ? new String[]{category} : new String[0];
+        String[] brands = brand != null ? new String[]{brand} : new String[0];
+
+        List<Product> deletedProducts = productDAO2.searchProductsByTable("DeletedProducts", offset, pageSize, categories, brands, search);
+
         request.setAttribute("listDeletedProducts", deletedProducts);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalProducts", totalProducts);
+        request.setAttribute("pageSize", pageSize);
+        request.setAttribute("categories", productDAO2.getAllCategories());
+        request.setAttribute("brands", productDAO2.getAllBrands());
+
+        System.out.println("Page: " + page + ", Total Deleted Products: " + totalProducts + ", Products on page: " + deletedProducts.size());
         request.getRequestDispatcher("trash.jsp").forward(request, response);
     }
 
@@ -588,13 +619,11 @@ public class ProductController extends HttpServlet {
         }
     }
     
-    protected void filterProductList(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void filterProductList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         try {
             ProductDAO productDAO = new ProductDAO();
-            // Get pagination parameters
             int page = 1;
             if (request.getParameter("page") != null) {
                 try {
@@ -604,54 +633,36 @@ public class ProductController extends HttpServlet {
                     page = 1;
                 }
             }
-            // Get page size
-            int pageSize = 10; // Default page size
-            // Get filter parameters
+
+            int pageSize = 10;
             String category = request.getParameter("category");
             String brand = request.getParameter("brand");
             String search = request.getParameter("search");
 
-            // Ensure proper handling of empty parameters
             category = (category != null && !category.trim().isEmpty()) ? category : null;
             brand = (brand != null && !brand.trim().isEmpty()) ? brand : null;
             search = (search != null && !search.trim().isEmpty()) ? search : null;
 
-            // Get total count for pagination
-            int totalProducts = productDAO.countProducts(category, brand, search);
-            // Calculate total pages
+            int totalProducts = productDAO.countProductsByTable("Products", category, brand, search);
             int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
-            // Ensure page is within valid range
-            if (totalProducts == 0) {
-                        page = 1; // Reset về trang 1 nếu không có sản phẩm
-            } else if (page > totalPages) {
-                        page = totalPages; // Điều chỉnh về trang cuối nếu vượt quá
-            }
-            // Calculate start index for pagination
+            if (totalProducts == 0) page = 1;
+            else if (page > totalPages) page = totalPages;
+
             int offset = (page - 1) * pageSize;
-            // Prepare filter arrays
             String[] categories = category != null ? new String[]{category} : new String[0];
             String[] brands = brand != null ? new String[]{brand} : new String[0];
 
-            // Get products for current page - Use the same method regardless of search
-            // This allows products to show even when search is null
-            List<Product> products = productDAO.searchProducts2(offset, pageSize, categories, brands, search);
+            List<Product> products = productDAO.searchProductsByTable("Products", offset, pageSize, categories, brands, search);
 
-            // Get categories and brands for filter dropdowns
-            List<String> allCategories = productDAO.getAllCategories();
-            List<String> allBrands = productDAO.getAllBrands();
-            // Set attributes for JSP
             request.setAttribute("list", products);
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("totalProducts", totalProducts);
             request.setAttribute("pageSize", pageSize);
-            request.setAttribute("categories", allCategories);
-            request.setAttribute("brands", allBrands);
-            // Add calendar for header
-            Calendar calendar = Calendar.getInstance();
-            request.setAttribute("currentYear", calendar.get(Calendar.YEAR));
-            request.setAttribute("currentMonth", calendar.get(Calendar.MONTH) + 1);
-            // Forward to JSP
+            request.setAttribute("categories", productDAO.getAllCategories());
+            request.setAttribute("brands", productDAO.getAllBrands());
+
+            System.out.println("Page: " + page + ", Total Products: " + totalProducts + ", Products on page: " + products.size());
             request.getRequestDispatcher("productList2.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -668,8 +679,6 @@ public class ProductController extends HttpServlet {
             getFilteredSortedPagedProducts(request, response);
         } else if (request.getServletPath().equals("/search")) {
             search(request, response);
-        } else if (request.getServletPath().equals("/list")) {
-            getAllProduct(request, response);
         } else if (request.getServletPath().equals("/add")) {
             addProduct(request, response);
         } else if (request.getServletPath().equals("/edit")) {
@@ -690,7 +699,7 @@ public class ProductController extends HttpServlet {
             deleteMultipleProducts(request, response);
         } else if (request.getServletPath().equals("/productAction")) {
             getAction(request, response);
-        } else if (request.getServletPath().equals("/searchAdmin")) {
+        } else if (request.getServletPath().equals("/list")) {
             filterProductList(request, response);  
         } else {
             request.getRequestDispatcher("/home").forward(request, response);

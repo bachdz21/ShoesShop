@@ -48,8 +48,8 @@
     <a href="home" class="navbar-brand d-flex d-lg-none me-4">
         <h2 class="text-primary mb-0">ShoeShop</h2>
     </a>
-    <form class="d-none d-md-flex ms-4">
-        <input class="form-control bg-dark border-0" type="search" placeholder="Search">
+    <form action="product" method="get" class="d-none d-md-flex ms-4">
+        <input style="width: 500px" class="form-control bg-dark border-0" type="search" placeholder="Tìm kiếm trong danh mục...">
     </form>
     <div class="navbar-nav align-items-center ms-auto">
         <div class="nav-item dropdown">

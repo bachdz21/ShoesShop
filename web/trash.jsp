@@ -207,6 +207,36 @@
                 background-color: #191c24;
                 overflow-x: hidden;
             }
+            .pagination {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 30px;
+            }
+            .pagination a, .pagination span {
+                padding: 8px 16px;
+                text-decoration: none;
+                color: #D10024;
+                border: 1px solid #ddd;
+                margin: 0 4px;
+                border-radius: 4px;
+            }
+            .pagination a:hover {
+                background-color: #f5f5f5;
+            }
+            .pagination .active {
+                background-color: #D10024;
+                color: white;
+                border: 1px solid #D10024;
+            }
+            .pagination .disabled {
+                color: #ccc;
+                cursor: not-allowed;
+            }
+
+            .align-self-end .btn:hover {
+                color: #ff3333;  
+            }            
+            
         </style>
     </head>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -284,6 +314,36 @@
 
     <div class="content"> 
         <jsp:include page="headerAdmin.jsp"/> 
+            <!-- Filter Form -->
+            <div class="filter-container" style="margin: 20px 30px;">
+                <form action="list" method="get" class="d-flex">
+                    <div class="me-3" style="margin-right: 100px">
+                        <label for="category" class="form-label">Danh Mục:</label>
+                        <select style="background-color: white;font-size: 13px" name="category" id="category" class="form-select">
+                                <option value="">Tất Cả</option>
+                                <c:forEach var="category" items="${categories}">
+                                    <option value="${category}" ${param.category eq category ? 'selected' : ''}>${category}</option>
+                                </c:forEach>
+                            </select>
+                    </div>
+                    <div class="me-3">
+                        <label for="brand" class="form-label">Thương Hiệu:</label>
+                            <select style="background-color: white;font-size: 13px" name="brand" id="brand" class="form-select">
+                                <option value="">Tất Cả</option>
+                                <c:forEach var="brand" items="${brands}">
+                                    <option value="${brand}" ${param.brand eq brand ? 'selected' : ''}>${brand}</option>
+                                </c:forEach>
+                            </select>
+                    </div>
+                    <div class="me-3">
+                        <label for="search" class="form-label">Tìm Kiếm:</label>
+                        <input style="background-color: white;" type="text" name="search" id="search" class="form-control" value="${param.search}" placeholder="Tên sản phẩm...">
+                    </div>
+                    <div class="align-self-end">
+                        <button style="background-color: #d10024;" type="submit" class="btn btn-primary">Lọc</button>
+                    </div>
+                </form>
+            </div>        
         <div class="list-product">
             <h2 class="product-title">Danh Sách Sản Phẩm Đã Xoá</h2>
             <a href="list" class="product-add-link">Danh Sách Sản Phẩm</a>
@@ -331,6 +391,25 @@
                     <button type="submit" class="btn-delete-all action-link btn-delete" style="border: none;
                             margin-top: 15px;" name="action" value="restoreMultiple">Khôi Phục Nhiều</button> 
                 </form>
+<!-- Pagination -->
+                <div class="pagination">
+                    <c:if test="${currentPage > 1}">
+                        <a href="trash?page=${currentPage - 1}&category=${param.category}&brand=${param.brand}&search=${param.search}">Previous</a>
+                    </c:if>
+                    <c:forEach begin="1" end="${totalPages}" var="i">
+                        <c:choose>
+                            <c:when test="${i == currentPage}">
+                                <span class="active">${i}</span>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="trash?page=${i}&category=${param.category}&brand=${param.brand}&search=${param.search}">${i}</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                    <c:if test="${currentPage < totalPages}">
+                        <a href="trash?page=${currentPage + 1}&category=${param.category}&brand=${param.brand}&search=${param.search}">Next</a>
+                    </c:if>
+                </div>            
             </div>
         </div>
     </div>

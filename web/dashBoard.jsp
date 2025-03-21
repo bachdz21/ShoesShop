@@ -163,7 +163,7 @@
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Danh Sách</a>
                             <div class="dropdown-menu bg-transparent border-0">
                                 <a href="getAllOrders" class="dropdown-item">Danh Sách Đơn Hàng</a>
-                                <a href="searchAdmin" class="dropdown-item">Danh Sách Sản Phẩm</a>
+                                <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
                                 <a href="#" class="dropdown-item">Khác</a>
                             </div>
                         </div>
