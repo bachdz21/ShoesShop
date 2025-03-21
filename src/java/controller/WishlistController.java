@@ -73,7 +73,7 @@ public class WishlistController extends HttpServlet {
         int userId = user.getUserId();
         List<WishlistItem> listWishlistItem = wishlistDAO.getWishlistItems(userId);
         request.setAttribute("listWishlistItem", listWishlistItem);
-        request.getRequestDispatcher("home.jsp").forward(request, response);
+        request.getRequestDispatcher("wishlist.jsp").forward(request, response);
     }
     
     protected void addWishlistItem(HttpServletRequest request, HttpServletResponse response)

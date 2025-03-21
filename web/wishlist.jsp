@@ -81,10 +81,27 @@
             .yn6AIc.dhqg2H{
                 padding: 28px
             }
+
+            .bRSn43.TvSDdG {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+            .lSrQtj {
+                color: #D10024; /* Màu ví dụ */
+                text-decoration: none;
+                padding: 5px 10px;
+                border-radius: 5px;
+            }
+            .lSrQtj:hover {
+                background-color: #f0f0f0;
+            }
+            
+            
         </style>
     </head>
     <%@page import="model.User"%>
-    <%@page import="model.CartItem"%>
+    <%@page import="model.WishlistItem"%>
     <%@ page import="java.util.List" %>
 
     <%@page import="jakarta.servlet.http.HttpSession"%>
@@ -128,8 +145,7 @@
                         </div>
                         <div class="jX4z5R">Sản Phẩm</div>
                         <div class="jHcdvj">Đơn Giá</div>
-                        <div class="o1QlcH">Số Lượng</div>
-                        <div class="RT5qRd">Số Tiền</div>
+                        <div class="o1QlcH"></div>
                         <div class="TkKRaF">Thao Tác</div>
 
                     </div>
@@ -140,7 +156,7 @@
                             <div class="lDiGJB" role="listitem">
                                 <h4 class="a11y-hidden">cart_accessibility_item</h4>
 
-                                <c:forEach var="p" items="${requestScope.listCartItem}">
+                                <c:forEach var="p" items="${requestScope.listWishlistItem}">
                                     <div class="f1bSN6">
                                         <input type="hidden" name="productID" value="${p.getProduct().getProductID()}"> <!-- Trường ẩn để gửi productID -->
                                         <div class="Xp4RLg">
@@ -162,17 +178,14 @@
                                                     <a class="c54pg1" title="Dép nam Dép thời trang Dép đi biển Giày đi biển nữ" 
                                                        href="">${p.getProduct().getProductName()}</a>
                                                     <div class="j_w5yD">
-
                                                     </div>
-
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="eHDC_o">
                                             <div class="qNRZqG">
                                                 <button class="mM4TZ8" role="button" tabindex="0">
-                                                    <div class="iIg1CN">Phân loại hàng:
-                                                    </div>
+                                                    <div class="iIg1CN">Phân loại hàng:</div>
                                                     <div class="dDPSp3">${p.getProduct().getCategoryName()}</div>
                                                 </button>
                                                 <div>
@@ -184,7 +197,7 @@
                                                 <c:choose>
                                                     <c:when test="${p.getProduct().getSale() > 0}">
                                                         <span class="vjkBXu">${p.getProduct().getSalePrice()} $</span>
-                                                        <span style="text-decoration: line-through; color: #757575; margin-left: 8px;">
+                                                        <span style="text-decoration: line-through; color: #757575">
                                                             ${p.getProduct().getPrice()} $
                                                         </span>
                                                     </c:when>
@@ -196,28 +209,12 @@
                                         </div>
                                         <div class="sluy3i">
                                             <div id="buy-amount">
-                                                <button type="button" class="minus-btn" onclick="handleMinus()">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
-                                                    </svg>
-                                                </button>
-                                                <input type="text" name="amount${p.getProduct().getProductID()}" id="amount" value="${p.quantity}">
-                                                <button type="button" class="plus-btn" onclick="handlePlus()">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                    </svg>
-                                                </button>
                                             </div>
                                         </div>
-                                        <div class="HRvCAv total-amount">
-                                            <span class="total-price">${p.getProduct().getPrice()}</span> <!-- Phần tử hiển thị tổng số tiền -->
-                                        </div>
                                         <div class="bRSn43 TvSDdG">
-                                            <a class="lSrQtj" href="deleteCartItem?productId=${p.getProduct().getProductID()}">Xóa</a>
-                                            <div class="J8cCGR">
-                                                <a href="./product?categories=${p.getProduct().getCategoryName()}&minPrice=1.00&maxPrice=999.00" class="shopee-button-no-outline slfWNx">
-                                                    <span class="wZrjgF">Tìm sản phẩm tương tự</span>
-                                                </a>
+                                            <div style="display: flex; align-items: center; gap: 20px;">
+                                                <a class="lSrQtj" href="addCartQuickFromWishlist?productID=${p.getProduct().getProductID()}&quantity=1">Thêm vào giỏ hàng</a>
+                                                <a class="lSrQtj" href="deleteWishlistItem?productId=${p.getProduct().getProductID()}">Xóa</a>
                                             </div>
                                         </div>
                                     </div>

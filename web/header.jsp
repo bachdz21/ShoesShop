@@ -129,6 +129,9 @@
                                     <p>Danh sách yêu thích của bạn đang trống</p>
                                     <% } %>
                                 </div>
+                                <div class="cart-btns">
+                                    <a style="width: 100%" href="getWishlist">Xem Danh Sách Yêu Thích</a>
+                                </div>
                             </div>
                         </div>
                         <!-- /Wishlist -->

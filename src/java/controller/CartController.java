@@ -28,7 +28,7 @@ import model.User;
  * @author nguye
  */
 @WebServlet(name = "CartController", urlPatterns = {"/cart", "/addCart", "/addCartQuick", "/cartItem", "/deleteCartItem", "/trashCart",
-    "/deleteCartItemTrash", "/restoreCartItem", "/updateQuantity"})
+    "/deleteCartItemTrash", "/restoreCartItem", "/updateQuantity", "/addCartQuickFromWishlist"})
 public class CartController extends HttpServlet {
 
     /**
@@ -60,6 +60,8 @@ public class CartController extends HttpServlet {
             restoreProduct(request, response);
         } else if (request.getServletPath().equals("/addCartQuick")) {
             addCartQuick(request, response);
+        } else if (request.getServletPath().equals("/addCartQuickFromWishlist")) {
+            addCartQuickFromWishlist(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }
@@ -112,6 +114,25 @@ public class CartController extends HttpServlet {
         List<CartItem> updatedCart = cartDAO.getCartItems(userId);
         updateCartInSession(request, updatedCart);
         response.sendRedirect("cart");
+    }
+
+    protected void addCartQuickFromWishlist(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int productId = Integer.parseInt(request.getParameter("productID"));
+        int quantity = Integer.parseInt(request.getParameter("quantity"));
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        // Thêm sản phẩm vào giỏ hàng
+        if (user == null) {
+            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
+            response.sendRedirect("login.jsp");
+            return;
+        }
+        int userId = user.getUserId();
+        cartDAO.addCartItem(userId, productId, quantity);
+        List<CartItem> updatedCart = cartDAO.getCartItems(userId);
+        updateCartInSession(request, updatedCart);
+        response.sendRedirect("getWishlist");
     }
 
     protected void addCart(HttpServletRequest request, HttpServletResponse response)
@@ -246,6 +267,8 @@ public class CartController extends HttpServlet {
             restoreProduct(request, response);
         } else if (request.getServletPath().equals("/addCartQuick")) {
             addCartQuick(request, response);
+        } else if (request.getServletPath().equals("/addCartQuickFromWishlist")) {
+            addCartQuickFromWishlist(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }

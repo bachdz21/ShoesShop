@@ -89,7 +89,6 @@ public class WishlistDAO extends DBConnect implements IWishlistDAO {
 
             while (rs.next()) {
                 int wishlistItemId = rs.getInt("WishlistItemID");
-                int productId = rs.getInt("ProductID");
                 Product product = new Product(rs.getInt("ProductID"), rs.getString("ProductName"), rs.getString("Description"),
                         rs.getDouble("Price"), rs.getInt("Stock"), rs.getString("CategoryName"),
                         rs.getString("imageURL"), rs.getInt("Sale"), rs.getString("brand"));
