@@ -8,16 +8,38 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Electro - HTML Ecommerce Template</title>
         
+
+        <!-- Favicon -->
+        <link href="img/favicon.ico" rel="icon">
+
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet"> 
+
+        <!-- Icon Font Stylesheet -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+        <!-- Libraries Stylesheet -->
+        <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+        <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="css/bootstrap.min_1.css" rel="stylesheet">
+
+        <!-- Template Stylesheet -->
+        <link href="css/style_1.css" rel="stylesheet">
+        
+        <!-- Bootstrap -->
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
+
+        
+        <!-- Custom styles -->
+        <link type="text/css" rel="stylesheet" href="css/style.css"/>
         
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
-
-        <!-- Bootstrap -->
-        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
 
         <!-- Slick -->
         <link type="text/css" rel="stylesheet" href="css/slick.css"/>
@@ -39,212 +61,252 @@
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
         <style>
-            .list-product {
-                margin: 30px; /* Lề cho container */
+            .sidebar {
+                position: fixed;
+                margin-top: 0px;
+                width: 270px;
+                height: 100vh;
+                overflow-y: auto;
+                background-color: #191c24;
+                transition: 0.5s;
+                z-index: 999;
             }
-            table {
-                width: 100%; /* Đặt chiều rộng của bảng 100% */
-                border-collapse: collapse; /* Gộp các viền lại với nhau */
-                margin-top: 20px; /* Thêm khoảng cách phía trên */
-            }
-
-            /* Cài đặt cho các ô tiêu đề */
-            th {
-                background-color: #D10024; /* Màu nền xanh lá cây */
-                color: white; /* Màu chữ trắng */
-                padding: 12px; /* Đệm cho ô tiêu đề */
-                text-align: center; /* Căn trái cho chữ */
-                vertical-align: middle;
-            }
-
-            /* Cài đặt cho các ô dữ liệu */
-            td {
-                border: 1px solid #ddd; /* Viền ô dữ liệu */
-                padding: 8px; /* Đệm cho ô dữ liệu */
-                text-align: center;
-                vertical-align: middle;
+            .content {
+                min-height: 80vh;
+                background: #ffffff;
+                transition: 0.5s;
+                width: 1600px;
             }
 
-            /* Thay đổi màu nền khi rê chuột qua hàng */
-            tr:hover {
-                background-color: #f5f5f5; /* Màu nền khi rê chuột */
+            .sidebar .navbar .navbar-nav .nav-link {
+                padding: 10px 20px;
+                color: var(--light);
+                font-weight: 500;
+                border-left: 3px solid var(--secondary);
+                border-radius: 0 30px 30px 0;
+                outline: none;
             }
+            
+            .sidebar .navbar-nav {
+                background-color: #191c24;
+            }
+            
 
-            /* Cài đặt cho hàng lẻ */
-            tr:nth-child(even) {
-                background-color: #f9f9f9; /* Màu nền cho hàng lẻ */
-            }
 
-            /* Cài đặt cho hình ảnh trong bảng */
-            img {
-                border-radius: 5px; /* Bo tròn góc cho hình ảnh */
+            .sidebar .navbar .dropdown-item {
+                padding: 10px 35px;
+                border-radius: 0 30px 30px 0;
+                color: var(--light);
             }
-            /* Cài đặt cho tiêu đề sản phẩm */
-            .product-title {
-                font-size: 24px; /* Kích thước chữ */
-                color: #333; /* Màu chữ */
-                margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
-                text-align: center; /* Căn giữa tiêu đề */
+            
+            .form-check-input {
+                background-color: white;
             }
-
-            /* Cài đặt cho liên kết "Thêm Sản Phẩm" */
-            .product-add-link {
-                display: inline-block; /* Hiển thị như một khối */
-                margin-bottom: 20px; /* Khoảng cách dưới liên kết */
-                padding: 10px 15px; /* Đệm cho liên kết */
-                background-color: #D10024; /* Màu nền xanh lá cây */
-                color: white; /* Màu chữ trắng */
-                text-decoration: none; /* Xóa gạch chân */
-                border-radius: 5px; /* Bo tròn góc cho liên kết */
-                transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền khi rê chuột */
+            
+            .form-group {
+                margin-left: 100px;
+                margin-right: 110px;
             }
-
-            /* Thay đổi màu nền khi rê chuột qua liên kết */
-            .product-add-link:hover {
-                background-color: #ff3333; /* Màu nền khi rê chuột */
+            
+            .btn {
+                margin-left: 100px;
             }
-
-            .divider {
-                margin: 0 10px; /* Khoảng cách giữa các liên kết */
+            
+            .form-group #category {
+                background-color: white;
+                border-style: solid;
+                border-color:#cccccc;
+                border-width: 1px;
+                box-shadow: 0 0 1px #ededed; 
             }
-            .action-link {
-                text-decoration: none; /* Bỏ gạch chân */
-                padding: 8px 12px; /* Khoảng cách bên trong */
-                border-radius: 4px; /* Bo góc */
-                color: white; /* Màu chữ */
-                transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu nền */
+            body {
+                background-color: white;
+                overflow-x: hidden;
             }
-
-            .btn-edit {
-                background-color: #4CAF50; /* Màu xanh lá cây cho nút sửa */
+            #top-header {
+                width: 1850px;
             }
-
-            .btn-delete {
-                background-color: #f44336; /* Màu đỏ cho nút xóa */
+            
+            .form-group #productName {
+                background-color: white;
             }
-
-            .btn-edit:hover {
-                background-color: #45a049; /* Màu xanh lá cây đậm khi hover */
+            .form-group #description {
+                background-color: white;
             }
-
-            .btn-delete:hover {
-                background-color: #e53935; /* Màu đỏ đậm khi hover */
+            .form-group #price {
+                background-color: white;
             }
-
-            .divider {
-                margin: 0 10px; /* Khoảng cách giữa các liên kết */
+            .form-group #productName {
+                background-color: white;
             }
-            .add-product-container {
-                margin: 40px auto; /* Căn giữa với margin tự động */
-                max-width: 600px; /* Đặt độ rộng tối đa */
-                margin-bottom: 100px;
-                margin-top: 100px;
-                display: flex; /* Sử dụng Flexbox */
-                flex-direction: column;
-                justify-content: center; /* Căn giữa theo chiều ngang */
-                align-items: center; /* Căn giữa theo chiều dọc */
-                height: 100vh; /* Chiều cao bằng 100% viewport */
-
+            .form-group #sale {
+                background-color: white;
             }
-
+            .form-group #stock {
+                background-color: white;
+            }
+            .form-group #brand {
+                background-color: white;
+            }
+            
+            
         </style>
+       
     </head>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ page contentType="text/html; charset=UTF-8" %>
+    <%@page import="model.User" %>
+    <%@page import="model.CartItem" %>
+    <%@page import="model.WishlistItem" %>
+    <%@ page import="java.util.List" %>
+    <%@ page import="java.util.Calendar" %>
+    <%
+        // Sử dụng biến session từ request mà không cần khai báo lại
+            User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
+        // Lấy danh sách sản phẩm trong giỏ hàng từ session
+        List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
+        int totalQuantity = 0;
+        double subtotal = 0.0;
+        if (cartItems != null) {
+            for (CartItem item : cartItems) {
+                totalQuantity += item.getQuantity();
+                subtotal += item.getProduct().getSalePrice() * item.getQuantity();
+            }
+        }
+        // Lấy danh sách wishlist từ session
+        List<WishlistItem> wishlistItems = (List<WishlistItem>) session.getAttribute("wishlist");
+        int total = 0;
+        if (wishlistItems != null) {
+            for (WishlistItem item : wishlistItems) {
+                total += 1;
+            }
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+    %> 
+        
     <body>
-    <jsp:include page="header.jsp" />
-
-    <!-- NAVIGATION -->
-    <nav id="navigation">
-        <!-- container -->
-        <div class="container">
-            <!-- responsive-nav -->
-            <div id="responsive-nav">
-                <!-- NAV -->
-                <ul class="main-nav nav navbar-nav">
-                    <li><a href="./home">Trang Chủ</a></li>
-                    <li><a href="./product">Danh Mục</a></li>
-                    <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
-                        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                        <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                        <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                        </c:if>
-
-                </ul>
-                <!-- /NAV -->
+    <div class="container-fluyid position-relative d-flex p-0">   
+            <!-- Sidebar Start -->
+            <div class="sidebar pe-4 pb-3">
+                <nav class="navbar bg-secondary navbar-dark">
+                    <a href="home.jsp" class="navbar-brand mx-5 mb-3">
+                        <h3 class="text-primary"><i class=""></i>ShoeShop</h3>
+                    </a>
+                    <div class="d-flex align-items-center ms-4 mb-4">
+                        <div class="position-relative">
+                            <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                            <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+                        </div>
+                        <div class="ms-3">
+                            <h6 style="color: red" class="mb-0"><%= user.getUsername() %></h6>
+                            <span style="color: red">Admin</span>
+                        </div>
+                    </div>
+                    <div class="navbar-nav w-100">
+                        <a href="./revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Danh Sách</a>
+                            <div class="dropdown-menu bg-transparent border-0">
+                                <a href="getAllOrders" class="dropdown-item">Danh Sách Đơn Hàng</a>
+                                <a href="list" class="dropdown-item active">Danh Sách Sản Phẩm</a>
+                                <a href="#" class="dropdown-item">Khác</a>
+                            </div>
+                        </div>
+                        <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Biểu Đồ</a>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Trang</a>
+                            <div class="dropdown-menu bg-transparent border-0">
+                                <a href="#" class="dropdown-item">Sign In</a>
+                                <a href="#" class="dropdown-item">Sign Up</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
             </div>
-            <!-- /responsive-nav -->
-        </div>
-        <!-- /container -->
-    </nav>
-    <!-- /NAVIGATION -->
-    <div class="container">
-    <div class="container-fluid pt-4 px-4">
-    <form action="add" method="post" enctype="multipart/form-data" class="add-product-form">
-        <hr>
-        <div class="form-group">
-            <label for="productName">Tên Sản Phẩm:</label>
-            <input type="text" id="productName" name="productName" class="form-control" required>
-        </div>
+           <!-- Sidebar End -->   
+    
+        <div class="content"> 
+            <jsp:include page="headerAdmin.jsp"/>
+            <div class="container-fluid pt-4 px-4">
+                    <% String error = (String) request.getAttribute("error"); %>
+                    <% if (error != null) { %>
+                        <div style="color: red; font-weight: bold;">
+                            <%= error %>
+                        </div>
+                    <% } %>                
+                <form action="add" method="post" enctype="multipart/form-data" class="add-product-form">
 
-        <div class="form-group">
-            <label for="description">Mô Tả:</label>
-            <textarea id="description" name="description" class="form-control "></textarea>
-            <script type="text/javascript">
-            </script>
-        </div>
+                    <hr>
 
-        <div class="form-group">
-            <label for="price">Giá:</label>
-            <input type="number" id="price" name="price" class="form-control" required>
-        </div>
+                    <div class="form-group">
+                        <label for="productName">Tên Sản Phẩm:</label>
+                        <input type="text" id="productName" name="productName" class="form-control">
+                    </div>
 
-        <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="isSale" name="isSale" onchange="toggleSaleInput(this)">
-            <label class="form-check-label" for="isSale">Sale:</label>
-        </div>
+                    <div class="form-group">
+                        <label for="description">Mô Tả:</label>
+                        <textarea id="description" name="description" class="form-control "></textarea>
+                        <script type="text/javascript">
+                        </script>
+                    </div>
 
-        <div id="salePercentage" class="form-group" style="display: none;">
-            <label for="sale">Nhập phần trăm giá giảm:</label>
-            <input type="text" id="sale" name="sale" class="form-control" placeholder="Phần trăm giảm" />
-        </div>
+                    <div class="form-group">
+                        <label for="price">Giá:</label>
+                        <input type="number" id="price" name="price" class="form-control">
+                    </div>
 
-        <div class="form-group">
-            <label for="stock">Số lượng:</label>
-            <input type="number" id="stock" name="stock" class="form-control" required>
-        </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="isSale" name="isSale" onchange="toggleSaleInput(this)">
+                        <label class="form-check-label" for="isSale">Sale:</label>
+                    </div>
 
-        <div class="form-group">
-            <label for="category">Danh Mục:</label>
-            <select id="category" name="category" class="form-select mb-3" aria-label="Default select example" onchange="toggleOtherCategory()">
-                <option value="">Chọn Danh Mục</option>
-                <option value="Sneakers">Sneakers</option>
-                <option value="Oxford">Oxford</option>
-                <option value="Boot">Boot</option>
-                <option value="Sandal">Sandal</option>
-                <option value="Other">Khác</option>
-            </select>
-        </div>
+                    <div id="salePercentage" class="form-group" style="display: none;">
+                        <label for="sale">Nhập phần trăm giá giảm:</label>
+                        <input type="text" id="sale" name="sale" class="form-control" placeholder="Phần trăm giảm" />
+                    </div>
 
-        <div id="otherCategory" class="form-group" style="display: none;">
-            <label for="otherCategoryInput">Danh Mục Khác:</label>
-            <input type="text" id="otherCategoryInput" name="otherCategory" class="form-control" />
-        </div>
+                    <div class="form-group">
+                        <label for="stock">Số lượng:</label>
+                        <input type="number" id="stock" name="stock" class="form-control">
+                    </div>
 
-        <div class="form-group">
-            <label for="images" class="form-label">Tải Lên Ảnh:</label>
-            <input type="file" id="imagesFormFileMultiple" name="images" class="form-control-file form-control bg-dark" accept="image/*" multiple required>
-        </div>
+                    <div class="form-group">
+                        <label for="category">Danh Mục:</label>
+                        <select id="category" name="category" class="form-select mb-3" aria-label="Default select example" onchange="toggleOtherCategory()">
+                            <option value="">Chọn Danh Mục</option>
+                            <option value="Sneaker">Sneaker</option>
+                            <option value="Oxford">Oxford</option>
+                            <option value="Boot">Boot</option>
+                            <option value="Sandal">Sandal</option>
+                            <option value="Other">Khác</option>
+                        </select>
+                    </div>
 
-        <div class="form-group">
-            <label for="brand">Thương Hiệu:</label>
-            <input type="text" id="brand" name="brand" class="form-control" required>
-        </div>
+                    <div id="otherCategory" class="form-group" style="display: none;">
+                        <label for="otherCategoryInput">Danh Mục Khác:</label>
+                        <input type="text" id="otherCategoryInput" name="otherCategory" class="form-control" />
+                    </div>
 
-        <button style="background-color: #d10024" type="submit" class="btn btn-primary btn-submit">Thêm Sản Phẩm</button>
-        <hr>
-    </form>
+                    <div class="form-group">
+                        <label for="images" class="form-label">Tải Lên Ảnh:</label>
+                        <input type="file" id="imagesFormFileMultiple" name="images" class="form-control-file form-control bg-white" accept="image/*" multiple>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brand">Thương Hiệu:</label>
+                        <input type="text" id="brand" name="brand" class="form-control">
+                    </div>
+
+                    <button style="background-color: #d10024" type="submit" class="btn btn-primary btn-submit">Thêm Sản Phẩm</button>
+                    <hr>
+                </form>                  
+            </div>
+        </div>
     </div>
-    </div>
-    <jsp:include page="footer.jsp" />
+    
 
     <!-- jQuery Plugins -->
     <script>
@@ -261,6 +323,7 @@
     <script src="js/nouislider.min.js"></script>
     <script src="js/jquery.zoom.min.js"></script>
     <script src="js/main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
         <script>
                                         // Đặt giá trị mặc định của sale là 0 khi trang tải
                                         document.getElementById('sale').value = '0';

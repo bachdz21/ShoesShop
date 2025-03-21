@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import model.Product;
+import java.sql.Connection;
 import model.User;
 import java.util.HashMap;
 import java.util.Map;
@@ -748,6 +749,230 @@ public class ProductDAO extends DBConnect implements IProductDAO {
             e.printStackTrace();
         }
         return products;
+    }
+    
+    public List<Product> getProductsForPage(int offset, int limit, String[] categories, String[] brands) {
+        List<Product> products = new ArrayList<>();
+        try {
+            StringBuilder sql = new StringBuilder("SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, "
+                    + "c.CategoryName, p.Brand, p.Sale, p.Price * (1 - p.Sale / 100.0) AS SalePrice "
+                    + "FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID"
+            );
+            
+            List<Object> params = new ArrayList<>();
+
+            // Add category filter
+            if (categories != null && categories.length > 0) {
+                    sql.append(" AND c.CategoryName IN (");
+                for (int i = 0; i < categories.length; i++) {
+                    sql.append(i > 0 ? ", ?" : "?");
+                    params.add(categories[i]);
+                }
+                sql.append(")");
+            }
+
+            // Add brand filter
+            if (brands != null && brands.length > 0) {
+                sql.append(" AND p.Brand IN (");
+                for (int i = 0; i < brands.length; i++) {
+                    sql.append(i > 0 ? ", ?" : "?");
+                    params.add(brands[i]);
+                }
+                sql.append(")");
+            }
+
+            // Add pagination
+            sql.append(" ORDER BY p.ProductID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            params.add(limit);
+            params.add(offset);
+
+            // Prepare and execute the query
+            PreparedStatement ps = c.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductID(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setDescription(rs.getString("Description"));
+                product.setPrice(rs.getDouble("Price"));
+                product.setStock(rs.getInt("Stock"));
+                product.setImageURL(rs.getString("ImageURL"));
+                product.setCategoryName(rs.getString("CategoryName"));
+                product.setBrand(rs.getString("Brand"));
+                product.setSale(rs.getInt("Sale"));
+
+                // Calculate sale price
+                if (product.getSale() > 0) {
+                    double salePrice = rs.getDouble("SalePrice");
+                    product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Round to 2 decimal places
+                } else {
+                    product.setSalePrice(product.getPrice());
+                }
+
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+    public List<Product> searchProducts2(int offset, int limit, String[] categories, String[] brands, String search) {
+        List<Product> products = new ArrayList<>();
+        try {
+            StringBuilder sql = new StringBuilder("SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, "
+                    + "c.CategoryName, p.Brand, p.Sale, p.Price * (1 - p.Sale / 100.0) AS SalePrice "
+                    + "FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
+
+            List<Object> params = new ArrayList<>();
+
+            // Add search condition
+            if (search != null && !search.isEmpty()) {
+                sql.append(" AND (p.ProductName LIKE ? OR p.Description LIKE ?)");
+                params.add("%" + search + "%");
+                params.add("%" + search + "%");
+            }
+
+            // Add category filter
+            if (categories != null && categories.length > 0) {
+                sql.append(" AND UPPER(c.CategoryName) IN (");
+                for (int i = 0; i < categories.length; i++) {
+                    sql.append(i > 0 ? ", UPPER(?)" : "UPPER(?)");
+                    params.add(categories[i]);
+                }
+                sql.append(")");
+            }
+
+            // Add brand filter
+            if (brands != null && brands.length > 0) {
+                sql.append(" AND p.Brand IN (");
+                for (int i = 0; i < brands.length; i++) {
+                    sql.append(i > 0 ? ", ?" : "?");
+                    params.add(brands[i]);
+                }
+                sql.append(")");
+            }
+
+            // Add pagination
+            sql.append(" ORDER BY p.ProductID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            params.add(offset);
+            params.add(limit);
+
+            // Prepare and execute the query
+            PreparedStatement ps = c.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductID(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setDescription(rs.getString("Description"));
+                product.setPrice(rs.getDouble("Price"));
+                product.setStock(rs.getInt("Stock"));
+                product.setImageURL(rs.getString("ImageURL"));
+                product.setCategoryName(rs.getString("CategoryName"));
+                product.setBrand(rs.getString("Brand"));
+                product.setSale(rs.getInt("Sale"));
+
+                // Calculate sale price
+                if (product.getSale() > 0) {
+                    double salePrice = rs.getDouble("SalePrice");
+                    product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Round to 2 decimal places
+                } else {
+                    product.setSalePrice(product.getPrice());
+                }
+
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+    
+    // Count total products for pagination
+    public int countProducts(String category, String brand, String search) {
+        int count = 0;
+        try {
+            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
+
+            List<Object> params = new ArrayList<>();
+
+            // Add search condition
+            if (search != null && !search.isEmpty()) {
+                sql.append(" AND (p.ProductName LIKE ? OR p.Description LIKE ?)");
+                params.add("%" + search + "%");
+                params.add("%" + search + "%");
+            }
+
+            // Add category filter
+            if (category != null && !category.isEmpty()) {
+                sql.append(" AND UPPER(c.CategoryName) = UPPER(?)");
+                params.add(category);
+            }
+
+            // Add brand filter
+            if (brand != null && !brand.isEmpty()) {
+                sql.append(" AND UPPER(p.Brand) = UPPER(?)");
+                params.add(brand);
+            }
+
+            PreparedStatement ps = c.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+    
+    // Get all categories for filter dropdown
+    public List<String> getAllCategories() {
+        List<String> categories = new ArrayList<>();
+        String sql = "SELECT DISTINCT CategoryName FROM Categories ORDER BY CategoryName";
+        
+        try {
+            PreparedStatement ps = c.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                categories.add(rs.getString("CategoryName"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving categories: " + e.getMessage());
+        }
+        
+        return categories;
+    }
+    
+    // Get all brands for filter dropdown
+    public List<String> getAllBrands() {
+        List<String> brands = new ArrayList<>();
+        String sql = "SELECT DISTINCT brand FROM Products ORDER BY brand";
+        
+        try {
+            PreparedStatement ps = c.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                brands.add(rs.getString("brand"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving brands: " + e.getMessage());
+        }
+        
+        return brands;
     }
 
     public static void main(String[] args) {

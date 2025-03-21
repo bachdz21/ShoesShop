@@ -114,10 +114,10 @@
                             <div class="checkbox-filter">
 
                                 <div class="input-checkbox">
-                                    <input type="checkbox" id="category-1" name="categories" value="Sneakers">
+                                    <input type="checkbox" id="category-1" name="categories" value="Sneaker">
                                     <label for="category-1">
                                         <span></span>
-                                        Sneakers
+                                        Sneaker
                                     </label>
                                 </div>
 
