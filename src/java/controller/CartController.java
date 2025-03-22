@@ -1,45 +1,30 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dal.ICartDAO;
 import dal.IProductDAO;
 import dal.imp.CartDAO;
 import dal.imp.ProductDAO;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import model.Cart;
 import model.CartItem;
-import model.Product;
 import model.User;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
-/**
- *
- * @author nguye
- */
 @WebServlet(name = "CartController", urlPatterns = {"/cart", "/addCart", "/addCartQuick", "/cartItem", "/deleteCartItem", "/trashCart",
     "/deleteCartItemTrash", "/restoreCartItem", "/updateQuantity", "/addCartQuickFromWishlist"})
 public class CartController extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     ICartDAO cartDAO = new CartDAO();
     IProductDAO productDAO = new ProductDAO();
 
@@ -51,19 +36,178 @@ public class CartController extends HttpServlet {
         } else if (request.getServletPath().equals("/cartItem")) {
             getCartItem(request, response);
         } else if (request.getServletPath().equals("/deleteCartItem")) {
-            deleteCartItem(request, response);
+            deleteCartItems(request, response);
         } else if (request.getServletPath().equals("/trashCart")) {
             getCartItemTrash(request, response);
         } else if (request.getServletPath().equals("/deleteCartItemTrash")) {
-            deleteCartItemTrash(request, response);
+            deleteCartItemsTrash(request, response);
         } else if (request.getServletPath().equals("/restoreCartItem")) {
-            restoreProduct(request, response);
+            restoreCartItems(request, response);
         } else if (request.getServletPath().equals("/addCartQuick")) {
             addCartQuick(request, response);
         } else if (request.getServletPath().equals("/addCartQuickFromWishlist")) {
             addCartQuickFromWishlist(request, response);
+        } else if (request.getServletPath().equals("/updateQuantity")) {
+            updateQuantity(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
+        }
+    }
+
+    // Phương thức gộp để xóa một hoặc nhiều sản phẩm từ CartItems
+    protected void deleteCartItems(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        int userId = user.getUserId();
+        List<Integer> productIds = new ArrayList<>();
+
+        // Kiểm tra xem request có phải từ AJAX (xóa nhiều) hay từ link (xóa một)
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.contains("application/json")) {
+            // Xử lý xóa nhiều sản phẩm qua AJAX
+            BufferedReader reader = request.getReader();
+            StringBuilder jsonBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonBuilder.append(line);
+            }
+
+            Gson gson = new Gson();
+            JsonObject jsonObject = gson.fromJson(jsonBuilder.toString(), JsonObject.class);
+            JsonArray productIdsArray = jsonObject.getAsJsonArray("productIds");
+            for (JsonElement element : productIdsArray) {
+                productIds.add(element.getAsInt());
+            }
+        } else {
+            // Xử lý xóa một sản phẩm qua link
+            String productIdStr = request.getParameter("productId");
+            if (productIdStr != null && !productIdStr.trim().isEmpty()) {
+                productIds.add(Integer.parseInt(productIdStr));
+            }
+        }
+
+        if (productIds.isEmpty()) {
+            String referer = request.getHeader("Referer");
+            response.sendRedirect(referer != null && !referer.isEmpty() ? referer : "cartItem");
+            return;
+        }
+
+        cartDAO.deleteMultipleCartItems(userId, productIds);
+
+        List<CartItem> updatedCart = cartDAO.getCartItems(userId);
+        updateCartInSession(request, updatedCart);
+
+        if (contentType != null && contentType.contains("application/json")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            String referer = request.getHeader("Referer");
+            response.sendRedirect(referer != null && !referer.isEmpty() ? referer : "cartItem");
+        }
+    }
+
+    // Phương thức gộp để xóa một hoặc nhiều sản phẩm từ CartItemsTrash
+    protected void deleteCartItemsTrash(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        int userId = user.getUserId();
+        List<Integer> productIds = new ArrayList<>();
+
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.contains("application/json")) {
+            BufferedReader reader = request.getReader();
+            StringBuilder jsonBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonBuilder.append(line);
+            }
+
+            Gson gson = new Gson();
+            JsonObject jsonObject = gson.fromJson(jsonBuilder.toString(), JsonObject.class);
+            JsonArray productIdsArray = jsonObject.getAsJsonArray("productIds");
+            for (JsonElement element : productIdsArray) {
+                productIds.add(element.getAsInt());
+            }
+        } else {
+            String productIdStr = request.getParameter("productId");
+            if (productIdStr != null && !productIdStr.trim().isEmpty()) {
+                productIds.add(Integer.parseInt(productIdStr));
+            }
+        }
+
+        if (productIds.isEmpty()) {
+            response.sendRedirect("trashCart");
+            return;
+        }
+
+        cartDAO.deleteMultipleTrashCartItems(userId, productIds);
+
+        if (contentType != null && contentType.contains("application/json")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            response.sendRedirect("trashCart");
+        }
+    }
+
+    // Phương thức gộp để khôi phục một hoặc nhiều sản phẩm từ CartItemsTrash
+    protected void restoreCartItems(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        int userId = user.getUserId();
+        List<Integer> productIds = new ArrayList<>();
+
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.contains("application/json")) {
+            BufferedReader reader = request.getReader();
+            StringBuilder jsonBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonBuilder.append(line);
+            }
+
+            Gson gson = new Gson();
+            JsonObject jsonObject = gson.fromJson(jsonBuilder.toString(), JsonObject.class);
+            JsonArray productIdsArray = jsonObject.getAsJsonArray("productIds");
+            for (JsonElement element : productIdsArray) {
+                productIds.add(element.getAsInt());
+            }
+        } else {
+            String productIdStr = request.getParameter("productId");
+            if (productIdStr != null && !productIdStr.trim().isEmpty()) {
+                productIds.add(Integer.parseInt(productIdStr));
+            }
+        }
+
+        if (productIds.isEmpty()) {
+            response.sendRedirect("trashCart");
+            return;
+        }
+
+        cartDAO.restoreMultipleCartItemsTrash(userId, productIds);
+        List<CartItem> updatedCart = cartDAO.getCartItems(userId);
+        updateCartInSession(request, updatedCart);
+
+        if (contentType != null && contentType.contains("application/json")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            response.sendRedirect("trashCart");
         }
     }
 
@@ -72,7 +216,6 @@ public class CartController extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
             return;
         }
@@ -85,9 +228,8 @@ public class CartController extends HttpServlet {
     protected void getCartItemTrash(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
+        User user = (User) session.getAttribute("user");
         if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
             return;
         }
@@ -103,9 +245,7 @@ public class CartController extends HttpServlet {
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        // Thêm sản phẩm vào giỏ hàng
         if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
             return;
         }
@@ -122,9 +262,7 @@ public class CartController extends HttpServlet {
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        // Thêm sản phẩm vào giỏ hàng
         if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
             return;
         }
@@ -140,10 +278,8 @@ public class CartController extends HttpServlet {
         int productId = Integer.parseInt(request.getParameter("productID"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
-        // Thêm sản phẩm vào giỏ hàng
+        User user = (User) session.getAttribute("user");
         if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
             return;
         }
@@ -154,79 +290,6 @@ public class CartController extends HttpServlet {
         request.getRequestDispatcher("cartItem").forward(request, response);
     }
 
-    protected void deleteCartItem(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-
-        if (user == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-
-        String productIdStr = request.getParameter("productId");
-
-        // Kiểm tra productId có hợp lệ không
-        if (productIdStr == null || productIdStr.trim().isEmpty()) {
-            response.sendRedirect(request.getHeader("Referer")); // Trả về trang trước
-            return;
-        }
-
-        try {
-            int productId = Integer.parseInt(productIdStr);
-            int userId = user.getUserId();
-            cartDAO.deleteCartItem(userId, productId);
-
-            List<CartItem> updatedCart = cartDAO.getCartItems(userId);
-            updateCartInSession(request, updatedCart);
-
-            // Trả về trang trước khi gửi request
-            String referer = request.getHeader("Referer");
-            if (referer != null && !referer.isEmpty()) {
-                response.sendRedirect(referer);
-            } else {
-                response.sendRedirect("cartItem"); // Nếu không có referer, về giỏ hàng mặc định
-            }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            response.sendRedirect("cartItem");
-        }
-    }
-
-    protected void deleteCartItemTrash(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
-        // Thêm sản phẩm vào giỏ hàng
-        if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
-            response.sendRedirect("login.jsp");
-            return;
-        }
-        int userId = user.getUserId();
-        int productId = Integer.parseInt(request.getParameter("productId"));
-        cartDAO.deleteTrashCartItem(userId, productId);
-        response.sendRedirect("trashCart"); // Chuyển hướng đến trang giỏ hàng sau khi xóa
-    }
-
-    protected void restoreProduct(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
-        // Thêm sản phẩm vào giỏ hàng
-        if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
-            response.sendRedirect("login.jsp");
-            return;
-        }
-        int userId = user.getUserId();
-        int productId = Integer.parseInt(request.getParameter("productId"));
-        cartDAO.restoreCartItemTrash(userId, productId); // Khôi phục sản phẩm từ thùng rác
-        List<CartItem> updatedCart = cartDAO.getCartItems(userId);
-        updateCartInSession(request, updatedCart);
-        response.sendRedirect("trashCart");
-    }
-
     public void updateCartInSession(HttpServletRequest request, List<CartItem> updatedCart) {
         HttpSession session = request.getSession();
         session.setAttribute("cart", updatedCart);
@@ -234,10 +297,8 @@ public class CartController extends HttpServlet {
 
     protected void updateQuantity(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
-        // Thêm sản phẩm vào giỏ hàng
+        User user = (User) session.getAttribute("user");
         if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
             return;
         }
@@ -245,33 +306,36 @@ public class CartController extends HttpServlet {
         int productID = Integer.parseInt(request.getParameter("productID"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
 
-        // Gọi phương thức DAO để cập nhật quantity trong CartItems
-        cartDAO.updateQuantityInCart(userId, productID, quantity); // userID có thể lấy từ session
+        cartDAO.updateQuantityInCart(userId, productID, quantity);
+        List<CartItem> updatedCart = cartDAO.getCartItems(userId);
+        updateCartInSession(request, updatedCart);
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String path = request.getServletPath();
         if (request.getServletPath().equals("/addCart")) {
             addCart(request, response);
         } else if (request.getServletPath().equals("/cartItem")) {
             getCartItem(request, response);
         } else if (request.getServletPath().equals("/deleteCartItem")) {
-            deleteCartItem(request, response);
+            deleteCartItems(request, response);
         } else if (request.getServletPath().equals("/trashCart")) {
             getCartItemTrash(request, response);
         } else if (request.getServletPath().equals("/deleteCartItemTrash")) {
-            deleteCartItemTrash(request, response);
+            deleteCartItemsTrash(request, response);
         } else if (request.getServletPath().equals("/restoreCartItem")) {
-            restoreProduct(request, response);
+            restoreCartItems(request, response);
         } else if (request.getServletPath().equals("/addCartQuick")) {
             addCartQuick(request, response);
         } else if (request.getServletPath().equals("/addCartQuickFromWishlist")) {
             addCartQuickFromWishlist(request, response);
+        } else if (request.getServletPath().equals("/updateQuantity")) {
+            updateQuantity(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }
     }
-
 }

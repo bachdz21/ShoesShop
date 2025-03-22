@@ -9,16 +9,10 @@ import dal.IProductDAO;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import model.Product;
-import model.User;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -755,8 +749,10 @@ public class ProductDAO extends DBConnect implements IProductDAO {
 
     public static void main(String[] args) {
         ProductDAO p = new ProductDAO();
-        List<Integer> list = p.getProductRatings(1);
-        System.out.println(list);
+        List<Product> list = p.getMostSoldProducts("Sneaker");
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i)); 
+        }
     }
 
 }

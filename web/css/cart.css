@@ -35,7 +35,6 @@ body, html {
     display: flex;
     font-size: 14px;
     height: 55px;
-    margin-bottom: 12px;
     overflow: hidden;
     padding: 0 20px;
 }
@@ -134,12 +133,11 @@ div {
     padding-bottom: 20px;
 }
 .lDiGJB:first-child {
-    padding-top: 15px;
+    padding-top: 20px;
 }
 .lDiGJB {
     color: rgba(0, 0, 0, .87);
     display: block;
-    margin-top: 15px;
     padding: 0 20px 15px;
     -webkit-text-decoration: none;
     text-decoration: none;

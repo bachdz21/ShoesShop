@@ -41,6 +41,97 @@
                 color: #D10024 !important;
             }
 
+            /* CSS cho nút Settings */
+            .settings-btn {
+                position: absolute;
+                top: -40px;
+                left: -120px;
+                background: none;
+                border: none;
+                font-size: 24px;
+                color: #333;
+                cursor: pointer;
+                z-index: 10; /* Đảm bảo nút nằm trên các phần tử khác */
+            }
+
+            .settings-btn:hover {
+                color: #D10024; /* Màu khi hover, tùy chỉnh theo theme của bạn */
+            }
+
+            /* CSS cho Modal */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+            }
+
+            .modal-content {
+                background-color: #fff;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                max-width: 500px;
+                border-radius: 5px;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 8px;
+                margin-bottom: 10px;
+            }
+
+            /* Đảm bảo container của hot-deal không che khuất nút */
+            #hot-deal .container {
+                position: relative;
+            }
+
+            .form-group input[type="text"] {
+                width: 100%;
+                padding: 8px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .primary-btn {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                color: #fff;
+                cursor: pointer;
+            }
+            .primary-btn:hover {
+                opacity: 0.9;
+            }
         </style>
     </head>
 
@@ -223,85 +314,69 @@
         <!-- /SECTION -->
 
         <!-- HOT DEAL SECTION -->
+
         <div id="hot-deal" class="section">
             <!-- container -->
             <div class="container">
+                <!-- Icon Settings cho Employee -->
+                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+                    <button class="settings-btn" onclick="openSettingsModal()">
+                        <i class="fa fa-cog"></i>
+                    </button>
+                </c:if>
+
                 <!-- row -->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="hot-deal">
                             <ul class="hot-deal-countdown">
-                                <li>
-                                    <div>
-                                        <h3 id="days">00</h3>
-                                        <span>Ngày</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div>
-                                        <h3 id="hours">00</h3>
-                                        <span>Giờ</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div>
-                                        <h3 id="minutes">00</h3>
-                                        <span>Phút</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div>
-                                        <h3 id="seconds">00</h3>
-                                        <span>Giây</span>
-                                    </div>
-                                </li>
+                                <li><div><h3 id="days">00</h3><span>Ngày</span></div></li>
+                                <li><div><h3 id="hours">00</h3><span>Giờ</span></div></li>
+                                <li><div><h3 id="minutes">00</h3><span>Phút</span></div></li>
+                                <li><div><h3 id="seconds">00</h3><span>Giây</span></div></li>
                             </ul>
-                            <h2 class="text-uppercase">GIẢM GIÁ SỐC TRONG TUẦN</h2>
-                            <p>Khuyến Mãi Lên Đến 50%</p>
+                            <h2 class="text-uppercase" id="hot-deal-title"></h2>
+                            <p id="hot-deal-subtitle"></p>
                             <a class="primary-btn cta-btn" href="./product">Mua Ngay</a>
                         </div>
                     </div>
                 </div>
                 <!-- /row -->
             </div>
-            <!-- /container -->
         </div>
+        <!-- /container -->
+
+        <!-- Modal Settings -->
+        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+            <div id="settingsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeSettingsModal()">×</span>
+                    <h4>Cài Đặt Hot Deal</h4>
+                    <form id="hot-deal-form" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="hot-deal-image">Thay đổi ảnh:</label>
+                            <input type="file" id="hot-deal-image" name="hot-deal-image" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <label for="hot-deal-endtime">Thời gian kết thúc:</label>
+                            <input type="datetime-local" id="hot-deal-endtime" name="hot-deal-endtime">
+                        </div>
+                        <div class="form-group">
+                            <label for="hot-deal-title-input">Tiêu đề:</label>
+                            <input type="text" id="hot-deal-title-input" name="hot-deal-title-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="hot-deal-subtitle-input">Phụ đề:</label>
+                            <input type="text" id="hot-deal-subtitle-input" name="hot-deal-subtitle-input">
+                        </div>
+                        <button type="button" onclick="saveSettings()" class="primary-btn">Lưu</button>
+                        <button type="button" onclick="resetSettings()" class="primary-btn" style="background-color: #D10024; margin-left: 10px;">Reset</button>
+                    </form>
+                </div>
+            </div>
+        </c:if>
+
         <!-- /HOT DEAL SECTION -->
-
-        <script>
-            // Hàm đếm ngược
-            function updateCountdown() {
-                const now = new Date();
-                const dayOfWeek = now.getDay();  // 0 = Chủ nhật, 1 = Thứ hai, ..., 6 = Thứ bảy
-                const daysPassed = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;  // Tính số ngày đã trôi qua kể từ thứ Hai
-                const daysRemaining = 6 - daysPassed;  // Số ngày còn lại đến Chủ nhật
-                const endOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysRemaining, 23, 59, 59);  // Cuối Chủ nhật
-
-                // Tính toán khoảng thời gian còn lại
-                const totalTimeRemaining = endOfWeek - now;
-
-                // Tính ngày, giờ, phút và giây
-                const seconds = Math.floor((totalTimeRemaining / 1000) % 60);
-                const minutes = Math.floor((totalTimeRemaining / 1000 / 60) % 60);
-                const hours = Math.floor((totalTimeRemaining / 1000 / 60 / 60) % 24);
-                const days = Math.floor(totalTimeRemaining / (1000 * 60 * 60 * 24));
-
-                // Cập nhật phần tử HTML với thời gian còn lại
-                document.getElementById("days").innerText = days < 10 ? "0" + days : days;
-                document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
-                document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
-                document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
-
-                // Kiểm tra nếu hết tuần (làm mới trang khi bắt đầu tuần mới)
-                if (totalTimeRemaining <= 0) {
-                    clearInterval(countdownInterval);  // Dừng đồng hồ đếm ngược
-                    location.reload();  // Làm mới trang
-                }
-            }
-
-            // Bắt đầu đếm ngược
-            const countdownInterval = setInterval(updateCountdown, 1000);  // Cập nhật mỗi giây
-        </script>
 
         <!-- SECTION -->
         <div class="section">
@@ -329,7 +404,14 @@
                                         <div class="product-body">
                                             <p class="product-category">${i.categoryName}</p>
                                             <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                            <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                <c:choose>
+                                                    <c:when test="${i.sale > 0}">
+                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <h4 class="product-price">$${i.price}</h4>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -345,7 +427,14 @@
                                         <div class="product-body">
                                             <p class="product-category">${i.categoryName}</p>
                                             <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                            <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                <c:choose>
+                                                    <c:when test="${i.sale > 0}">
+                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <h4 class="product-price">$${i.price}</h4>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -374,7 +463,14 @@
                                         <div class="product-body">
                                             <p class="product-category">${i.categoryName}</p>
                                             <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                            <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                <c:choose>
+                                                    <c:when test="${i.sale > 0}">
+                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <h4 class="product-price">$${i.price}</h4>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -390,7 +486,14 @@
                                         <div class="product-body">
                                             <p class="product-category">${i.categoryName}</p>
                                             <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                            <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                <c:choose>
+                                                    <c:when test="${i.sale > 0}">
+                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <h4 class="product-price">$${i.price}</h4>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -421,7 +524,14 @@
                                         <div class="product-body">
                                             <p class="product-category">${i.categoryName}</p>
                                             <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                            <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                <c:choose>
+                                                    <c:when test="${i.sale > 0}">
+                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <h4 class="product-price">$${i.price}</h4>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -437,7 +547,14 @@
                                         <div class="product-body">
                                             <p class="product-category">${i.categoryName}</p>
                                             <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                            <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                <c:choose>
+                                                    <c:when test="${i.sale > 0}">
+                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <h4 class="product-price">$${i.price}</h4>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -488,7 +605,7 @@
             <!-- /container -->
         </div>
         <!-- /NEWSLETTER -->
-        
+
         <!-- FOOTER -->
         <jsp:include page="footer.jsp" />
         <!-- /FOOTER -->
@@ -499,7 +616,159 @@
         <script src="js/slick.min.js"></script>
         <script src="js/nouislider.min.js"></script>
         <script src="js/jquery.zoom.min.js"></script>
-        <script src="js/main.js"></script>
+        <script src="js/main.js"></script>            
+        <script>
+                            const userRole = "${sessionScope.user != null ? sessionScope.user.role : 'Customer'}";
 
+                            // Hàm đếm ngược
+                            function updateCountdown(endTime) {
+                                const now = new Date();
+                                const targetTime = endTime ? new Date(endTime) : now;
+                                const totalTimeRemaining = targetTime - now;
+                                if (totalTimeRemaining <= 0) {
+                                    clearInterval(countdownInterval);
+                                    document.getElementById("days").innerText = "00";
+                                    document.getElementById("hours").innerText = "00";
+                                    document.getElementById("minutes").innerText = "00";
+                                    document.getElementById("seconds").innerText = "00";
+                                    return true; // Trả về true nếu thời gian đã hết
+                                }
+
+                                const seconds = Math.floor((totalTimeRemaining / 1000) % 60);
+                                const minutes = Math.floor((totalTimeRemaining / 1000 / 60) % 60);
+                                const hours = Math.floor((totalTimeRemaining / 1000 / 60 / 60) % 24);
+                                const days = Math.floor(totalTimeRemaining / (1000 * 60 * 60 * 24));
+                                document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+                                document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+                                document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+                                document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+                                return false; // Trả về false nếu thời gian chưa hết
+                            }
+
+                            // Hàm khởi tạo Hot Deal từ server
+                            function initializeHotDeal() {
+                                fetch('/ShoesStoreWed/getHotDeal')
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            const hotDealSection = document.getElementById("hot-deal");
+                                            const isTimeExpired = data.endTime ? updateCountdown(data.endTime) : true;
+
+                                            // Nếu thời gian hết và không phải Employee, ẩn Hot Deal
+                                            if (isTimeExpired && userRole !== "Employee") {
+                                                hotDealSection.style.display = "none";
+                                                return; // Thoát hàm nếu không hiển thị
+                                            } else {
+                                                hotDealSection.style.display = "block"; // Đảm bảo hiển thị nếu không thỏa mãn điều kiện ẩn
+                                            }
+
+                                            if (data.endTime && !isTimeExpired) {
+                                                clearInterval(countdownInterval);
+                                                countdownInterval = setInterval(() => updateCountdown(data.endTime), 1000);
+                                            } else {
+                                                updateCountdown(); // Hiển thị 00:00:00:00 nếu không có thời gian hoặc đã hết
+                                            }
+
+                                            document.getElementById("hot-deal-title").innerText = data.title ? data.title.toUpperCase() : "TIÊU ĐỀ";
+                                            document.getElementById("hot-deal-subtitle").innerText = data.subtitle || "Phụ Đề";
+
+                                            // Chỉ cập nhật các input trong modal nếu người dùng là Employee
+                                            if (userRole === "Employee") {
+                                                document.getElementById("hot-deal-title-input").value = data.title || "TIÊU ĐỀ";
+                                                document.getElementById("hot-deal-subtitle-input").value = data.subtitle || "Phụ Đề";
+                                                document.getElementById("hot-deal-endtime").value = data.endTime ? data.endTime.slice(0, 16) : "";
+                                            }
+
+                                            if (data.imageURL) {
+                                                hotDealSection.style.background = "url('" + data.imageURL + "') no-repeat center center";
+                                                hotDealSection.style.backgroundSize = "cover";
+                                            } else {
+                                                hotDealSection.style.background = "url('./img/hotdeal.png') no-repeat center center";
+                                                hotDealSection.style.backgroundSize = "cover";
+                                            }
+                                        })
+                                        .catch(error => console.error('Error fetching hot deal settings:', error));
+                            }
+
+                            window.onload = function () {
+                                initializeHotDeal();
+                            };
+
+                            // Hàm mở/đóng Modal
+                            function openSettingsModal() {
+                                document.getElementById("settingsModal").style.display = "block";
+                            }
+
+                            function closeSettingsModal() {
+                                document.getElementById("settingsModal").style.display = "none";
+                            }
+
+                            window.onclick = function (event) {
+                                const modal = document.getElementById("settingsModal");
+                                if (event.target == modal) {
+                                    modal.style.display = "none";
+                                }
+                            };
+
+                            // Hàm lưu cài đặt
+                            function saveSettings() {
+                                const endTime = document.getElementById("hot-deal-endtime").value;
+                                const title = document.getElementById("hot-deal-title-input").value;
+                                const subtitle = document.getElementById("hot-deal-subtitle-input").value;
+                                const fileInput = document.getElementById("hot-deal-image");
+
+                                if (endTime && new Date(endTime) <= new Date()) {
+                                    alert("Vui lòng chọn thời gian trong tương lai!");
+                                    return;
+                                }
+
+                                const formData = new FormData();
+                                formData.append("endTime", endTime);
+                                formData.append("title", title);
+                                formData.append("subtitle", subtitle);
+                                if (fileInput.files.length > 0) {
+                                    formData.append("hot-deal-image", fileInput.files[0]);
+                                }
+
+                                fetch('/ShoesStoreWed/saveHotDeal', {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                        .then(response => response.text())
+                                        .then(() => {
+                                            if (endTime) {
+                                                clearInterval(countdownInterval);
+                                                countdownInterval = setInterval(() => updateCountdown(endTime), 1000);
+                                            } else {
+                                                clearInterval(countdownInterval);
+                                                updateCountdown();
+                                            }
+                                            document.getElementById("hot-deal-title").innerText = title ? title.toUpperCase() : "TIÊU ĐỀ";
+                                            document.getElementById("hot-deal-subtitle").innerText = subtitle || "Phụ Đề";
+                                            initializeHotDeal(); // Cập nhật lại giao diện sau khi lưu
+                                            closeSettingsModal();
+                                        })
+                                        .catch(error => console.error('Error saving settings:', error));
+                            }
+
+                            // Hàm reset cài đặt
+                            function resetSettings() {
+                                fetch('/ShoesStoreWed/resetHotDeal', {method: 'POST'})
+                                        .then(response => response.text())
+                                        .then(() => {
+                                            clearInterval(countdownInterval);
+                                            updateCountdown();
+                                            document.getElementById("hot-deal-title").innerText = "TIÊU ĐỀ";
+                                            document.getElementById("hot-deal-subtitle").innerText = "Phụ Đề";
+                                            document.getElementById("hot-deal-endtime").value = "";
+                                            document.getElementById("hot-deal-title-input").value = "TIÊU ĐỀ";
+                                            document.getElementById("hot-deal-subtitle-input").value = "Phụ Đề";
+                                            initializeHotDeal(); // Cập nhật lại giao diện sau khi reset
+                                            closeSettingsModal();
+                                        })
+                                        .catch(error => console.error('Error resetting settings:', error));
+                            }
+
+                            let countdownInterval;
+        </script>
     </body>
 </html>

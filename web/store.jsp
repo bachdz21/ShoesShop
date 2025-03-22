@@ -304,13 +304,13 @@
                                         <p class="product-category">${i.categoryName}</p>
                                         <h3 class="product-name"><a href="productDetail?id=${i.productID}">${i.productName}</a></h3>
                                             <c:choose>
-                                                <c:when test="${i.salePrice > 0}">
-                                                <h4 class="product-price">${i.salePrice} <del class="product-old-price">${i.price}</del></h4>
+                                                    <c:when test="${i.sale > 0}">
+                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
                                                 </c:when>
                                                 <c:otherwise>
-                                                <h4 class="product-price">${i.price}</h4>
-                                            </c:otherwise>
-                                        </c:choose>
+                                                    <h4 class="product-price">$${i.price}</h4>
+                                                </c:otherwise>
+                                            </c:choose>
                                         <div class="product-rating">
                                             <i class="fa fa-star"></i>
                                             <i class="fa fa-star"></i>
