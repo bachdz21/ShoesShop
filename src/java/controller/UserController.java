@@ -5,11 +5,13 @@
 package controller;
 
 import dal.ICartDAO;
+import dal.IShippingDAO;
 import dal.IUserDAO;
 import dal.IWishlistDAO;
 import dal.imp.CartDAO;
 import dal.imp.EmailService;
 import dal.imp.OrderDAO;
+import dal.imp.ShippingDAO;
 import dal.imp.UserDAO;
 import dal.imp.WishlistDAO;
 import jakarta.mail.internet.MimeUtility;
@@ -23,6 +25,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import model.CartItem;
 import model.User;
@@ -32,6 +36,7 @@ import java.util.UUID;
 import model.Order;
 import model.OrderContact;
 import model.OrderDetail;
+import model.Shipping;
 import model.WishlistItem;
 //import org.json.JSONObject;
 import utils.Encryption;
@@ -42,8 +47,10 @@ import utils.Encryption;
  */
 @WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/checkExisting",
     "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
-    "/userProfile", "/userOrder","/updateProfile", "/changePassword", "/updateAvatar", "/orderDetail",
-    "/filterBanUser", "/emailReminder", "/banUser","/updateRoleUser", "/filterUser", "/restoreUser"})
+    "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar",
+    "/userOrder", "/orderDetail", "/allUserOrder", "/confirmOrder",
+    "/filterBanUser", "/emailReminder", "/banUser", "/updateRoleUser", "/filterUser", "/restoreUser",
+    "/shippingInformation", "/addShippingInformation"})
 @MultipartConfig
 
 public class UserController extends HttpServlet {
@@ -53,6 +60,7 @@ public class UserController extends HttpServlet {
     IWishlistDAO wishlistDAO = new WishlistDAO();
     private final OrderDAO orderDAO = new OrderDAO();
     Encryption e = new Encryption();
+    IShippingDAO shippingDAO = new ShippingDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -75,12 +83,6 @@ public class UserController extends HttpServlet {
             case "/userProfile":
                 userProfile(request, response);//get
                 break;
-            case "/userOrder":
-                userOrder(request, response);//get
-                break;
-            case "/orderDetail":
-                orderDetail(request, response);//get
-                break;
             case "/filterUser":
                 filterUser(request, response);//get
                 break;
@@ -98,6 +100,21 @@ public class UserController extends HttpServlet {
                 break;
             case "/filterBanUser":
                 filterBanUser(request, response);//get
+                break;
+            case "/userOrder":
+                userOrder(request, response);//get
+                break;
+            case "/orderDetail":
+                orderDetail(request, response);//get confirmOrder
+                break;
+            case "/allUserOrder":
+                allUserOrder(request, response);//get
+                break;
+            case "/confirmOrder":
+                confirmOrder(request, response);//get confirmOrder
+                break;
+            case "/shippingInformation":
+                shippingInformation(request, response);//get confirmOrder
                 break;
 
             default:
@@ -137,7 +154,9 @@ public class UserController extends HttpServlet {
             case "/updateAvatar":
                 updateAvatar(request, response);
                 break;
-
+            case "/addShippingInformation":
+                addShippingInformation(request, response);//get confirmOrder
+                break;
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -401,72 +420,6 @@ public class UserController extends HttpServlet {
         request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển hướng đến trang JSP
     }
 
-    protected void userOrder(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy UserID từ session
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            response.sendRedirect("login");
-            return;
-        }
-
-        // Lấy các tham số từ form
-        String orderCode = request.getParameter("orderCode");
-        String paymentMethod = request.getParameter("paymentMethod");
-        String sortBy = request.getParameter("sortBy");
-        String fromDate = request.getParameter("fromDate");
-        String toDate = request.getParameter("toDate");
-        String minPriceStr = request.getParameter("minPrice");
-        String maxPriceStr = request.getParameter("maxPrice");
-
-        // Xử lý giá trị minPrice và maxPrice
-        Double minPrice = (minPriceStr != null && !minPriceStr.isEmpty()) ? Double.parseDouble(minPriceStr) : null;
-        Double maxPrice = (maxPriceStr != null && !maxPriceStr.isEmpty()) ? Double.parseDouble(maxPriceStr) : null;
-
-        // Xử lý phương thức thanh toán
-        String selectedPaymentMethod = null;
-        if ("Chuyển Khoản Ngân Hàng".equals(paymentMethod)) {
-            selectedPaymentMethod = "Chuyển Khoản Ngân Hàng";
-        } else if ("Thẻ Tín Dụng".equals(paymentMethod)) {
-            selectedPaymentMethod = "Thẻ Tín Dụng";
-        } else if ("Tiền Mặt Khi Nhận Hàng".equals(paymentMethod)) {
-            selectedPaymentMethod = "Tiền Mặt Khi Nhận Hàng";
-        }
-
-        // Xử lý sắp xếp
-        String orderBy = null;
-        if ("priceDesc".equals(sortBy)) {
-            orderBy = "TotalAmount DESC";
-        } else if ("priceAsc".equals(sortBy)) {
-            orderBy = "TotalAmount ASC";
-        } else {
-            orderBy = "OrderDate DESC";
-        }
-
-        // Lấy danh sách đơn hàng với các điều kiện lọc
-        List<Order> orders = orderDAO.getOrdersByUserId(
-                user.getUserId(),
-                orderCode,
-                selectedPaymentMethod,
-                fromDate,
-                toDate,
-                minPrice,
-                maxPrice,
-                orderBy
-        );
-
-        // Gửi dữ liệu sang JSP (bao gồm các giá trị đã nhập)
-        request.setAttribute("orders", orders);
-        request.setAttribute("orderCode", orderCode);
-        request.setAttribute("paymentMethod", paymentMethod);
-        request.setAttribute("sortBy", sortBy);
-        request.setAttribute("fromDate", fromDate);
-        request.setAttribute("toDate", toDate);
-        request.setAttribute("minPrice", minPriceStr); // Giữ nguyên chuỗi để hiển thị
-        request.setAttribute("maxPrice", maxPriceStr); // Giữ nguyên chuỗi để hiển thị
-
-        request.getRequestDispatcher("userOrder.jsp").forward(request, response);
-    }
     // Cập nhật ảnh đại diện
     private static final String IMAGE_UPLOAD_DIR = "D:\\DH_FPT\\Semester5\\SWP301\\pj_swp\\ShoesShop\\web\\img";
 
@@ -553,7 +506,7 @@ public class UserController extends HttpServlet {
         if (!user.getPassword().equals(e.getMd5(password))) {
             message = "Mật khẩu hiện tại không chính xác.";
         } else {
-        userDAO.changePassword(userId, e.getMd5(newPassword)); // Cập nhật mật khẩu mới
+            userDAO.changePassword(userId, e.getMd5(newPassword)); // Cập nhật mật khẩu mới
             message = "Đổi mật khẩu thành công.";
         }
 
@@ -561,6 +514,307 @@ public class UserController extends HttpServlet {
         session.setAttribute("messageChangePassword", message);
         // Sử dụng sendRedirect để chuyển hướng đến trang userProfile
         response.sendRedirect("userProfile"); // Chuyển hướng tới trang userProfile
+    }
+
+    protected void userOrder(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy UserID từ session
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login");
+            return;
+        }
+
+        // Lấy các tham số từ form
+        String orderCode = request.getParameter("orderCode");
+        String shippingAddress = request.getParameter("shippingAddress");
+        String paymentMethod = request.getParameter("paymentMethod");
+        String sortBy = request.getParameter("sortBy");
+        String fromDate = request.getParameter("fromDate");
+        String toDate = request.getParameter("toDate");
+        String minPriceStr = request.getParameter("minPrice");
+        String maxPriceStr = request.getParameter("maxPrice");
+
+        // Xử lý giá trị minPrice và maxPrice
+        Double minPrice = (minPriceStr != null && !minPriceStr.isEmpty()) ? Double.parseDouble(minPriceStr) : null;
+        Double maxPrice = (maxPriceStr != null && !maxPriceStr.isEmpty()) ? Double.parseDouble(maxPriceStr) : null;
+
+        // Xử lý phương thức thanh toán
+        String selectedPaymentMethod = null;
+        if ("Chuyển Khoản Ngân Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Chuyển Khoản Ngân Hàng";
+        } else if ("Thẻ Tín Dụng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Thẻ Tín Dụng";
+        } else if ("Tiền Mặt Khi Nhận Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Tiền Mặt Khi Nhận Hàng";
+        }
+
+        // Xử lý sắp xếp
+        String orderBy = null;
+        if ("priceDesc".equals(sortBy)) {
+            orderBy = "TotalAmount DESC";
+        } else if ("priceAsc".equals(sortBy)) {
+            orderBy = "TotalAmount ASC";
+        } else {
+            orderBy = "OrderDate DESC";
+        }
+
+        List<Order> orders;
+
+        if (user.getRole().equals("Admin") || user.getRole().equals("Staff")) {
+            // Lấy danh sách đơn hàng với các điều kiện lọc
+            orders = orderDAO.getAllOrders(
+                    orderCode, shippingAddress,
+                    selectedPaymentMethod,
+                    fromDate,
+                    toDate,
+                    minPrice,
+                    maxPrice,
+                    orderBy
+            );
+            System.out.println("11111111111");
+        } else if (user.getRole().equals("Customer")) {
+            // Lấy danh sách đơn hàng với các điều kiện lọc
+            orders = orderDAO.getOrdersByUserId(
+                    user.getUserId(),
+                    orderCode, shippingAddress,
+                    selectedPaymentMethod,
+                    fromDate,
+                    toDate,
+                    minPrice,
+                    maxPrice,
+                    orderBy
+            );
+            System.out.println("222222222222");
+        } else {
+            // Lấy danh sách đơn hàng với các điều kiện lọc
+            orders = orderDAO.getOrdersByUserIdInShipping(
+                    user.getUserId(),
+                    orderCode, shippingAddress,
+                    selectedPaymentMethod,
+                    fromDate,
+                    toDate,
+                    minPrice,
+                    maxPrice,
+                    orderBy
+            );
+            System.out.println("3333333333333");
+        }
+
+        // Gửi dữ liệu sang JSP (bao gồm các giá trị đã nhập)
+        request.setAttribute("orders", orders);
+        request.setAttribute("orderCode", orderCode);
+        request.setAttribute("shippingAddress", shippingAddress);
+
+        request.setAttribute("paymentMethod", paymentMethod);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("fromDate", fromDate);
+        request.setAttribute("toDate", toDate);
+        request.setAttribute("minPrice", minPriceStr); // Giữ nguyên chuỗi để hiển thị
+        request.setAttribute("maxPrice", maxPriceStr); // Giữ nguyên chuỗi để hiển thị
+
+        request.getRequestDispatcher("userOrder.jsp").forward(request, response);
+    }
+
+    protected void allUserOrder(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy UserID từ session
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login");
+            return;
+        }
+        if (user.getRole().equals("Customer")) {
+            response.sendRedirect("home");
+            return;
+        }
+
+        // Lấy các tham số từ form
+        String orderCode = request.getParameter("orderCode");
+        String shippingAddress = request.getParameter("shippingAddress");
+        String paymentMethod = request.getParameter("paymentMethod");
+        String sortBy = request.getParameter("sortBy");
+        String fromDate = request.getParameter("fromDate");
+        String toDate = request.getParameter("toDate");
+        String minPriceStr = request.getParameter("minPrice");
+        String maxPriceStr = request.getParameter("maxPrice");
+
+        // Lấy tham số phân trang
+        String pageStr = request.getParameter("pageStr");
+        int page = (pageStr != null && !pageStr.isEmpty()) ? Integer.parseInt(pageStr) : 1;
+        int pageSize = 4; // Số đơn hàng trên mỗi trang
+
+        // Xử lý giá trị minPrice và maxPrice
+        Double minPrice = (minPriceStr != null && !minPriceStr.isEmpty()) ? Double.parseDouble(minPriceStr) : null;
+        Double maxPrice = (maxPriceStr != null && !maxPriceStr.isEmpty()) ? Double.parseDouble(maxPriceStr) : null;
+
+        // Xử lý phương thức thanh toán
+        String selectedPaymentMethod = null;
+        if ("Chuyển Khoản Ngân Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Chuyển Khoản Ngân Hàng";
+        } else if ("Thẻ Tín Dụng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Thẻ Tín Dụng";
+        } else if ("Tiền Mặt Khi Nhận Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Tiền Mặt Khi Nhận Hàng";
+        }
+
+        // Xử lý sắp xếp
+        String orderBy = null;
+        if ("priceDesc".equals(sortBy)) {
+            orderBy = "TotalAmount DESC";
+        } else if ("priceAsc".equals(sortBy)) {
+            orderBy = "TotalAmount ASC";
+        } else {
+            orderBy = "OrderDate DESC";
+        }
+
+        // Lấy danh sách đơn hàng với các điều kiện lọc
+        List<Order> orders;
+
+        if (user.getRole().equals("Admin") || user.getRole().equals("Staff")) {
+            orders = orderDAO.getAllPendingOrders("Pending",
+                    orderCode, shippingAddress,
+                    selectedPaymentMethod,
+                    fromDate,
+                    toDate,
+                    minPrice,
+                    maxPrice,
+                    orderBy
+            );
+        } else {
+            orders = orderDAO.getAllPendingOrders("Confirmed",
+                    orderCode, shippingAddress,
+                    selectedPaymentMethod,
+                    fromDate,
+                    toDate,
+                    minPrice,
+                    maxPrice,
+                    orderBy);
+        }
+
+        // Phân trang cho danh sách đơn hàng
+        int totalOrders = orders.size();
+        int totalPages = (int) Math.ceil((double) totalOrders / pageSize);
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, totalOrders);
+
+        List<Order> paginatedOrders;
+        if (startIndex < totalOrders) {
+            paginatedOrders = orders.subList(startIndex, endIndex);
+        } else {
+            paginatedOrders = new ArrayList<>(); // Nếu không có dữ liệu, trả về danh sách rỗng
+        }
+
+        // Gửi dữ liệu sang JSP (bao gồm các giá trị đã nhập và thông tin phân trang)
+        request.setAttribute("orders", paginatedOrders);
+        request.setAttribute("orderCode", orderCode);
+        request.setAttribute("shippingAddress", shippingAddress);
+        request.setAttribute("paymentMethod", paymentMethod);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("fromDate", fromDate);
+        request.setAttribute("toDate", toDate);
+        request.setAttribute("minPrice", minPriceStr);
+        request.setAttribute("maxPrice", maxPriceStr);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalOrders", totalOrders);
+        request.getRequestDispatcher("listPendingOrder.jsp").forward(request, response);
+    }
+
+    protected void confirmOrder(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Lấy UserID từ session
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login");
+            return;
+        }
+        if (!user.getRole().equals("Staff") & !user.getRole().equals("Admin") & !user.getRole().equals("Shipper")) {
+            response.sendRedirect("home");
+            return;
+        }
+        // Lấy các tham số từ request
+        String orderCode = request.getParameter("orderCode");
+        String shippingAddress = request.getParameter("shippingAddress");
+
+        String paymentMethod = request.getParameter("paymentMethod");
+        String sortBy = request.getParameter("sortBy");
+        String fromDate = request.getParameter("fromDate");
+        String toDate = request.getParameter("toDate");
+        String minPrice = request.getParameter("minPrice");
+        String maxPrice = request.getParameter("maxPrice");
+        String pageStr = request.getParameter("pageStr");
+
+        // Xử lý giá trị
+        orderCode = (orderCode == null) ? "" : orderCode;
+        paymentMethod = (paymentMethod == null) ? "" : paymentMethod;
+        sortBy = (sortBy == null) ? "" : sortBy;
+        fromDate = (fromDate == null) ? "" : fromDate;
+        toDate = (toDate == null) ? "" : toDate;
+        minPrice = (minPrice == null) ? "" : minPrice;
+        maxPrice = (maxPrice == null) ? "" : maxPrice;
+        pageStr = (pageStr == null) ? "" : pageStr;
+
+        Double minPriceValue = (minPrice.isEmpty()) ? null : Double.parseDouble(minPrice);
+        Double maxPriceValue = (maxPrice.isEmpty()) ? null : Double.parseDouble(maxPrice);
+        // Xử lý phương thức thanh toán
+        String selectedPaymentMethod = null;
+        if ("Chuyển Khoản Ngân Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Chuyển Khoản Ngân Hàng";
+        } else if ("Thẻ Tín Dụng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Thẻ Tín Dụng";
+        } else if ("Tiền Mặt Khi Nhận Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Tiền Mặt Khi Nhận Hàng";
+        }
+
+        String orderBy = null;
+        if ("priceDesc".equals(sortBy)) {
+            orderBy = "TotalAmount DESC";
+        } else if ("priceAsc".equals(sortBy)) {
+            orderBy = "TotalAmount ASC";
+        } else {
+            orderBy = "OrderDate DESC";
+        }
+
+        if (user.getRole().equals("Admin") || user.getRole().equals("Staff")) {
+            if (request.getParameter("orderId") == null) {
+                // Gọi phương thức confirmAllPendingOrders
+                orderDAO.confirmAllPendingOrders(orderCode, shippingAddress, selectedPaymentMethod, fromDate, toDate, minPriceValue, maxPriceValue, orderBy);
+
+                // Đặt thông báo
+                session.setAttribute("message", "Đã xác nhận tất cả đơn hàng đang chờ!");
+            } else {
+                int oId = Integer.parseInt(request.getParameter("orderId")); // Lấy orderId từ URL
+                boolean a = orderDAO.updateOrderStatus(oId, "Confirmed", 0);
+                session.setAttribute("message", "Đã xác nhận đơn hàng !");
+
+            }
+        } else {
+            if (request.getParameter("orderId") == null) {
+                // Gọi phương thức confirmAllPendingOrders
+                orderDAO.receiveAllConfirmedOrders(orderCode, shippingAddress, selectedPaymentMethod, fromDate, toDate, minPriceValue, maxPriceValue, orderBy, user.getUserId());
+
+                // Đặt thông báo
+                session.setAttribute("message", "Đã xác nhận tất cả đơn hàng đang chờ!");
+            } else {
+                int oId = Integer.parseInt(request.getParameter("orderId")); // Lấy orderId từ URL
+                boolean a = orderDAO.updateOrderStatus(oId, "Shipped", user.getUserId());
+                System.out.println(user.getUserId());
+                session.setAttribute("message", "Đã xác nhận đơn hàng !");
+
+            }
+
+        }
+
+        // Mã hóa các tham số có dấu
+        String encodedPaymentMethod = (selectedPaymentMethod == null) ? "" : URLEncoder.encode(selectedPaymentMethod, StandardCharsets.UTF_8);
+
+        // Chuyển hướng
+        // Chuyển hướng về trang allUserOrder và giữ lại các tham số tìm kiếm trong URL
+        response.sendRedirect("allUserOrder?pageStr=" + pageStr + "&orderCode=" + orderCode + "&paymentMethod=" + encodedPaymentMethod
+                + "&sortBy=" + sortBy + "&fromDate=" + fromDate + "&toDate=" + toDate
+                + "&minPrice=" + minPrice + "&maxPrice=" + maxPrice);
     }
 
     protected void orderDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -716,7 +970,7 @@ public class UserController extends HttpServlet {
         // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
         response.sendRedirect("filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName=" + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
     }
-    
+
     protected void updateRoleUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Lấy thông tin userId từ tham số request
@@ -727,13 +981,12 @@ public class UserController extends HttpServlet {
             response.sendRedirect("home");
             return;
         }
-        
+
         User u11 = userDAO.getUserById(Integer.parseInt(request.getParameter("userId")));
-        
+
         User u1 = new User(); // Gọi hàm để lấy thông tin người dùng
         u1.setUserId(Integer.parseInt(request.getParameter("userId")));
-        
-        
+
         // Nếu hiện tại là Admin thì hủy quyền về Customer
         if ("Admin".equals(u11.getRole())) {
             u1.setRole("Customer");
@@ -741,8 +994,6 @@ public class UserController extends HttpServlet {
             u1.setRole("Admin");
         }
         userDAO.updateUser(u1);
-
-
 
         // Lấy thông tin các tham số tìm kiếm và đảm bảo rằng nếu chúng là null thì sẽ mặc định là ""
         String pageStr1 = request.getParameter("pageStr1");
@@ -960,6 +1211,52 @@ public class UserController extends HttpServlet {
         request.setAttribute("totalCustomers", totalCustomers);
         request.setAttribute("totalEmployees", totalEmployees);
         request.getRequestDispatcher("accountIsLockedList.jsp").forward(request, response);
+    }
+
+    protected void shippingInformation(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int orderId = Integer.parseInt(request.getParameter("orderId"));
+
+        // Lấy danh sách Shipping theo OrderID
+        List<Shipping> shippingList = shippingDAO.getListShippingByOrderID(orderId);
+
+        // Giả sử UserID của Shipper là 100 (có thể lấy từ session hoặc database)
+        int shipperId = shippingDAO.getUserIDInShippingByOrderID(orderId); // Thay bằng logic thực tế để lấy UserID của Shipper
+        User shipper = userDAO.getUserById(shipperId);
+
+        Order order = orderDAO.getOrdersByOrderId(orderId);
+        // Đặt thuộc tính để truyền sang JSP
+        request.setAttribute("orderId", orderId);
+        request.setAttribute("order", order);
+        request.setAttribute("shipper", shipper);
+        request.setAttribute("shippingList", shippingList);
+
+        // Chuyển hướng đến JSP
+        request.getRequestDispatcher("shippingInformation.jsp").forward(request, response);
+
+    }
+
+    protected void addShippingInformation(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int orderId = Integer.parseInt(request.getParameter("orderId"));
+        int userId = Integer.parseInt(request.getParameter("userId"));
+        String reason = request.getParameter("reason"); // Lý do từ ô text
+        String orderStatus = request.getParameter("status"); // "", "Delivered" hoặc "Cancelled"
+        String shippingStatus;
+
+        // Xử lý shippingStatus dựa trên orderStatus
+        if ("Delivered".equalsIgnoreCase(orderStatus)) {
+            shippingStatus = "Giao hàng thành công";
+        } else if ("Cancelled".equalsIgnoreCase(orderStatus)) {
+            shippingStatus = "Giao hàng không thành công, " + reason;
+        } else {
+            shippingStatus = reason; // Trường hợp status=""
+        }
+
+        // Gọi phương thức addStatusShippingByOrderID
+        boolean success = shippingDAO.addStatusShippingByOrderID(orderId, shippingStatus, userId, orderStatus);
+        response.sendRedirect("shippingInformation?orderId=" + orderId);
+
     }
 
     public static void main(String[] args) {

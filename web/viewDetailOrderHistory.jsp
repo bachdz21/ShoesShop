@@ -214,6 +214,7 @@
                 font-weight: 500;
                 transition: background-color 0.3s ease;
                 margin-top: 15px;
+                margin-left: 300px;
                 text-align: center;
             }
             .back-btn:hover {
@@ -246,7 +247,7 @@
         <!-- /NAVIGATION -->
         
         <a href="./userOrder" class="back-btn"><i class="fa fa-arrow-left"></i> Trở về</a>
-        
+        <a href="./shippingInformation?orderId=${order.orderId}" class="back-btn"><i class="fa fa-arrow-right"></i> Tông tin vận chuyển</a>
         <div class="user-profile-page">
             <div class="container user-profile">
                 <h1>Thông tin đơn hàng</h1>
