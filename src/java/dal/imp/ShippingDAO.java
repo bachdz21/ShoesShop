@@ -95,7 +95,7 @@ public class ShippingDAO extends DBConnect implements IShippingDAO {
     @Override
 
     // Phương thức lấy UserID mới nhất trong Shipping theo OrderID
-    public int getUserIDInShippingByOrderID(int orderID) {
+    public Integer getUserIDInShippingByOrderID(int orderID) {
         String sql = "SELECT TOP 1 [UserID] FROM [Shipping] WHERE [OrderID] = ? ORDER BY [ShippingDate] DESC";
         Integer userId = null; // Sử dụng Integer để hỗ trợ giá trị NULL
 

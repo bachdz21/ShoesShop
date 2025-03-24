@@ -12,7 +12,7 @@ import model.Shipping;
  * @author Admin
  */
 public interface IShippingDAO {
-    int getUserIDInShippingByOrderID(int orderID);
+    Integer getUserIDInShippingByOrderID(int orderID);
     List<Shipping> getListShippingByOrderID(int orderID);
     boolean addStatusShippingByOrderID(int orderID, String shippingStatus, int userID,String orderStatus);
 }

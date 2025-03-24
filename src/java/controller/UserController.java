@@ -812,7 +812,7 @@ public class UserController extends HttpServlet {
 
         // Chuyển hướng
         // Chuyển hướng về trang allUserOrder và giữ lại các tham số tìm kiếm trong URL
-        response.sendRedirect("allUserOrder?pageStr=" + pageStr + "&orderCode=" + orderCode + "&paymentMethod=" + encodedPaymentMethod
+        response.sendRedirect("allUserOrder?pageStr=" + pageStr + "&orderCode=" + orderCode + "&shippingAddress=" + shippingAddress + "&paymentMethod=" + encodedPaymentMethod
                 + "&sortBy=" + sortBy + "&fromDate=" + fromDate + "&toDate=" + toDate
                 + "&minPrice=" + minPrice + "&maxPrice=" + maxPrice);
     }
@@ -1220,11 +1220,32 @@ public class UserController extends HttpServlet {
         // Lấy danh sách Shipping theo OrderID
         List<Shipping> shippingList = shippingDAO.getListShippingByOrderID(orderId);
 
-        // Giả sử UserID của Shipper là 100 (có thể lấy từ session hoặc database)
-        int shipperId = shippingDAO.getUserIDInShippingByOrderID(orderId); // Thay bằng logic thực tế để lấy UserID của Shipper
-        User shipper = userDAO.getUserById(shipperId);
+        // Lấy UserID từ Shipping
+        Integer shipperId = shippingDAO.getUserIDInShippingByOrderID(orderId);
+        User shipper;
+
+        if (shipperId == null) {
+            // Tạo User giả nếu không có Shipper
+            shipper = new User();
+            shipper.setUserId(0); // Giá trị mặc định, có thể thay đổi tùy yêu cầu
+            shipper.setFullName("Đơn chưa được nhận");
+            shipper.setPhoneNumber("Chưa được cập nhật");
+            shipper.setEmail("Chưa được cập nhật");
+        } else {
+            // Lấy thông tin Shipper từ userDAO
+            shipper = userDAO.getUserById(shipperId);
+            if (shipper == null) {
+                // Nếu userDAO không tìm thấy User, tạo User giả với thông tin mặc định
+                shipper = new User();
+                shipper.setUserId(shipperId);
+                shipper.setFullName("Đơn chưa được nhận");
+                shipper.setPhoneNumber("Chưa được cập nhật");
+                shipper.setEmail("Chưa được cập nhật");
+            }
+        }
 
         Order order = orderDAO.getOrdersByOrderId(orderId);
+
         // Đặt thuộc tính để truyền sang JSP
         request.setAttribute("orderId", orderId);
         request.setAttribute("order", order);
@@ -1233,7 +1254,6 @@ public class UserController extends HttpServlet {
 
         // Chuyển hướng đến JSP
         request.getRequestDispatcher("shippingInformation.jsp").forward(request, response);
-
     }
 
     protected void addShippingInformation(HttpServletRequest request, HttpServletResponse response)

@@ -591,7 +591,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         }
         if (shippingAddress != null && !shippingAddress.isEmpty()) {
             updateSql.append(" AND [ShippingAddress] LIKE ?");
-            params.add("%" + shippingAddress + "%");
+            updateParams.add("%" + shippingAddress + "%");
         }
         if (paymentMethod != null && !paymentMethod.isEmpty()) {
             updateSql.append(" AND [PaymentMethod] = ?");
@@ -705,7 +705,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         }
         if (shippingAddress != null && !shippingAddress.isEmpty()) {
             updateSql.append(" AND [ShippingAddress] LIKE ?");
-            params.add("%" + shippingAddress + "%");
+            updateParams.add("%" + shippingAddress + "%");
         }
         if (paymentMethod != null && !paymentMethod.isEmpty()) {
             updateSql.append(" AND [PaymentMethod] = ?");
@@ -977,8 +977,8 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
     public static void main(String[] args) {
         OrderDAO orderDAO = new OrderDAO();
 //        orderDAO.updateOrderStatus(87, "Confirmed");
-        int s = orderDAO.getOrdersByUserIdInShipping(2, null, "VietNam", null, null, null, null, null, null).size();
-        System.out.println(s);
+        orderDAO.confirmAllPendingOrders( "ORDER-P17DN8", "ityC", null, null, null, null, null, null);
+//        System.out.println(s);
 
     }
 }
