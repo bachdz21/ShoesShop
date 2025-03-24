@@ -195,7 +195,9 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
                                                     </svg>
                                                 </button>
-                                                <input type="text" name="amount${p.getProduct().getProductID()}" id="amount" value="${p.quantity}" data-product-id="${p.getProduct().getProductID()}">
+                                                <input type="text" name="amount${p.getProduct().getProductID()}" id="amount" 
+                                                       value="${p.quantity}" data-product-id="${p.getProduct().getProductID()}" 
+                                                       data-stock="${p.getProduct().getStock()}"> <!-- Thêm data-stock -->
                                                 <button type="button" class="plus-btn" data-product-id="${p.getProduct().getProductID()}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -275,8 +277,13 @@
             }
 
             // Hàm gửi yêu cầu AJAX để cập nhật số lượng
-            const updateQuantityInDatabase = (productId, quantity) => {
-                fetch('updateQuantity', {
+            const updateQuantityInDatabase = (productId, quantity, stock) => {
+                if (quantity > stock) {
+                    alert(`Số lượng yêu cầu vượt quá lượng hàng tồn kho.`);
+                    return Promise.reject(new Error('Số lượng vượt quá tồn kho'));
+                }
+
+                return fetch('updateQuantity', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -285,12 +292,15 @@
                 })
                         .then(response => {
                             if (!response.ok) {
-                                throw new Error('Cập nhật số lượng thất bại');
+                                return response.text().then(text => {
+                                    throw new Error(text || 'Cập nhật số lượng thất bại');
+                                });
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('Có lỗi xảy ra khi cập nhật số lượng. Vui lòng thử lại.');
+                            alert(error.message);
+                            throw error;
                         });
             }
 
@@ -300,12 +310,18 @@
                     const item = event.target.closest('.f1bSN6');
                     const amountInput = item.querySelector('input[name^="amount"]');
                     const productId = button.getAttribute('data-product-id');
+                    const stock = parseInt(amountInput.getAttribute('data-stock'));
                     let amount = parseInt(amountInput.value);
                     amount++;
                     amountInput.value = amount;
-                    updateTotalPriceForSingleProduct(item);
-                    updateTotalPriceForAllProducts();
-                    updateQuantityInDatabase(productId, amount); // Gửi AJAX để cập nhật số lượng
+                    updateQuantityInDatabase(productId, amount, stock)
+                            .then(() => {
+                                updateTotalPriceForSingleProduct(item);
+                                updateTotalPriceForAllProducts();
+                            })
+                            .catch(() => {
+                                amountInput.value = amount - 1; // Hoàn tác nếu lỗi
+                            });
                 });
             });
 
@@ -314,13 +330,19 @@
                     const item = event.target.closest('.f1bSN6');
                     const amountInput = item.querySelector('input[name^="amount"]');
                     const productId = button.getAttribute('data-product-id');
+                    const stock = parseInt(amountInput.getAttribute('data-stock'));
                     let amount = parseInt(amountInput.value);
                     if (amount > 1) {
                         amount--;
                         amountInput.value = amount;
-                        updateTotalPriceForSingleProduct(item);
-                        updateTotalPriceForAllProducts();
-                        updateQuantityInDatabase(productId, amount); // Gửi AJAX để cập nhật số lượng
+                        updateQuantityInDatabase(productId, amount, stock)
+                                .then(() => {
+                                    updateTotalPriceForSingleProduct(item);
+                                    updateTotalPriceForAllProducts();
+                                })
+                                .catch(() => {
+                                    amountInput.value = amount + 1; // Hoàn tác nếu lỗi
+                                });
                     }
                 });
             });
@@ -330,14 +352,20 @@
                 amountInput.addEventListener('input', (event) => {
                     const item = event.target.closest('.f1bSN6');
                     const productId = amountInput.getAttribute('data-product-id');
+                    const stock = parseInt(amountInput.getAttribute('data-stock'));
                     let amount = parseInt(event.target.value);
                     if (isNaN(amount) || amount <= 0) {
                         amount = 1;
                     }
                     event.target.value = amount;
-                    updateTotalPriceForSingleProduct(item);
-                    updateTotalPriceForAllProducts();
-                    updateQuantityInDatabase(productId, amount); // Gửi AJAX để cập nhật số lượng
+                    updateQuantityInDatabase(productId, amount, stock)
+                            .then(() => {
+                                updateTotalPriceForSingleProduct(item);
+                                updateTotalPriceForAllProducts();
+                            })
+                            .catch(() => {
+                                event.target.value = amountInput.defaultValue; // Hoàn tác nếu lỗi
+                            });
                 });
             });
 

@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import model.Product;
 
 @WebServlet(name = "CartController", urlPatterns = {"/cart", "/addCart", "/addCartQuick", "/cartItem", "/deleteCartItem", "/trashCart",
     "/deleteCartItemTrash", "/restoreCartItem", "/updateQuantity", "/addCartQuickFromWishlist"})
@@ -303,10 +304,19 @@ public class CartController extends HttpServlet {
             return;
         }
         int userId = user.getUserId();
-        int productID = Integer.parseInt(request.getParameter("productID"));
+        int productId = Integer.parseInt(request.getParameter("productID"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
 
-        cartDAO.updateQuantityInCart(userId, productID, quantity);
+        // Lấy thông tin sản phẩm để kiểm tra stock
+        Product product = productDAO.getProductById(productId);
+        if (product == null || quantity > product.getStock()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Trả về lỗi nếu số lượng vượt quá stock
+            response.getWriter().write("Số lượng yêu cầu vượt quá tồn kho (" + product.getStock() + ").");
+            return;
+        }
+
+        // Nếu số lượng hợp lệ, tiến hành cập nhật
+        cartDAO.updateQuantityInCart(userId, productId, quantity);
         List<CartItem> updatedCart = cartDAO.getCartItems(userId);
         updateCartInSession(request, updatedCart);
         response.setStatus(HttpServletResponse.SC_OK);

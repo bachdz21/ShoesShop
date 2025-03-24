@@ -13,4 +13,7 @@ import model.Category;
  */
 public interface ICategoryDAO {
     List<Category> getAllCategories();
+    List<Category> getDisplayedCategories();
+    void updateDisplayedCategories(List<Integer> selectedCategoryIds);
+    void syncSelectedCategories();
 }

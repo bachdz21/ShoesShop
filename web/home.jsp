@@ -41,8 +41,20 @@
                 color: #D10024 !important;
             }
 
-            /* CSS cho nút Settings */
+
             .settings-btn {
+                position: absolute;
+                top: 1760px;
+                left: 56px;
+                background: none;
+                border: none;
+                font-size: 24px;
+                color: #333;
+                cursor: pointer;
+                z-index: 10; /* Đảm bảo nút nằm trên các phần tử khác */
+            }
+            /* CSS cho nút Settings */
+            .hot-deal-setting {
                 position: absolute;
                 top: -40px;
                 left: -120px;
@@ -53,6 +65,7 @@
                 cursor: pointer;
                 z-index: 10; /* Đảm bảo nút nằm trên các phần tử khác */
             }
+
 
             .settings-btn:hover {
                 color: #D10024; /* Màu khi hover, tùy chỉnh theo theme của bạn */
@@ -72,7 +85,7 @@
 
             .modal-content {
                 background-color: #fff;
-                margin: 15% auto;
+                margin: 10% auto;
                 padding: 20px;
                 border: 1px solid #888;
                 width: 80%;
@@ -131,6 +144,43 @@
             }
             .primary-btn:hover {
                 opacity: 0.9;
+            }
+
+            /* CSS for Most Sold Modal */
+            #settingsMostSoldModal .modal-content {
+                width: 100%;
+                max-width: 400px; /* Adjusted width to fit content */
+                margin: 10% auto; /* Center the modal vertically and horizontally */
+                padding: 20px;
+                text-align: center; /* Center-align text and inline elements */
+            }
+
+            #settingsMostSoldModal h4 {
+                margin-bottom: 20px; /* Add spacing below the title */
+            }
+
+            #settingsMostSoldModal .form-group {
+                text-align: left; /* Align form content to the left for better readability */
+                margin: 0 auto; /* Center the form group */
+                width: 80%; /* Limit the width of the form group for better spacing */
+            }
+
+            #settingsMostSoldModal .form-group label {
+                display: flex; /* Use flexbox to align checkbox and text */
+                align-items: center; /* Vertically center the checkbox and label text */
+                margin-bottom: 10px; /* Add spacing between each label */
+            }
+
+            #settingsMostSoldModal .form-group input[type="checkbox"] {
+                margin-right: 10px; /* Add spacing between checkbox and label text */
+                width: 16px; /* Set a consistent size for the checkbox */
+                height: 16px; /* Set a consistent size for the checkbox */
+                margin-bottom: 5px;
+            }
+
+            #settingsMostSoldModal .primary-btn {
+                display: inline-block; /* Ensure the button is centered */
+                background-color: #D10024; /* Match the theme color */
             }
         </style>
     </head>
@@ -240,7 +290,7 @@
                                 <!-- tab -->
                                 <div id="tab1" class="tab-pane active">
 
-                                    <div class="products-slick" data-nav="#slick-nav-1">
+                                    <div class="products-slick" data-nav="#slick-nav-sale">
                                         <!-- product -->
                                         <c:forEach var="i" items="${requestScope.listSaleProducts}">
                                             <div class="product">
@@ -299,7 +349,7 @@
                                         </c:forEach>
                                         <!-- product -->
                                     </div>
-                                    <div id="slick-nav-1" class="products-slick-nav"></div>
+                                    <div id="slick-nav-sale" class="products-slick-nav"></div>
                                 </div>
                                 <!-- /tab -->
                             </div>
@@ -320,7 +370,7 @@
             <div class="container">
                 <!-- Icon Settings cho Employee -->
                 <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
-                    <button class="settings-btn" onclick="openSettingsModal()">
+                    <button class="settings-btn hot-deal-setting" onclick="openSettingsModal()">
                         <i class="fa fa-cog"></i>
                     </button>
                 </c:if>
@@ -370,7 +420,10 @@
                             <input type="text" id="hot-deal-subtitle-input" name="hot-deal-subtitle-input">
                         </div>
                         <button type="button" onclick="saveSettings()" class="primary-btn">Lưu</button>
-                        <button type="button" onclick="resetSettings()" class="primary-btn" style="background-color: #D10024; margin-left: 10px;">Reset</button>
+                        <button type="button" onclick="resetSettings()" class="primary-btn" style="color: #D10024;
+                                background-color: white;
+                                margin-left: 10px;
+                                border: solid 1px;">XOÁ HẾT</button>
                     </form>
                 </div>
             </div>
@@ -382,191 +435,102 @@
         <div class="section">
             <!-- container -->
             <div class="container">
+                <!-- Icon Settings cho Employee -->
+                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+                    <button class="settings-btn" onclick="openMostSoldSettingsModal()">
+                        <i class="fa fa-cog"></i>
+                    </button>
+                </c:if>
+
                 <!-- row -->
                 <div class="row">
-                    <div class="col-md-4 col-xs-6">
-                        <div class="section-title">
-                            <h4 class="title">Giày Thể Thao</h4><br>
-                            <h4 class="title">Bán Chạy Nhất</h4>
-                            <div class="section-nav">
-                                <div id="slick-nav-3" class="products-slick-nav"></div>
+                    <c:forEach var="category" items="${requestScope.categories}" varStatus="loop">
+                        <div class="col-md-4 col-xs-6">
+                            <div class="section-title">
+                                <h4 class="title">${category.categoryName}</h4><br>
+                                <h4 class="title">Bán Chạy Nhất</h4>
+                                <div class="section-nav">
+                                    <div id="slick-nav-${loop.count}" class="products-slick-nav"></div>
+                                </div>
+                            </div>
+
+                            <div class="products-widget-slick" data-nav="#slick-nav-${loop.count}">
+                                <div>
+                                    <c:forEach var="product" items="${requestScope.mostSoldProductsByCategory[category.categoryName]}" varStatus="status" begin="0" end="2">
+                                        <div class="product-widget">
+                                            <div class="product-img">
+                                                <img src="${product.imageURL}" alt="">
+                                            </div>
+                                            <div class="product-body">
+                                                <p class="product-category">${product.categoryName}</p>
+                                                <h3 class="product-name"><a href="#">${product.productName}</a></h3>
+                                                    <c:choose>
+                                                        <c:when test="${product.sale > 0}">
+                                                        <h4 class="product-price">$${product.salePrice} <del class="product-old-price">$${product.price}</del></h4>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <h4 class="product-price">$${product.price}</h4>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                                <div>
+                                    <c:forEach var="product" items="${requestScope.mostSoldProductsByCategory[category.categoryName]}" varStatus="status" begin="3" end="5">
+                                        <div class="product-widget">
+                                            <div class="product-img">
+                                                <img src="${product.imageURL}" alt="">
+                                            </div>
+                                            <div class="product-body">
+                                                <p class="product-category">${product.categoryName}</p>
+                                                <h3 class="product-name"><a href="#">${product.productName}</a></h3>
+                                                    <c:choose>
+                                                        <c:when test="${product.sale > 0}">
+                                                        <h4 class="product-price">$${product.salePrice} <del class="product-old-price">$${product.price}</del></h4>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <h4 class="product-price">$${product.price}</h4>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="products-widget-slick" data-nav="#slick-nav-3">
-                            <div>
-                                <!-- product widget -->
-                                <c:forEach var="i" items="${requestScope.listMostSoldSneakers}" varStatus="status" begin="0" end="2">
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="${i.imageURL}" alt="">
-                                        </div>
-                                        <div class="product-body">
-                                            <p class="product-category">${i.categoryName}</p>
-                                            <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                                <c:choose>
-                                                    <c:when test="${i.sale > 0}">
-                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <h4 class="product-price">$${i.price}</h4>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                                <!-- /product widget -->
-                            </div>
-                            <div>
-                                <!-- product widget -->
-                                <c:forEach var="i" items="${requestScope.listMostSoldSneakers}" varStatus="status" begin="3" end="5">
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="${i.imageURL}" alt="">
-                                        </div>
-                                        <div class="product-body">
-                                            <p class="product-category">${i.categoryName}</p>
-                                            <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                                <c:choose>
-                                                    <c:when test="${i.sale > 0}">
-                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <h4 class="product-price">$${i.price}</h4>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                                <!-- /product widget -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4 col-xs-6">
-                        <div class="section-title">
-                            <h4 class="title">Boot</h4><br>
-                            <h4 class="title">Bán Chạy Nhất</h4>
-                            <div class="section-nav">
-                                <div id="slick-nav-4" class="products-slick-nav"></div>
-                            </div>
-                        </div>
-
-                        <div class="products-widget-slick" data-nav="#slick-nav-4">
-                            <div>
-                                <!-- product widget -->
-                                <c:forEach var="i" items="${requestScope.listMostSoldBoots}" varStatus="status" begin="0" end="2">
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="${i.imageURL}" alt="">
-                                        </div>
-                                        <div class="product-body">
-                                            <p class="product-category">${i.categoryName}</p>
-                                            <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                                <c:choose>
-                                                    <c:when test="${i.sale > 0}">
-                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <h4 class="product-price">$${i.price}</h4>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                                <!-- /product widget -->
-                            </div>
-                            <div>
-                                <!-- product widget -->
-                                <c:forEach var="i" items="${requestScope.listMostSoldBoots}" varStatus="status" begin="3" end="5">
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="${i.imageURL}" alt="">
-                                        </div>
-                                        <div class="product-body">
-                                            <p class="product-category">${i.categoryName}</p>
-                                            <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                                <c:choose>
-                                                    <c:when test="${i.sale > 0}">
-                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <h4 class="product-price">$${i.price}</h4>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                                <!-- /product widget -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="clearfix visible-sm visible-xs"></div>
-
-                    <div class="col-md-4 col-xs-6">
-                        <div class="section-title">
-                            <h4 class="title">Sandal</h4><br>
-                            <h4 class="title">Bán Chạy Nhất</h4>
-                            <div class="section-nav">
-                                <div id="slick-nav-5" class="products-slick-nav"></div>
-                            </div>
-                        </div>
-
-                        <div class="products-widget-slick" data-nav="#slick-nav-5">
-                            <div>
-                                <!-- product widget -->
-                                <c:forEach var="i" items="${requestScope.listMostSoldSandals}" varStatus="status" begin="0" end="2">
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="${i.imageURL}" alt="">
-                                        </div>
-                                        <div class="product-body">
-                                            <p class="product-category">${i.categoryName}</p>
-                                            <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                                <c:choose>
-                                                    <c:when test="${i.sale > 0}">
-                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <h4 class="product-price">$${i.price}</h4>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                                <!-- /product widget -->
-                            </div>
-                            <div>
-                                <!-- product widget -->
-                                <c:forEach var="i" items="${requestScope.listMostSoldSandals}" varStatus="status" begin="3" end="5">
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="${i.imageURL}" alt="">
-                                        </div>
-                                        <div class="product-body">
-                                            <p class="product-category">${i.categoryName}</p>
-                                            <h3 class="product-name"><a href="#">${i.productName}</a></h3>
-                                                <c:choose>
-                                                    <c:when test="${i.sale > 0}">
-                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <h4 class="product-price">$${i.price}</h4>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                                <!-- /product widget -->
-                            </div>
-                        </div>
-                    </div>
-
+                        <c:if test="${loop.count % 3 == 0}">
+                            <div class="clearfix visible-sm visible-xs"></div>
+                        </c:if>
+                    </c:forEach>
                 </div>
                 <!-- /row -->
             </div>
             <!-- /container -->
+
+            <!-- Modal Settings cho Employee -->
+            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+                <div id="settingsMostSoldModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeMostSoldSettingsModal()">×</span>
+                        <h4>Chọn Danh Mục Hiển Thị</h4>
+                        <form id="category-display-form" method="post" action="updateDisplayedCategories">
+                            <div class="form-group">
+                                <c:forEach var="category" items="${allCategories}">
+                                    <label>
+                                        <input type="checkbox" name="selectedCategories" value="${category.categoryID}"
+                                               <c:forEach var="displayed" items="${requestScope.categories}">
+                                                   <c:if test="${displayed.categoryID == category.categoryID}">checked</c:if>
+                                               </c:forEach>
+                                               > ${category.categoryName}
+                                    </label><br>
+                                </c:forEach>
+                            </div>
+                            <button type="button" onclick="saveMostSoldSettings()" class="primary-btn">Lưu</button>
+                        </form>
+                    </div>
+                </div>
+            </c:if>
         </div>
         <!-- /SECTION -->
 
@@ -618,157 +582,189 @@
         <script src="js/jquery.zoom.min.js"></script>
         <script src="js/main.js"></script>            
         <script>
-                            const userRole = "${sessionScope.user != null ? sessionScope.user.role : 'Customer'}";
+                                const userRole = "${sessionScope.user != null ? sessionScope.user.role : 'Customer'}";
 
-                            // Hàm đếm ngược
-                            function updateCountdown(endTime) {
-                                const now = new Date();
-                                const targetTime = endTime ? new Date(endTime) : now;
-                                const totalTimeRemaining = targetTime - now;
-                                if (totalTimeRemaining <= 0) {
-                                    clearInterval(countdownInterval);
-                                    document.getElementById("days").innerText = "00";
-                                    document.getElementById("hours").innerText = "00";
-                                    document.getElementById("minutes").innerText = "00";
-                                    document.getElementById("seconds").innerText = "00";
-                                    return true; // Trả về true nếu thời gian đã hết
+                                // Hàm đếm ngược
+                                function updateCountdown(endTime) {
+                                    const now = new Date();
+                                    const targetTime = endTime ? new Date(endTime) : now;
+                                    const totalTimeRemaining = targetTime - now;
+                                    if (totalTimeRemaining <= 0) {
+                                        clearInterval(countdownInterval);
+                                        document.getElementById("days").innerText = "00";
+                                        document.getElementById("hours").innerText = "00";
+                                        document.getElementById("minutes").innerText = "00";
+                                        document.getElementById("seconds").innerText = "00";
+                                        return true; // Trả về true nếu thời gian đã hết
+                                    }
+
+                                    const seconds = Math.floor((totalTimeRemaining / 1000) % 60);
+                                    const minutes = Math.floor((totalTimeRemaining / 1000 / 60) % 60);
+                                    const hours = Math.floor((totalTimeRemaining / 1000 / 60 / 60) % 24);
+                                    const days = Math.floor(totalTimeRemaining / (1000 * 60 * 60 * 24));
+                                    document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+                                    document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+                                    document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+                                    document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+                                    return false; // Trả về false nếu thời gian chưa hết
                                 }
 
-                                const seconds = Math.floor((totalTimeRemaining / 1000) % 60);
-                                const minutes = Math.floor((totalTimeRemaining / 1000 / 60) % 60);
-                                const hours = Math.floor((totalTimeRemaining / 1000 / 60 / 60) % 24);
-                                const days = Math.floor(totalTimeRemaining / (1000 * 60 * 60 * 24));
-                                document.getElementById("days").innerText = days < 10 ? "0" + days : days;
-                                document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
-                                document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
-                                document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
-                                return false; // Trả về false nếu thời gian chưa hết
-                            }
+                                // Hàm khởi tạo Hot Deal từ server
+                                function initializeHotDeal() {
+                                    fetch('/ShoesStoreWed/getHotDeal')
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                const hotDealSection = document.getElementById("hot-deal");
+                                                const isTimeExpired = data.endTime ? updateCountdown(data.endTime) : true;
 
-                            // Hàm khởi tạo Hot Deal từ server
-                            function initializeHotDeal() {
-                                fetch('/ShoesStoreWed/getHotDeal')
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            const hotDealSection = document.getElementById("hot-deal");
-                                            const isTimeExpired = data.endTime ? updateCountdown(data.endTime) : true;
+                                                // Nếu thời gian hết và không phải Employee, ẩn Hot Deal
+                                                if (isTimeExpired && userRole !== "Employee") {
+                                                    hotDealSection.style.display = "none";
+                                                    return; // Thoát hàm nếu không hiển thị
+                                                } else {
+                                                    hotDealSection.style.display = "block"; // Đảm bảo hiển thị nếu không thỏa mãn điều kiện ẩn
+                                                }
 
-                                            // Nếu thời gian hết và không phải Employee, ẩn Hot Deal
-                                            if (isTimeExpired && userRole !== "Employee") {
-                                                hotDealSection.style.display = "none";
-                                                return; // Thoát hàm nếu không hiển thị
-                                            } else {
-                                                hotDealSection.style.display = "block"; // Đảm bảo hiển thị nếu không thỏa mãn điều kiện ẩn
-                                            }
+                                                if (data.endTime && !isTimeExpired) {
+                                                    clearInterval(countdownInterval);
+                                                    countdownInterval = setInterval(() => updateCountdown(data.endTime), 1000);
+                                                } else {
+                                                    updateCountdown(); // Hiển thị 00:00:00:00 nếu không có thời gian hoặc đã hết
+                                                }
 
-                                            if (data.endTime && !isTimeExpired) {
-                                                clearInterval(countdownInterval);
-                                                countdownInterval = setInterval(() => updateCountdown(data.endTime), 1000);
-                                            } else {
-                                                updateCountdown(); // Hiển thị 00:00:00:00 nếu không có thời gian hoặc đã hết
-                                            }
+                                                document.getElementById("hot-deal-title").innerText = data.title ? data.title.toUpperCase() : "TIÊU ĐỀ";
+                                                document.getElementById("hot-deal-subtitle").innerText = data.subtitle || "Phụ Đề";
 
-                                            document.getElementById("hot-deal-title").innerText = data.title ? data.title.toUpperCase() : "TIÊU ĐỀ";
-                                            document.getElementById("hot-deal-subtitle").innerText = data.subtitle || "Phụ Đề";
+                                                // Chỉ cập nhật các input trong modal nếu người dùng là Employee
+                                                if (userRole === "Employee") {
+                                                    document.getElementById("hot-deal-title-input").value = data.title || "TIÊU ĐỀ";
+                                                    document.getElementById("hot-deal-subtitle-input").value = data.subtitle || "Phụ Đề";
+                                                    document.getElementById("hot-deal-endtime").value = data.endTime ? data.endTime.slice(0, 16) : "";
+                                                }
 
-                                            // Chỉ cập nhật các input trong modal nếu người dùng là Employee
-                                            if (userRole === "Employee") {
-                                                document.getElementById("hot-deal-title-input").value = data.title || "TIÊU ĐỀ";
-                                                document.getElementById("hot-deal-subtitle-input").value = data.subtitle || "Phụ Đề";
-                                                document.getElementById("hot-deal-endtime").value = data.endTime ? data.endTime.slice(0, 16) : "";
-                                            }
-
-                                            if (data.imageURL) {
-                                                hotDealSection.style.background = "url('" + data.imageURL + "') no-repeat center center";
-                                                hotDealSection.style.backgroundSize = "cover";
-                                            } else {
-                                                hotDealSection.style.background = "url('./img/hotdeal.png') no-repeat center center";
-                                                hotDealSection.style.backgroundSize = "cover";
-                                            }
-                                        })
-                                        .catch(error => console.error('Error fetching hot deal settings:', error));
-                            }
-
-                            window.onload = function () {
-                                initializeHotDeal();
-                            };
-
-                            // Hàm mở/đóng Modal
-                            function openSettingsModal() {
-                                document.getElementById("settingsModal").style.display = "block";
-                            }
-
-                            function closeSettingsModal() {
-                                document.getElementById("settingsModal").style.display = "none";
-                            }
-
-                            window.onclick = function (event) {
-                                const modal = document.getElementById("settingsModal");
-                                if (event.target == modal) {
-                                    modal.style.display = "none";
-                                }
-                            };
-
-                            // Hàm lưu cài đặt
-                            function saveSettings() {
-                                const endTime = document.getElementById("hot-deal-endtime").value;
-                                const title = document.getElementById("hot-deal-title-input").value;
-                                const subtitle = document.getElementById("hot-deal-subtitle-input").value;
-                                const fileInput = document.getElementById("hot-deal-image");
-
-                                if (endTime && new Date(endTime) <= new Date()) {
-                                    alert("Vui lòng chọn thời gian trong tương lai!");
-                                    return;
+                                                if (data.imageURL) {
+                                                    hotDealSection.style.background = "url('" + data.imageURL + "') no-repeat center center";
+                                                    hotDealSection.style.backgroundSize = "cover";
+                                                } else {
+                                                    hotDealSection.style.background = "url('./img/hotdeal.png') no-repeat center center";
+                                                    hotDealSection.style.backgroundSize = "cover";
+                                                }
+                                            })
+                                            .catch(error => console.error('Error fetching hot deal settings:', error));
                                 }
 
-                                const formData = new FormData();
-                                formData.append("endTime", endTime);
-                                formData.append("title", title);
-                                formData.append("subtitle", subtitle);
-                                if (fileInput.files.length > 0) {
-                                    formData.append("hot-deal-image", fileInput.files[0]);
+                                window.onload = function () {
+                                    initializeHotDeal();
+                                };
+
+                                // Hàm mở/đóng Modal
+                                function openSettingsModal() {
+                                    document.getElementById("settingsModal").style.display = "block";
                                 }
 
-                                fetch('/ShoesStoreWed/saveHotDeal', {
-                                    method: 'POST',
-                                    body: formData
-                                })
-                                        .then(response => response.text())
-                                        .then(() => {
-                                            if (endTime) {
-                                                clearInterval(countdownInterval);
-                                                countdownInterval = setInterval(() => updateCountdown(endTime), 1000);
-                                            } else {
+                                function closeSettingsModal() {
+                                    document.getElementById("settingsModal").style.display = "none";
+                                }
+
+                                window.onclick = function (event) {
+                                    const modal = document.getElementById("settingsModal");
+                                    if (event.target == modal) {
+                                        modal.style.display = "none";
+                                    }
+                                };
+
+                                // Hàm lưu cài đặt
+                                function saveSettings() {
+                                    const endTime = document.getElementById("hot-deal-endtime").value;
+                                    const title = document.getElementById("hot-deal-title-input").value;
+                                    const subtitle = document.getElementById("hot-deal-subtitle-input").value;
+                                    const fileInput = document.getElementById("hot-deal-image");
+
+                                    if (endTime && new Date(endTime) <= new Date()) {
+                                        alert("Vui lòng chọn thời gian trong tương lai!");
+                                        return;
+                                    }
+
+                                    const formData = new FormData();
+                                    formData.append("endTime", endTime);
+                                    formData.append("title", title);
+                                    formData.append("subtitle", subtitle);
+                                    if (fileInput.files.length > 0) {
+                                        formData.append("hot-deal-image", fileInput.files[0]);
+                                    }
+
+                                    fetch('/ShoesStoreWed/saveHotDeal', {
+                                        method: 'POST',
+                                        body: formData
+                                    })
+                                            .then(response => response.text())
+                                            .then(() => {
+                                                if (endTime) {
+                                                    clearInterval(countdownInterval);
+                                                    countdownInterval = setInterval(() => updateCountdown(endTime), 1000);
+                                                } else {
+                                                    clearInterval(countdownInterval);
+                                                    updateCountdown();
+                                                }
+                                                document.getElementById("hot-deal-title").innerText = title ? title.toUpperCase() : "TIÊU ĐỀ";
+                                                document.getElementById("hot-deal-subtitle").innerText = subtitle || "Phụ Đề";
+                                                initializeHotDeal(); // Cập nhật lại giao diện sau khi lưu
+                                                closeSettingsModal();
+                                            })
+                                            .catch(error => console.error('Error saving settings:', error));
+                                }
+
+                                // Hàm reset cài đặt
+                                function resetSettings() {
+                                    fetch('/ShoesStoreWed/resetHotDeal', {method: 'POST'})
+                                            .then(response => response.text())
+                                            .then(() => {
                                                 clearInterval(countdownInterval);
                                                 updateCountdown();
-                                            }
-                                            document.getElementById("hot-deal-title").innerText = title ? title.toUpperCase() : "TIÊU ĐỀ";
-                                            document.getElementById("hot-deal-subtitle").innerText = subtitle || "Phụ Đề";
-                                            initializeHotDeal(); // Cập nhật lại giao diện sau khi lưu
-                                            closeSettingsModal();
-                                        })
-                                        .catch(error => console.error('Error saving settings:', error));
-                            }
+                                                document.getElementById("hot-deal-title").innerText = "TIÊU ĐỀ";
+                                                document.getElementById("hot-deal-subtitle").innerText = "Phụ Đề";
+                                                document.getElementById("hot-deal-endtime").value = "";
+                                                document.getElementById("hot-deal-title-input").value = "TIÊU ĐỀ";
+                                                document.getElementById("hot-deal-subtitle-input").value = "Phụ Đề";
+                                                initializeHotDeal(); // Cập nhật lại giao diện sau khi reset
+                                                closeSettingsModal();
+                                            })
+                                            .catch(error => console.error('Error resetting settings:', error));
+                                }
 
-                            // Hàm reset cài đặt
-                            function resetSettings() {
-                                fetch('/ShoesStoreWed/resetHotDeal', {method: 'POST'})
-                                        .then(response => response.text())
-                                        .then(() => {
-                                            clearInterval(countdownInterval);
-                                            updateCountdown();
-                                            document.getElementById("hot-deal-title").innerText = "TIÊU ĐỀ";
-                                            document.getElementById("hot-deal-subtitle").innerText = "Phụ Đề";
-                                            document.getElementById("hot-deal-endtime").value = "";
-                                            document.getElementById("hot-deal-title-input").value = "TIÊU ĐỀ";
-                                            document.getElementById("hot-deal-subtitle-input").value = "Phụ Đề";
-                                            initializeHotDeal(); // Cập nhật lại giao diện sau khi reset
-                                            closeSettingsModal();
-                                        })
-                                        .catch(error => console.error('Error resetting settings:', error));
-                            }
+                                let countdownInterval;
+        </script>
+        <script>
+            function openMostSoldSettingsModal() {
+                document.getElementById("settingsMostSoldModal").style.display = "block";
+            }
 
-                            let countdownInterval;
+            function closeMostSoldSettingsModal() {
+                document.getElementById("settingsMostSoldModal").style.display = "none";
+            }
+
+            window.onclick = function (event) {
+                const modal = document.getElementById("settingsMostSoldModal");
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+
+            function saveMostSoldSettings() {
+                const form = document.getElementById("category-display-form");
+                const formData = new FormData(form);
+
+                fetch('updateDisplayedCategories', {
+                    method: 'POST',
+                    body: formData
+                })
+                        .then(response => response.text())
+                        .then(() => {
+                            closeMostSoldSettingsModal();
+                            location.reload();
+                        })
+                        .catch(error => console.error('Error saving settings:', error));
+            }
         </script>
     </body>
 </html>

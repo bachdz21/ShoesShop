@@ -77,6 +77,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setBrand(rs.getString("brand"));
                 product.setSale(rs.getInt("Sale"));
                 product.setCreatedDate(rs.getDate("CreatedDate"));
+                product.setSalePrice(rs.getDouble("Price"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
                     product.setSalePrice(Math.round(salePrice * 100.0) / 100.0);

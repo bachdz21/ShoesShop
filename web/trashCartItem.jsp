@@ -48,7 +48,7 @@
                 text-decoration: none;
                 border-radius: 5px;
                 transition: background-color 0.3s;
-                margin-left: 187px;
+                margin-left: 191px;
             }
             .product-add-link:hover {
                 background-color: #ff3333;

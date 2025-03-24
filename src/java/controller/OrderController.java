@@ -44,12 +44,10 @@ public class OrderController extends HttpServlet {
         }
     }
 
-    protected void checkout(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void checkout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
+        User user = (User) session.getAttribute("user");
         if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
             return;
         }
@@ -57,9 +55,23 @@ public class OrderController extends HttpServlet {
         String fullName = request.getParameter("full-name");
         String email = request.getParameter("email");
         String paymentMethod = request.getParameter("payment");
-        String shippingAddress = request.getParameter("address");
         String phoneNumber = request.getParameter("tel");
         String note = request.getParameter("note");
+
+        // Ghép Billing Address
+        String city = request.getParameter("city");
+        String district = request.getParameter("district");
+        String ward = request.getParameter("ward");
+        String addressDetail = request.getParameter("addressDetail");
+        String billingAddress = addressDetail + ", " + ward + ", " + district + ", " + city;
+
+        // Ghép Shipping Address
+        String shippingCity = request.getParameter("shippingCity");
+        String shippingDistrict = request.getParameter("shippingDistrict");
+        String shippingWard = request.getParameter("shippingWard");
+        String shippingAddressDetail = request.getParameter("shippingAddressDetail");
+        String shippingAddress = shippingAddressDetail + ", " + shippingWard + ", " + shippingDistrict + ", " + shippingCity;
+
         int orderId = orderDAO.checkout(userId, fullName, email, phoneNumber, shippingAddress, paymentMethod, note);
         String orderCode = orderDAO.getOrderCodeByOrderID(orderId);
         List<CartItem> cartItems = cartDAO.getCartItems(user.getUserId());
@@ -174,7 +186,7 @@ public class OrderController extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(json);
-            
+
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // HTTP 400 - Bad Request
             response.getWriter().write("{\"error\":\"Định dạng Mã đơn hàng không hợp lệ\"}");

@@ -29,15 +29,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import model.Category;
 import model.Review;
 
 @WebServlet(name = "ProductController", urlPatterns = {"/product", "/home", "/search", "/list", "/add", "/edit", "/update",
-    "/deleteProduct", "/trash", "/restore", "/deleteTrash", "/productDetail", "/deleteMultipleProducts", "/productAction", "/sortProduct"})
+    "/deleteProduct", "/trash", "/restore", "/deleteTrash", "/productDetail", "/deleteMultipleProducts", "/productAction", "/sortProduct",
+    "/updateDisplayedCategories"})
 @MultipartConfig
 public class ProductController extends HttpServlet {
 
     IProductDAO productDAO = new ProductDAO();
     ReviewDAO reviewDAO = new ReviewDAO();
+    ICategoryDAO categoryDAO = new CategoryDAO();
+    
     private static final String IMAGE_UPLOAD_DIR = "D:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
 
     @Override
@@ -71,6 +77,8 @@ public class ProductController extends HttpServlet {
             deleteMultipleProducts(request, response);
         } else if (request.getServletPath().equals("/productAction")) {
             getAction(request, response);
+        } else if (request.getServletPath().equals("/updateDisplayedCategories")) {
+            updateDisplayedCategories(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }
@@ -79,15 +87,64 @@ public class ProductController extends HttpServlet {
 
     protected void getHomeProducts(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Đồng bộ SelectedCategories với Categories
+        categoryDAO.syncSelectedCategories();
+
+        // Lấy danh sách sản phẩm đang giảm giá
         List<Product> listSale = productDAO.getSaleProducts();
-        List<Product> listMostSoldSneakers = productDAO.getMostSoldProducts("Sneaker");
-        List<Product> listMostSoldBoots = productDAO.getMostSoldProducts("Boot");
-        List<Product> listMostSoldSandals = productDAO.getMostSoldProducts("Sandal");
+
+        // Lấy danh sách danh mục được chọn hiển thị
+        List<Category> displayedCategories = categoryDAO.getDisplayedCategories();
+
+        // Lấy tất cả danh mục để hiển thị trong modal (dành cho Employee)
+        List<Category> allCategories = categoryDAO.getAllCategories();
+
+        // Tạo một Map để lưu danh sách sản phẩm bán chạy nhất theo từng danh mục
+        Map<String, List<Product>> mostSoldProductsByCategory = new HashMap<>();
+        for (Category category : displayedCategories) {
+            List<Product> mostSoldProducts = productDAO.getMostSoldProducts(category.getCategoryName());
+            mostSoldProductsByCategory.put(category.getCategoryName(), mostSoldProducts);
+        }
+
+        // Đặt các thuộc tính vào request
         request.setAttribute("listSaleProducts", listSale);
-        request.setAttribute("listMostSoldSneakers", listMostSoldSneakers);
-        request.setAttribute("listMostSoldBoots", listMostSoldBoots);
-        request.setAttribute("listMostSoldSandals", listMostSoldSandals);
+        request.setAttribute("categories", displayedCategories);
+        request.setAttribute("mostSoldProductsByCategory", mostSoldProductsByCategory);
+        request.setAttribute("allCategories", allCategories);
+
         request.getRequestDispatcher("home.jsp").forward(request, response);
+    }
+    
+    protected void showUpdateDisplayedCategoriesForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (request.getSession().getAttribute("user") != null && 
+            "Employee".equals(((User) request.getSession().getAttribute("user")).getRole())) {
+            List<Category> allCategories = categoryDAO.getAllCategories();
+            List<Category> displayedCategories = categoryDAO.getDisplayedCategories();
+            request.setAttribute("allCategories", allCategories);
+            request.setAttribute("displayedCategories", displayedCategories);
+            request.getRequestDispatcher("updateDisplayedCategories.jsp").forward(request, response);
+        } else {
+            response.sendRedirect("home");
+        }
+    }
+    
+    protected void updateDisplayedCategories(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (request.getSession().getAttribute("user") != null && 
+            "Employee".equals(((User) request.getSession().getAttribute("user")).getRole())) {
+            String[] selectedCategories = request.getParameterValues("selectedCategories");
+            List<Integer> selectedCategoryIds = new ArrayList<>();
+            if (selectedCategories != null) {
+                for (String id : selectedCategories) {
+                    selectedCategoryIds.add(Integer.parseInt(id));
+                }
+            }
+            categoryDAO.updateDisplayedCategories(selectedCategoryIds);
+            response.sendRedirect("home");
+        } else {
+            response.sendRedirect("home");
+        }
     }
 
     protected void getFilteredSortedPagedProducts(HttpServletRequest request, HttpServletResponse response)
@@ -483,10 +540,11 @@ public class ProductController extends HttpServlet {
             deleteMultipleProducts(request, response);
         } else if (request.getServletPath().equals("/productAction")) {
             getAction(request, response);
+        } else if (request.getServletPath().equals("/updateDisplayedCategories")) {
+            updateDisplayedCategories(request, response);
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }
-
     }
 
 }
