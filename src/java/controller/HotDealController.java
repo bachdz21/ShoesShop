@@ -64,10 +64,7 @@ public class HotDealController extends HttpServlet {
             filePart.write(imageFile.getAbsolutePath());
             imageURL = "./img/" + fileName;
             // Debug
-            System.out.println("DEBUG - saveHotDeal: Image saved at " + imageFile.getAbsolutePath());
-            System.out.println("DEBUG - saveHotDeal: imageURL = " + imageURL);
         } else {
-            System.out.println("DEBUG - saveHotDeal: No image uploaded");
         }
 
         if (endTimeStr != null && !endTimeStr.isEmpty()) {
@@ -82,7 +79,6 @@ public class HotDealController extends HttpServlet {
         settings.setImageURL(imageURL);
 
         hotDealDAO.saveHotDealSettings(settings);
-        System.out.println("DEBUG - saveHotDeal: Settings saved - " + settings.toString());
         response.getWriter().write("Settings saved successfully");
     } catch (Exception e) {
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error: " + e.getMessage());
@@ -113,11 +109,9 @@ public class HotDealController extends HttpServlet {
                     settings.getSubtitle() != null ? "\"" + settings.getSubtitle() + "\"" : "null",
                     settings.getImageURL() != null ? "\"" + settings.getImageURL() + "\"" : "null");
             // Debug
-            System.out.println("DEBUG - getHotDeal JSON: " + json);
             response.getWriter().write(json);
         } else {
             String json = "{\"endTime\": null, \"title\": null, \"subtitle\": null, \"imageURL\": null}";
-            System.out.println("DEBUG - getHotDeal JSON (null settings): " + json);
             response.getWriter().write(json);
         }
     } catch (SQLException e) {

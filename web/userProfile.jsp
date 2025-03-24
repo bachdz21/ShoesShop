@@ -771,15 +771,21 @@
                                             <h6 class="mb-0">Địa chỉ</h6>
                                         </div>
                                         <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
-                                            <option value="${address != null && address.size() > 3 ? address.get(3) : ''}" selected>Tỉnh Thành</option>
+                                            <option value="${requestScope.address != null && requestScope.address.size() > 3 ? requestScope.address.get(3) : ''}" selected>
+                                                ${requestScope.address != null && requestScope.address.size() > 3 ? requestScope.address.get(3) : 'Tỉnh Thành'}
+                                            </option>
                                         </select>
 
                                         <select name="district" class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm">
-                                            <option value="${address != null && address.size() > 2 ? address.get(2) : ''}" selected>Quận Huyện</option>
+                                            <option value="${requestScope.address != null && requestScope.address.size() > 2 ? requestScope.address.get(2) : ''}" selected>
+                                                ${requestScope.address != null && requestScope.address.size() > 2 ? requestScope.address.get(2) : 'Quận Huyện'}
+                                            </option>
                                         </select>
 
                                         <select name="ward" class="form-select form-select-sm" id="ward" aria-label=".form-select-sm">
-                                            <option value="${address != null && address.size() > 1 ? address.get(1) : ''}" selected>Xã Phường</option>
+                                            <option value="${requestScope.address != null && requestScope.address.size() > 1 ? requestScope.address.get(1) : ''}" selected>
+                                                ${requestScope.address != null && requestScope.address.size() > 1 ? requestScope.address.get(1) : 'Xã Phường'}
+                                            </option>
                                         </select>
                                     </div>
 
@@ -828,48 +834,48 @@
     <!-- Bootstrap Bundle JS -->
 
 
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script>
-        var citis = document.getElementById("city");
-        var districts = document.getElementById("district");
-        var wards = document.getElementById("ward");
-        var Parameter = {
-            url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
-            method: "GET",
-            responseType: "application/json",
-        };
-        var promise = axios(Parameter);
-        promise.then(function (result) {
-            renderCity(result.data);
-        });
-        function renderCity(data) {
-            for (const x of data) {
-                // Đặt value thành tên thay vì ID
-                citis.options[citis.options.length] = new Option(x.Name, x.Name);
-            }
-            citis.onchange = function () {
-                districts.length = 1;
-                wards.length = 1;
-                if (this.value != "") {
-                    const result = data.filter(n => n.Name === this.value);
-                    for (const k of result[0].Districts) {
-                        // Đặt value thành tên thay vì ID
-                        districts.options[districts.options.length] = new Option(k.Name, k.Name);
-                    }
-                }
-            };
-            districts.onchange = function () {
-                wards.length = 1;
-                const dataCity = data.filter((n) => n.Name === citis.value);
-                if (this.value != "") {
-                    const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
-                    for (const w of dataWards) {
-                        // Đặt value thành tên thay vì ID
-                        wards.options[wards.options.length] = new Option(w.Name, w.Name);
-                    }
-                }
-            };
-        }
+                            var citis = document.getElementById("city");
+                            var districts = document.getElementById("district");
+                            var wards = document.getElementById("ward");
+                            var Parameter = {
+                                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+                                method: "GET",
+                                responseType: "application/json",
+                            };
+                            var promise = axios(Parameter);
+                            promise.then(function (result) {
+                                renderCity(result.data);
+                            });
+                            function renderCity(data) {
+                                for (const x of data) {
+                                    // Đặt value thành tên thay vì ID
+                                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
+                                }
+                                citis.onchange = function () {
+                                    districts.length = 1;
+                                    wards.length = 1;
+                                    if (this.value != "") {
+                                        const result = data.filter(n => n.Name === this.value);
+                                        for (const k of result[0].Districts) {
+                                            // Đặt value thành tên thay vì ID
+                                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                                        }
+                                    }
+                                };
+                                districts.onchange = function () {
+                                    wards.length = 1;
+                                    const dataCity = data.filter((n) => n.Name === citis.value);
+                                    if (this.value != "") {
+                                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+                                        for (const w of dataWards) {
+                                            // Đặt value thành tên thay vì ID
+                                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
+                                        }
+                                    }
+                                };
+                            }
     </script>
     <script>
         document.getElementById('profileImage').addEventListener('change', function () {
@@ -923,23 +929,6 @@
             return true;
         }
     </script>
-
-    <script>
-        $(document).ready(function () {
-            $('#loginModal').modal('show');
-            $(function () {
-                $('[data-toggle="tooltip"]').tooltip()
-            })
-        });
-    </script>
-    <!-- jQuery -->
-    <script src='https://code.jquery.com/jquery-3.3.1.slim.min.js'></script>
-    <!-- Popper JS -->
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'></script>
-    <!-- Bootstrap JS -->
-    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
-
-
 
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>

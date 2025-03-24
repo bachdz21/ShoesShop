@@ -25,11 +25,12 @@ public class Order {
     private int productId;
     private int quantity;
     private double price;
+    private String paymentStatus;
     
     public Order() {
     }
 
-    public Order(int orderId, int userId, String orderDate, String orderCode, double totalAmount, String orderStatus, String paymentMethod, String shippingAddress, String recipientName, String recipientPhone, String recipientEmail, int productId, int quantity, double price) {
+    public Order(int orderId, int userId, String orderDate, String orderCode, double totalAmount, String orderStatus, String paymentMethod, String shippingAddress, String recipientName, String recipientPhone, String recipientEmail, int productId, int quantity, double price, String paymentStatus) {
         this.orderId = orderId;
         this.userId = userId;
         this.orderDate = orderDate;
@@ -44,6 +45,7 @@ public class Order {
         this.productId = productId;
         this.quantity = quantity;
         this.price = price;
+        this.paymentStatus = paymentStatus;
     }
 
     public int getOrderId() {
@@ -158,10 +160,17 @@ public class Order {
         this.price = price;
     }
 
-    @Override
-    public String toString() {
-        return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", orderDate=" + orderDate + ", orderCode=" + orderCode + ", totalAmount=" + totalAmount + ", orderStatus=" + orderStatus + ", paymentMethod=" + paymentMethod + ", shippingAddress=" + shippingAddress + ", recipientName=" + recipientName + ", recipientPhone=" + recipientPhone + ", recipientEmail=" + recipientEmail + ", productId=" + productId + ", quantity=" + quantity + ", price=" + price + '}';
+    public String getPaymentStatus() {
+        return paymentStatus;
     }
 
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" + "orderId=" + orderId + ", userId=" + userId + ", orderDate=" + orderDate + ", orderCode=" + orderCode + ", totalAmount=" + totalAmount + ", orderStatus=" + orderStatus + ", paymentMethod=" + paymentMethod + ", shippingAddress=" + shippingAddress + ", recipientName=" + recipientName + ", recipientPhone=" + recipientPhone + ", recipientEmail=" + recipientEmail + ", productId=" + productId + ", quantity=" + quantity + ", price=" + price + ", paymentStatus=" + paymentStatus + '}';
+    }
     
 }

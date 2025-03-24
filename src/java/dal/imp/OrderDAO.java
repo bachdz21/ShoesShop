@@ -101,64 +101,62 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
             updateStockStmt.executeBatch();
 
             // Bước 8: Cập nhật doanh thu hằng ngày trong DailyRevenue
-                    // Lấy ngày, tháng, năm hiện tại
-                    String checkRevenueQuery = "SELECT TotalRevenue, TotalOrders FROM DailyRevenue WHERE [Day] = DAY(GETDATE()) AND [Month] = MONTH(GETDATE()) AND [Year] = YEAR(GETDATE())";
-                    double existingRevenue = 0.0;
-                    int existingOrders = 0;
-                    try (PreparedStatement checkStmt = c.prepareStatement(checkRevenueQuery);
-                         ResultSet rs = checkStmt.executeQuery()) {
-                        if (rs.next()) {
-                            existingRevenue = rs.getDouble("TotalRevenue");
-                            existingOrders = rs.getInt("TotalOrders");
-                        }
-                    }
+            // Lấy ngày, tháng, năm hiện tại
+            String checkRevenueQuery = "SELECT TotalRevenue, TotalOrders FROM DailyRevenue WHERE [Day] = DAY(GETDATE()) AND [Month] = MONTH(GETDATE()) AND [Year] = YEAR(GETDATE())";
+            double existingRevenue = 0.0;
+            int existingOrders = 0;
+            try (PreparedStatement checkStmt = c.prepareStatement(checkRevenueQuery); ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) {
+                    existingRevenue = rs.getDouble("TotalRevenue");
+                    existingOrders = rs.getInt("TotalOrders");
+                }
+            }
 
-                    if (existingOrders > 0) {
-                        // Nếu đã có bản ghi cho ngày hôm nay, cập nhật TotalRevenue và TotalOrders
-                        String updateRevenueQuery = "UPDATE DailyRevenue SET TotalRevenue = TotalRevenue + ?, TotalOrders = TotalOrders + 1 "
-                                + "WHERE [Day] = DAY(GETDATE()) AND [Month] = MONTH(GETDATE()) AND [Year] = YEAR(GETDATE())";
-                        try (PreparedStatement updateStmt = c.prepareStatement(updateRevenueQuery)) {
-                            updateStmt.setDouble(1, totalAmount);
-                            updateStmt.executeUpdate();
-                        }
-                    } else {
-                        // Nếu chưa có bản ghi, thêm mới
-                        String insertRevenueQuery = "INSERT INTO DailyRevenue ([Day], [Month], [Year], TotalRevenue, TotalOrders) "
-                                + "VALUES (DAY(GETDATE()), MONTH(GETDATE()), YEAR(GETDATE()), ?, 1)";
-                        try (PreparedStatement insertStmt = c.prepareStatement(insertRevenueQuery)) {
-                            insertStmt.setDouble(1, totalAmount);
-                            insertStmt.executeUpdate();
-                        }
-                    }
-                    
+            if (existingOrders > 0) {
+                // Nếu đã có bản ghi cho ngày hôm nay, cập nhật TotalRevenue và TotalOrders
+                String updateRevenueQuery = "UPDATE DailyRevenue SET TotalRevenue = TotalRevenue + ?, TotalOrders = TotalOrders + 1 "
+                        + "WHERE [Day] = DAY(GETDATE()) AND [Month] = MONTH(GETDATE()) AND [Year] = YEAR(GETDATE())";
+                try (PreparedStatement updateStmt = c.prepareStatement(updateRevenueQuery)) {
+                    updateStmt.setDouble(1, totalAmount);
+                    updateStmt.executeUpdate();
+                }
+            } else {
+                // Nếu chưa có bản ghi, thêm mới
+                String insertRevenueQuery = "INSERT INTO DailyRevenue ([Day], [Month], [Year], TotalRevenue, TotalOrders) "
+                        + "VALUES (DAY(GETDATE()), MONTH(GETDATE()), YEAR(GETDATE()), ?, 1)";
+                try (PreparedStatement insertStmt = c.prepareStatement(insertRevenueQuery)) {
+                    insertStmt.setDouble(1, totalAmount);
+                    insertStmt.executeUpdate();
+                }
+            }
+
             // Bước 9: Cập nhật doanh thu hàng tháng trong MonthlyRevenue
-                    String checkMonthlyRevenueQuery = "SELECT TotalRevenue, TotalOrders FROM MonthlyRevenue WHERE [Month] = MONTH(GETDATE()) AND [Year] = YEAR(GETDATE())";
-                    double existingMonthlyRevenue = 0.0;
-                    int existingMonthlyOrders = 0;
-                    try (PreparedStatement checkStmt = c.prepareStatement(checkMonthlyRevenueQuery);
-                         ResultSet rs = checkStmt.executeQuery()) {
-                        if (rs.next()) {
-                            existingMonthlyRevenue = rs.getDouble("TotalRevenue");
-                            existingMonthlyOrders = rs.getInt("TotalOrders");
-                        }
-                    }
+            String checkMonthlyRevenueQuery = "SELECT TotalRevenue, TotalOrders FROM MonthlyRevenue WHERE [Month] = MONTH(GETDATE()) AND [Year] = YEAR(GETDATE())";
+            double existingMonthlyRevenue = 0.0;
+            int existingMonthlyOrders = 0;
+            try (PreparedStatement checkStmt = c.prepareStatement(checkMonthlyRevenueQuery); ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) {
+                    existingMonthlyRevenue = rs.getDouble("TotalRevenue");
+                    existingMonthlyOrders = rs.getInt("TotalOrders");
+                }
+            }
 
-                    if (existingMonthlyOrders > 0) {
-                        String updateMonthlyRevenueQuery = "UPDATE MonthlyRevenue SET TotalRevenue = TotalRevenue + ?, TotalOrders = TotalOrders + 1 "
-                                + "WHERE [Month] = MONTH(GETDATE()) AND [Year] = YEAR(GETDATE())";
-                        try (PreparedStatement updateStmt = c.prepareStatement(updateMonthlyRevenueQuery)) {
-                            updateStmt.setDouble(1, totalAmount);
-                            updateStmt.executeUpdate();
-                        }
-                    } else {
-                        String insertMonthlyRevenueQuery = "INSERT INTO MonthlyRevenue ([Year], [Month], TotalRevenue, TotalOrders) "
-                                + "VALUES (YEAR(GETDATE()), MONTH(GETDATE()), ?, 1)";
-                        try (PreparedStatement insertStmt = c.prepareStatement(insertMonthlyRevenueQuery)) {
-                            insertStmt.setDouble(1, totalAmount);
-                            insertStmt.executeUpdate();
-                        }
-                    }
-            
+            if (existingMonthlyOrders > 0) {
+                String updateMonthlyRevenueQuery = "UPDATE MonthlyRevenue SET TotalRevenue = TotalRevenue + ?, TotalOrders = TotalOrders + 1 "
+                        + "WHERE [Month] = MONTH(GETDATE()) AND [Year] = YEAR(GETDATE())";
+                try (PreparedStatement updateStmt = c.prepareStatement(updateMonthlyRevenueQuery)) {
+                    updateStmt.setDouble(1, totalAmount);
+                    updateStmt.executeUpdate();
+                }
+            } else {
+                String insertMonthlyRevenueQuery = "INSERT INTO MonthlyRevenue ([Year], [Month], TotalRevenue, TotalOrders) "
+                        + "VALUES (YEAR(GETDATE()), MONTH(GETDATE()), ?, 1)";
+                try (PreparedStatement insertStmt = c.prepareStatement(insertMonthlyRevenueQuery)) {
+                    insertStmt.setDouble(1, totalAmount);
+                    insertStmt.executeUpdate();
+                }
+            }
+
             c.commit(); // Xác nhận giao dịch nếu không lỗi
         } catch (SQLException e) {
             try {
@@ -174,8 +172,8 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
                 e.printStackTrace();
             }
         }
-        return orderId;         
-        }
+        return orderId;
+    }
 
     public String generateOrderId() {
         final String PREFIX = "ORDER-"; // Tiền tố cho mã đơn hàng
@@ -392,8 +390,6 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         return products;
     }
 
-
-
     public List<OrderDetail> getOrderDetailByOderId(int orderId) {
         List<OrderDetail> orderDetails = new ArrayList<>();
         String query = "SELECT od.OrderDetailID, od.OrderID, od.Quantity, od.Price, p.ProductID, p.ProductName, p.Price as ProductPrice, p.ImageURL, p.ProductID "
@@ -426,9 +422,29 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         }
 
         return orderDetails; // Trả về danh sách OrderDetails
-    
-    
 
+    }
     
-}
+    public boolean updateOrderPaymentStatus(Order order) {
+        String sql = "UPDATE [dbo].[Orders]\n"
+                + "   SET [PaymentStatus] = ?\n"
+                + " WHERE OrderID = ?";
+        try {
+            PreparedStatement ps = c.prepareStatement(sql);
+            ps.setString(1, order.getPaymentStatus());
+            ps.setInt(2, order.getOrderId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            System.out.println(ex);
+        }
+        return false;
+    }
+    
+    public static void main(String[] args) {
+        OrderDAO o = new OrderDAO();
+        Order od = new Order();
+        od.setOrderId(95);
+        od.setPaymentStatus("Đã thanh toán");
+        System.out.println(od);
+    }
 }
