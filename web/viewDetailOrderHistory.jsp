@@ -209,9 +209,10 @@
                 <!-- User's Information -->
                 <div class="border">
                     <h3>Thông tin người nhận</h3>
-                    <p>Tên người nhận: ${order.recipientName}</p>
+                    <p>Tên người nhận: ${orderContact.recipientName}</p>
                     <p>Địa chỉ: ${order.shippingAddress}</p>
-                    <p>Số điện thoại: ${order.recipientPhone}</p>
+                    <p>Số điện thoại: ${orderContact.recipientPhone}</p>
+                    <p>Ghi chú: ${orderContact.note}</p>
                 </div>
 
                 <!-- Order Details -->

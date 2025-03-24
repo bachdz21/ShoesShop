@@ -76,20 +76,28 @@
           transition: 0.2s color;
         }
         body{
-            overflow-y: hidden;
+            overflow-x: hidden;
             background-color: #191c24
         }
 
         .bg-secondary {
             display: block !important;
         }
+        .content {
+            margin-left: -1600px;
+            margin-top: 140px;
+            min-height: 100vh;
+            background: #ffffff;
+            transition: 0.5s;
+        }
     </style>
     
         <%@page import="model.User"%>
         <%@page import="model.CartItem"%>
         <%@ page import="java.util.List" %>
-
+        <%@ page import="java.util.Calendar" %>
         <%@page import="jakarta.servlet.http.HttpSession"%>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%
             // Sử dụng biến session từ request mà không cần khai báo lại
             User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
@@ -105,6 +113,9 @@
                 subtotal += item.getProduct().getPrice() * item.getQuantity();
             }
         }
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
         %>
     <body>
         <div class="container-fluid position-relative d-flex p-0">
@@ -121,23 +132,21 @@
             <div class="sidebar pe-4 pb-3">
                 <nav class="navbar bg-secondary navbar-dark">
                     <div class="navbar-nav w-100">
-                        <a href="dashBoard.jsp" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                        <a href="/ShoesStoreWeb/revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>List</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Danh Sách</a>
                             <div class="dropdown-menu bg-transparent border-0">
-                                <a href="getAllOrders" class="dropdown-item">All Orders List</a>
-                                <a href="list" class="dropdown-item">All Products List</a>
-                                <a href="element.html" class="dropdown-item">Other</a>
+                                <a href="getAllOrders" class="dropdown-item">Danh Sách Đơn Hàng</a>
+                                <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
+                                <a href="#" class="dropdown-item">Khác</a>
                             </div>
                         </div>
-                        <a href="chart.jsp" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
+                        <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Biểu Đồ</a>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Trang</a>
                             <div class="dropdown-menu bg-transparent border-0">
-                                <a href="signin.html" class="dropdown-item">Sign In</a>
-                                <a href="signup.html" class="dropdown-item">Sign Up</a>
-                                <a href="404.html" class="dropdown-item">404 Error</a>
-                                <a href="blank.jsp" class="dropdown-item">Blank Page</a>
+                                <a href="#" class="dropdown-item">Sign In</a>
+                                <a href="#" class="dropdown-item">Sign Up</a>
                             </div>
                         </div>
                     </div>
@@ -152,37 +161,37 @@
                 <div class="container-fluid pt-4 px-4">
                     <div class="row g-4">
                         <div class="col-sm-3 col-xl-2">
-                            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                            <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
                                 <i class="fa fa-chart-line fa-3x text-primary"></i>
                                 <div class="ms-3">
-                                    <p class="mb-2">Today Sale</p>
-                                    <h6 class="mb-0">${requestScope.todaySale}</h6>
+                                    <p class="mb-2">Đã bán hôm nay</p>
+                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.todaySale}" type="number" maxFractionDigits="0" /></h6>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-3 col-xl-2">
-                            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                            <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
                                 <i class="fa fa-chart-bar fa-3x text-primary"></i>
                                 <div class="ms-3">
-                                    <p class="mb-2">Total Sale</p>
-                                    <h6 class="mb-0">${requestScope.totalSale}</h6>
+                                    <p class="mb-2">Tổng số đã bán</p>
+                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.totalSale}" type="number" maxFractionDigits="0" /></h6>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-3 col-xl-2">
-                            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                            <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
                                 <i class="fa fa-chart-area fa-3x text-primary"></i>
                                 <div class="ms-3">
-                                    <p class="mb-2">Today Revenue</p>
+                                    <p class="mb-2">Doanh thu hôm nay</p>
                                     <h6 class="mb-0">$${requestScope.todayRevenue}</h6>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-3 col-xl-2">
-                            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                            <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
                                 <i class="fa fa-chart-pie fa-3x text-primary"></i>
                                 <div class="ms-3">
-                                    <p class="mb-2">Total Revenue</p>
+                                    <p class="mb-2">Tổng doanh thu</p>
                                     <h6 class="mb-0">$${requestScope.totalRevenue}</h6>
                                 </div>
                             </div>
@@ -196,10 +205,10 @@
                 <div class="container-fluid pt-4 px-4">
                     <div class="row g-4">
                         <div class="col-sm-6 col-xl-3">
-                            <div class="bg-secondary text-center rounded p-4">
+                            <div style="border-style: solid; border-width: 2px" class="bg-gradient text-center rounded p-4">
                                 <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <h6 class="mb-0">Monthly Revenue</h6>
-                                    <a href="getRevenueLastNDays?numberOfDays=7">Show All</a> <!-- Link để hiển thị tất cả -->
+                                    <h6 class="mb-0">Doanh thu hàng tháng</h6>
+                                    <a href="getRevenueLastNDays?numberOfDays=7">Xem tất cả</a> <!-- Link để hiển thị tất cả -->
                                 </div>
 
                                 <c:choose>
@@ -214,39 +223,23 @@
                                     </c:choose>
                             </div>
                         </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <div class="bg-secondary text-center rounded p-4">
+                        <div style="margin-bottom: 120px" class="col-sm-6 col-xl-3">
+                            <div style="border-style: solid; border-width: 2px" class="bg-gradient text-center rounded p-4">
                                 <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <h6 class="mb-0">Sales & Revenue</h6>
-                                    <a href="getRevenueLastNDays?numberOfDays=7">Show All</a>
+                                    <h6 class="mb-0">Doanh thu các mặt hàng</h6>
+<!--                                    <a href="getRevenueLastNDays?numberOfDays=7">Xem tất cả</a>-->
                                 </div>
                                 <canvas id="worldwide-sales"></canvas>
                             </div>
                         </div>
+                        <jsp:include page="footer.jsp" />
                     </div>
+                    
                 </div>
                 <!-- Sales Chart End -->
-
-
-
-
-                <!-- Footer Start -->
-                <div class="container-fluid pt-4 px-4">
-                    <div class="bg-secondary rounded-top p-4">
-                        <div class="row">
-                            <div class="col-12 col-sm-6 text-center text-sm-start">
-                                &copy; <a href="#">ShoeShop</a>, All Right Reserved. 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer End -->
+      
             </div>
             <!-- Content End -->
-
-
-            <!-- Back to Top -->
-            <!--            <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>-->
         </div>
 
         <!-- JavaScript Libraries -->
@@ -258,7 +251,7 @@
         <script src="lib/owlcarousel/owl.carousel.min.js"></script>
         <script src="lib/tempusdominus/js/moment.min.js"></script>
         <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+<!--        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>-->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             // Hàm JavaScript để tự động submit form
@@ -377,8 +370,8 @@
                         }
                         }
                 });
+                
         </script>
-
         <!-- Template Javascript -->
         <script src="js/main_1.js"></script>
     </body>

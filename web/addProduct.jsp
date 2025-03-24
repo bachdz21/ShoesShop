@@ -75,22 +75,6 @@
                 width: 1850px;
             }
             
-            label, h1, h2, h3, h4, h5, h6 {
-              color: #6c7293;
-              font-weight: 700;
-              margin: 0 0 10px;
-            }
-
-            a {
-              color: #6c7293;
-              font-weight: 500;
-              -webkit-transition: 0.2s color;
-              transition: 0.2s color;
-            }
-            
-            input {
-                
-            }
         </style>
     </head>
         <%@page import="model.User"%>
@@ -219,7 +203,7 @@
                                 <input type="text" id="brand" name="brand" class="form-control" required>
                             </div>
 
-                            <button style="background-color: #d10024" type="submit" class="btn btn-primary btn-submit">Thêm Sản Phẩm</button>
+                            <button type="submit" class="btn btn-primary btn-submit">Thêm Sản Phẩm</button>
                             <hr>
                         </form>
                         <!-- ADDPRODUCT -->
@@ -244,6 +228,9 @@
             </div>
             <!-- Content End -->
 
+
+            <!-- Back to Top -->
+            <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
         </div>
 
         <!-- JavaScript Libraries -->

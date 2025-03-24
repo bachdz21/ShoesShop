@@ -9,7 +9,7 @@ public class DBConnect {
 
     public DBConnect() {
         try {
-            String url = "jdbc:sqlserver://localhost\\LAPTOP-56UHJN3G:1433;databaseName=ProjectSWP;trustServerCertificate=true";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=ProjectSWP;trustServerCertificate=true";
             String username = "sa";
             String pass = "123";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -18,7 +18,7 @@ public class DBConnect {
             e.printStackTrace();
         }
     }
-
+ 
     public void closeConnection() {
         try {
             if (c != null && !c.isClosed()) {

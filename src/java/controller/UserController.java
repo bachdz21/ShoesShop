@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.UUID;
 import model.Order;
+import model.OrderContact;
 import model.OrderDetail;
 import model.WishlistItem;
 //import org.json.JSONObject;
@@ -42,7 +43,7 @@ import utils.Encryption;
 @WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/checkExisting",
     "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
     "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar", "/orderDetail",
-    "/filterBanUser", "/emailReminder", "/banUser", "/filterUser", "/restoreUser"})
+    "/filterBanUser", "/emailReminder", "/banUser","/updateRoleUser", "/filterUser", "/restoreUser"})
 @MultipartConfig
 
 public class UserController extends HttpServlet {
@@ -52,6 +53,8 @@ public class UserController extends HttpServlet {
     IWishlistDAO wishlistDAO = new WishlistDAO();
     private final OrderDAO orderDAO = new OrderDAO();
     Encryption e = new Encryption();
+    // Cập nhật ảnh đại diện
+    private static final String IMAGE_UPLOAD_DIR = "D:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\web\\img";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -83,8 +86,14 @@ public class UserController extends HttpServlet {
             case "/filterUser":
                 filterUser(request, response);//get
                 break;
+            case "/emailReminder":
+                emailReminder(request, response);//get
+                break;
             case "/banUser":
                 banUser(request, response);//get
+                break;
+            case "/updateRoleUser":
+                updateRoleUser(request, response);//get
                 break;
             case "/restoreUser":
                 restoreUser(request, response);//get
@@ -92,9 +101,7 @@ public class UserController extends HttpServlet {
             case "/filterBanUser":
                 filterBanUser(request, response);//get
                 break;
-            case "/emailReminder":
-                emailReminder(request, response);//get
-                break;
+
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -399,8 +406,7 @@ public class UserController extends HttpServlet {
         request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển hướng đến trang JSP
     }
 
-    // Cập nhật ảnh đại diện
-    private static final String IMAGE_UPLOAD_DIR = "D:\\DH_FPT\\Semester5\\SWP301\\pj_swp\\ShoesShop\\web\\img";
+    
 
     protected void updateAvatar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -424,6 +430,7 @@ public class UserController extends HttpServlet {
         u.setUserId(userId);
         u.setProfileImageURL(imageUrl);
         userDAO.updateUser(u);
+
         // Sử dụng sendRedirect để chuyển hướng đến trang userProfile
         response.sendRedirect("userProfile"); // Chuyển hướng tới trang userProfile
 
@@ -436,7 +443,7 @@ public class UserController extends HttpServlet {
         User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
         if (user == null) {
             // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("login");
             return;
         }
         int userId = user.getUserId();
@@ -459,8 +466,10 @@ public class UserController extends HttpServlet {
         u.setPhoneNumber(phoneNumber);
         u.setAddress(address);
         userDAO.updateUser(u);
-        request.setAttribute("message1", "Cập nhật hồ sơ thành công.");
-        request.getRequestDispatcher("./userProfile").forward(request, response); // Chuyển về trang JSP với thông báo
+        String message = "Cập nhật hồ sơ thành công!";
+        session.setAttribute("messageUpdateProfile", message);
+        // Sử dụng sendRedirect để chuyển hướng đến trang userProfile
+        response.sendRedirect("userProfile"); // Chuyển hướng tới trang userProfile
     }
 
     protected void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -469,7 +478,7 @@ public class UserController extends HttpServlet {
         User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
         if (user == null) {
             // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("login");
             return;
         }
         int userId = user.getUserId();
@@ -482,12 +491,14 @@ public class UserController extends HttpServlet {
         if (!user.getPassword().equals(e.getMd5(password))) {
             message = "Mật khẩu hiện tại không chính xác.";
         } else {
-            userDAO.changePassword(userId, e.getMd5(newPassword)); // Cập nhật mật khẩu mới
+        userDAO.changePassword(userId, e.getMd5(newPassword)); // Cập nhật mật khẩu mới
             message = "Đổi mật khẩu thành công.";
         }
 
-        request.setAttribute("message", message);
-        request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển về trang JSP với thông báo
+//        String message = "Thay đổi mật khẩu thành công!";
+        session.setAttribute("messageChangePassword", message);
+        // Sử dụng sendRedirect để chuyển hướng đến trang userProfile
+        response.sendRedirect("userProfile"); // Chuyển hướng tới trang userProfile
     }
 
     protected void orderDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -495,11 +506,13 @@ public class UserController extends HttpServlet {
         User user = (User) session.getAttribute("user");
         int orderId = Integer.parseInt(request.getParameter("orderId"));
 
+        OrderContact oC = userDAO.getOrderContactsByOrderID(orderId);
+
         Order o = orderDAO.getOrdersByOrderId(orderId);
 
         List<OrderDetail> orderDetails = orderDAO.getOrderDetailByOderId(orderId);
 
-        request.setAttribute("user", user);
+        request.setAttribute("orderContact", oC);
         request.setAttribute("order", o);// tính tổng tiền, phương thức thanh toán,trạng thái
         request.setAttribute("orderDetails", orderDetails);
         request.getRequestDispatcher("viewDetailOrderHistory.jsp").forward(request, response);
@@ -507,6 +520,14 @@ public class UserController extends HttpServlet {
 
     protected void filterUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User u = (User) session.getAttribute("user");
+
+        if (u == null || !u.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+
         // Lấy thông tin phân trang cho khách hàng và nhân viên
         String pageStr1 = request.getParameter("pageStr1"); // Phân trang cho khách hàng
         String pageStr2 = request.getParameter("pageStr2"); // Phân trang cho nhân viên
@@ -592,7 +613,13 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         // Lấy thông tin userId từ tham số request
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Lấy user từ session (nếu có)
+        User u = (User) session.getAttribute("user");
+
+        if (u == null || !u.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+
         int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
         userDAO.isLocked(userId); // Gọi phương thức isLocked để khóa tài khoản
 
@@ -611,7 +638,6 @@ public class UserController extends HttpServlet {
         username = (username == null) ? "" : username;
         fullName = (fullName == null) ? "" : fullName;
         email = (email == null) ? "" : email;
-        System.out.println(email);
         phone = (phone == null) ? "" : phone;
         registrationDate = (registrationDate == null) ? "" : registrationDate;
 
@@ -621,12 +647,68 @@ public class UserController extends HttpServlet {
         // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
         response.sendRedirect("filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName=" + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
     }
-
-    protected void emailReminder(HttpServletRequest request, HttpServletResponse response)
+    
+    protected void updateRoleUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Lấy thông tin userId từ tham số request
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Lấy user từ session (nếu có)
+        User u = (User) session.getAttribute("user");
+
+        if (u == null || !u.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+        
+        User u11 = userDAO.getUserById(Integer.parseInt(request.getParameter("userId")));
+        
+        User u1 = new User(); // Gọi hàm để lấy thông tin người dùng
+        u1.setUserId(Integer.parseInt(request.getParameter("userId")));
+        
+        
+        // Nếu hiện tại là Admin thì hủy quyền về Customer
+        if ("Admin".equals(u11.getRole())) {
+            u1.setRole("Customer");
+        } else {
+            u1.setRole("Admin");
+        }
+        userDAO.updateUser(u1);
+
+
+
+        // Lấy thông tin các tham số tìm kiếm và đảm bảo rằng nếu chúng là null thì sẽ mặc định là ""
+        String pageStr1 = request.getParameter("pageStr1");
+        String pageStr2 = request.getParameter("pageStr2");
+        String username = request.getParameter("username");
+        String fullName = request.getParameter("fullName");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String registrationDate = request.getParameter("registrationDate");
+
+        // Nếu các tham số là null, gán giá trị mặc định là rỗng ""
+        pageStr1 = (pageStr1 == null) ? "" : pageStr1;
+        pageStr2 = (pageStr2 == null) ? "" : pageStr2;
+        username = (username == null) ? "" : username;
+        fullName = (fullName == null) ? "" : fullName;
+        email = (email == null) ? "" : email;
+        phone = (phone == null) ? "" : phone;
+        registrationDate = (registrationDate == null) ? "" : registrationDate;
+
+        String message = "Cấp quyền khoản thành công!";
+        session.setAttribute("message", message);
+
+        // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
+        response.sendRedirect("filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName=" + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
+    }
+
+    protected void emailReminder(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User u1 = (User) session.getAttribute("user");
+
+        if (u1 == null || !u1.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
 
         int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
         User u = userDAO.getUserById(userId); // Gọi hàm để lấy thông tin người dùng
@@ -686,7 +768,12 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         // Lấy thông tin userId từ tham số request
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Lấy user từ session (nếu có)
+        User u = (User) session.getAttribute("user");
+
+        if (u == null || !u.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
 
         int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
 
@@ -717,6 +804,14 @@ public class UserController extends HttpServlet {
 
     protected void filterBanUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User u = (User) session.getAttribute("user");
+
+        if (u == null || !u.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+
         // Lấy thông tin phân trang cho khách hàng và nhân viên
         String pageStr1 = request.getParameter("pageStr1"); // Phân trang cho khách hàng
         String pageStr2 = request.getParameter("pageStr2"); // Phân trang cho nhân viên

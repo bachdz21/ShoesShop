@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 // Vì class này thực hiện thao tác trên database => Ta phải có 1 cái connections => kết nối đến database
 import java.util.*;
 import model.Order;
+import model.OrderContact;
 import model.User;
 
 // UserDAO => Đã có connections
@@ -304,6 +305,10 @@ public class UserDAO extends DBConnect implements IUserDAO {
                 sql.append("ProfileImageURL = ?, ");
                 params.add(u.getProfileImageURL());
             }
+            if (u.getRole() != null) {
+                sql.append("Role = ?, ");
+                params.add(u.getRole());
+            }
 
             // Xóa dấu phẩy cuối cùng và thêm điều kiện WHERE
             sql.setLength(sql.length() - 2); // Xóa ", "
@@ -486,7 +491,7 @@ public class UserDAO extends DBConnect implements IUserDAO {
 
         return users;
     }
-    
+
     @Override
     public List<User> filterBanUsers(String username, String fullName, String email, String phone, String registrationDate) {
         List<User> users = new ArrayList<>();
@@ -587,20 +592,31 @@ public class UserDAO extends DBConnect implements IUserDAO {
         return employee;
     }
 
-    public static void main(String[] args) {
-        Encryption e = new Encryption();
-        UserDAO ud = new UserDAO();
-        User u = new User();
-//        u.setProfileImageURL("https://images2.thanhnien.vn/528068263637045248/2024/1/25/e093e9cfc9027d6a142358d24d2ee350-65a11ac2af785880-17061562929701875684912.jpg");
+    @Override
+    public OrderContact getOrderContactsByOrderID(int orderID) {
+        String query = "SELECT * FROM OrderContacts WHERE OrderID = ?";
+        OrderContact orderContact = null;
 
-//        List<User> user = ud.getAllUsers();
-//        for (User user1 : user) {
-//            ud.changePassword(user1.getUserId(), e.getMd5(user1.getPassword()));
-//        }
-////      
-        System.out.println(e.getMd5("9824"));
-//        ud.changePassword(user.get(11).getUserId(), user.get(11).getPassword());
+        try (PreparedStatement stmt = c.prepareStatement(query)) {
+            stmt.setInt(1, orderID);
+            ResultSet rs = stmt.executeQuery();
 
+            if (rs.next()) {
+                orderContact = new OrderContact();
+                orderContact.setContactID(rs.getInt("ContactID"));
+                orderContact.setOrderID(rs.getInt("OrderID"));
+                orderContact.setRecipientName(rs.getString("RecipientName"));
+                orderContact.setRecipientPhone(rs.getString("RecipientPhone"));
+                orderContact.setRecipientEmail(rs.getString("RecipientEmail"));
+                orderContact.setNote(rs.getString("NOTE"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return orderContact; // Trả về đối tượng OrderContact nếu tìm thấy, ngược lại trả về null
     }
+
+   
 
 }

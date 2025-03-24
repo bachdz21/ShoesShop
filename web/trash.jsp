@@ -167,9 +167,12 @@
                 <ul class="main-nav nav navbar-nav">
                     <li><a href="/ShoesStoreWeb/home">Trang Chủ</a></li>
                     <li><a href="/ShoesStoreWeb/product">Danh Mục</a></li>
+                    <li class=""><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
+                    <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
+                    <li class="active"><a href="trash" class="admin-link">Danh Sách Sản Phẩm Đã Xóa</a></li>
                         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                         <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                        <li class="active"><a href="trash" class="admin-link">Danh Sách Sản Phẩm Đã Xóa</a></li>
+                            <li><a href="trash" class="admin-link">Danh Sách Sản Phẩm Đã Xóa</a></li>
                         <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
                         </c:if>
 

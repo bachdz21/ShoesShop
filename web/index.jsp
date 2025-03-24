@@ -1,9 +1,3 @@
-<%-- 
-    Document   : index
-    Created on : Oct 23, 2024, 12:47:20 AM
-    Author     : nguye
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>

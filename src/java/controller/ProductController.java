@@ -1,7 +1,9 @@
+
 package controller;
 
 import dal.ICategoryDAO;
 import dal.IProductDAO;
+import dal.IReviewDAO;
 import dal.IUserDAO;
 import dal.imp.CategoryDAO;
 import dal.imp.ProductDAO;
@@ -223,7 +225,7 @@ public class ProductController extends HttpServlet {
             return;
         }
         request.setAttribute("list", list);
-        request.getRequestDispatcher("productList.jsp").forward(request, response);
+        request.getRequestDispatcher("productList2.jsp").forward(request, response);
     }
 
     protected void addProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
