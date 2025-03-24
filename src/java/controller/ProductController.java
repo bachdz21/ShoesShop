@@ -3,7 +3,6 @@ package controller;
 
 import dal.ICategoryDAO;
 import dal.IProductDAO;
-import dal.IReviewDAO;
 import dal.IUserDAO;
 import dal.imp.CategoryDAO;
 import dal.imp.ProductDAO;
@@ -40,7 +39,8 @@ public class ProductController extends HttpServlet {
 
     IProductDAO productDAO = new ProductDAO();
     private static final String IMAGE_UPLOAD_DIR = "C:\\Users\\nvhoa\\OneDrive\\Documents\\GitHub\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
-    IReviewDAO reviewDAO = new ReviewDAO();
+    ReviewDAO reviewDAO = new ReviewDAO();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
