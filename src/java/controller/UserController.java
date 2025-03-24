@@ -244,39 +244,12 @@ public class UserController extends HttpServlet {
 
     protected void getRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy danh sách email, username và phonenumber từ cơ sở dữ liệu
-        List<String> existingEmails = userDAO.getAllEmails();
-        List<String> existingUsernames = userDAO.getAllUsernames();
-        List<String> existingPhoneNumbers = userDAO.getAllPhoneNumbers();
-
-        // Đưa các danh sách vào request để sử dụng trong trang JSP
-        request.setAttribute("existingEmails", existingEmails);
-        request.setAttribute("existingUsernames", existingUsernames);
-        request.setAttribute("existingPhoneNumbers", existingPhoneNumbers);
-
         // Tiến hành forward request đến trang register.jsp
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
-//    protected void checkExisting(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        String username = request.getParameter("username");
-//        String email = request.getParameter("email");
-//
-//        // Kiểm tra trong cơ sở dữ liệu
-//        boolean isUsernameExists = userDAO.checkUsernameExists(username);
-//        boolean isEmailExists = userDAO.checkEmailExists(email);
-//
-//        // Trả kết quả dưới dạng JSON
-//        JSONObject result = new JSONObject();
-//        result.put("isUsernameExists", isUsernameExists);
-//        result.put("isEmailExists", isEmailExists);
-//
-//        response.setContentType("application/json");
-//        response.getWriter().write(result.toString());
-//    }
     protected void postRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Tạo đối tượng DAO để thao tác với cơ sở dữ liệu
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirm_password");
@@ -284,35 +257,39 @@ public class UserController extends HttpServlet {
         String email = request.getParameter("email");
         String phonenumber = request.getParameter("phonenumber");
 
-        // Kiểm tra nếu username đã tồn tại
-        User existingUserByUsername = userDAO.getUserByUsername(username);
-        if (existingUserByUsername != null) {
-            request.setAttribute("error", "Username already exists. Please choose another.");
+        // Gán lại tất cả các giá trị đã nhập (bao gồm mật khẩu)
+        request.setAttribute("username", username);
+        request.setAttribute("password", password);
+        request.setAttribute("confirm_password", confirmPassword);
+        request.setAttribute("fullname", fullname);
+        request.setAttribute("email", email);
+        request.setAttribute("phonenumber", phonenumber);
+
+        // Kiểm tra username tồn tại
+        if (userDAO.getUserByUsername(username) != null) {
+            request.setAttribute("error", "Tên tài khoản đã tồn tại.Vui lòng chọn tên tài khoản khác.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // Kiểm tra nếu email đã tồn tại
-        boolean emailExists = userDAO.checkEmailExists(email);
-        if (emailExists) {
-            request.setAttribute("error", "Email already exists. Please choose another.");
+        // Kiểm tra email tồn tại
+        if (userDAO.checkEmailExists(email)) {
+            request.setAttribute("error", "Email đã tồn tại.Vui lòng nhập tài khoản email khác.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // Tạo đối tượng User mới
+        // Tạo người dùng mới
         User newUser = new User();
         newUser.setUsername(username);
-        newUser.setPassword(e.getMd5(password));  // Có thể mã hóa mật khẩu trước khi lưu
+        newUser.setPassword(e.getMd5(password));
         newUser.setFullName(fullname);
         newUser.setEmail(email);
         newUser.setPhoneNumber(phonenumber);
-        // Lưu người dùng mới vào database
         userDAO.addUser(newUser);
 
         request.setAttribute("message", "Đăng ký thành công");
-        request.getRequestDispatcher("login.jsp").forward(request, response);
-
+        request.getRequestDispatcher("login").forward(request, response);
     }
 
     protected void forgotPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
