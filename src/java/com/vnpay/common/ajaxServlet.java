@@ -37,6 +37,7 @@ import model.User;
 public class ajaxServlet extends HttpServlet {
 
     private OrderDAO orderDAO = new OrderDAO();
+    private CartDAO cartDAO = new CartDAO();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -61,7 +62,8 @@ public class ajaxServlet extends HttpServlet {
         String note = req.getParameter("note");
         int orderId = orderDAO.checkout(userId, fullName, email, phoneNumber, shippingAddress, paymentMethod, note);
         String orderCode = orderDAO.getOrderCodeByOrderID(orderId);
-
+        List<CartItem> cartItems = cartDAO.getCartItems(user.getUserId());
+        session.setAttribute("cart", cartItems);
         // Lấy totalAmount từ request parameter
         String totalAmountStr = req.getParameter("totalAmount");
         double totalAmount;
