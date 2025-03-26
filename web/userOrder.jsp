@@ -288,6 +288,25 @@
                 text-decoration: none;
             }
 
+
+            .price-group {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .price-group .form-control {
+                flex: 1;
+            }
+            .date-group {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .date-group .form-control {
+                flex: 1;
+            }
+
+
         </style>
 
     </head>
@@ -326,60 +345,68 @@
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <form action="userOrder" method="GET" class="form-inline mb-3 gap-3">
-                                        <div class="form-group mr-2">
-                                            <label for="orderCode">Mã Đơn Hàng:</label>
-                                            <input type="text" class="form-control ml-2" id="orderCode" name="orderCode" 
-                                                   placeholder="Nhập mã đơn" value="${orderCode}" style="width: 300px;">
-                                        </div>
-                                        
-                                        <div class="form-group mr-2" style="margin-left: 63px;">
-                                            <label for="orderCode">Địa Chỉ Giao Hàng:</label>
-                                            <input type="text" class="form-control ml-2" id="shippingAddress" name="shippingAddress" 
-                                                   placeholder="Nhập Địa Chỉ Giao Hàng" value="${shippingAddress}" style="width: 400px;">
-                                        </div>
+                                    <div class="row justify-content-center">
+                                        <div class="col-lg-12 search-container">
+                                            <form action="userOrder" method="GET" class="row g-3">
+                                                <input type="hidden" id="userId" name="userId" value="${user.userId}">
 
-                                        <div class="form-group mr-2">
-                                            <label for="paymentMethod">Chọn phương thức thanh toán:</label>
-                                            <select class="form-control ml-2" id="paymentMethod" name="paymentMethod">
-                                                <option value="null" ${paymentMethod == null || paymentMethod == 'null' ? 'selected' : ''}>Tất cả</option>
-                                                <option value="Chuyển Khoản Ngân Hàng" ${paymentMethod == 'Chuyển Khoản Ngân Hàng' ? 'selected' : ''}>Chuyển Khoản Ngân Hàng</option>
-                                                <option value="Thẻ Tín Dụng" ${paymentMethod == 'Thẻ Tín Dụng' ? 'selected' : ''}>Thẻ Tín Dụng</option>
-                                                <option value="Tiền Mặt Khi Nhận Hàng" ${paymentMethod == 'Tiền Mặt Khi Nhận Hàng' ? 'selected' : ''}>Tiền Mặt Khi Nhận Hàng</option>
-                                            </select>
-                                        </div>
+                                                <div class="col-md-6" style="margin-top: 5px;">
+                                                    <label for="orderCode" class="form-label">Mã Đơn Hàng:</label>
+                                                    <input type="text" class="form-control" id="orderCode" name="orderCode" 
+                                                           placeholder="Nhập mã đơn" value="${orderCode}">
+                                                </div>
 
-                                        <div class="form-group mr-2" style="margin-left: 2px;">
-                                            <label for="sortBy">Sắp xếp :</label>
-                                            <select class="form-control ml-2" id="sortBy" name="sortBy" style="width: 400px;">
-                                                <option value="default" ${sortBy == null || sortBy == 'default' ? 'selected' : ''}>Mặc định</option>
-                                                <option value="priceDesc" ${sortBy == 'priceDesc' ? 'selected' : ''}>Tổng Số Tiền giảm dần</option>
-                                                <option value="priceAsc" ${sortBy == 'priceAsc' ? 'selected' : ''}>Tổng Số Tiền tăng dần</option>
-                                            </select>
-                                        </div>
+                                                <div class="col-md-6" style="margin-top: 5px;">
+                                                    <label for="shippingAddress" class="form-label">Địa Chỉ Giao Hàng:</label>
+                                                    <input type="text" class="form-control" id="shippingAddress" name="shippingAddress" 
+                                                           placeholder="Nhập Địa Chỉ Giao Hàng" value="${shippingAddress}">
+                                                </div>
 
-                                        <div class="form-group mr-2">
-                                            <label for="fromDate">Ngày Đặt Hàng:</label>
-                                            <input type="date" class="form-control ml-2" id="fromDate" name="fromDate" value="${fromDate}">
-                                            <label for="toDate">-</label>
-                                            <input type="date" class="form-control ml-2" id="toDate" name="toDate" value="${toDate}">
-                                        </div>
+                                                <div class="col-md-6" style="margin-top: 5px;">
+                                                    <label for="paymentMethod">Chọn phương thức thanh toán:</label>
+                                                    <select class="form-control ml-2" id="paymentMethod" name="paymentMethod">
+                                                        <option value="null" ${paymentMethod == null || paymentMethod == 'null' ? 'selected' : ''}>Tất cả</option>
+                                                        <option value="Chuyển Khoản Ngân Hàng" ${paymentMethod == 'Chuyển Khoản Ngân Hàng' ? 'selected' : ''}>Chuyển Khoản Ngân Hàng</option>
+                                                        <option value="Thẻ Tín Dụng" ${paymentMethod == 'Thẻ Tín Dụng' ? 'selected' : ''}>Thẻ Tín Dụng</option>
+                                                        <option value="Tiền Mặt Khi Nhận Hàng" ${paymentMethod == 'Tiền Mặt Khi Nhận Hàng' ? 'selected' : ''}>Tiền Mặt Khi Nhận Hàng</option>
+                                                    </select>
+                                                </div>
 
-                                        <div class="form-group mr-2" style="margin-left: 25px;">
-                                            <label for="minPrice">Tổng Số Tiền:</label>
-                                            <input type="number" class="form-control ml-2" id="minPrice" name="minPrice" 
-                                                   placeholder="Nhập giá tối thiểu" value="${minPrice}">
-                                            <label for="maxPrice">-</label>
-                                            <input type="number" class="form-control ml-2" id="maxPrice" name="maxPrice" 
-                                                   placeholder="Nhập giá tối đa" value="${maxPrice}">
-                                        </div>
-                                        
-                                        
+                                                <div class="col-md-6" style="margin-top: 5px;">
+                                                    <label for="sortBy">Sắp xếp :</label>
+                                                    <select class="form-control ml-2" id="sortBy" name="sortBy" >
+                                                        <option value="default" ${sortBy == null || sortBy == 'default' ? 'selected' : ''}>Mặc định</option>
+                                                        <option value="priceDesc" ${sortBy == 'priceDesc' ? 'selected' : ''}>Tổng Số Tiền giảm dần</option>
+                                                        <option value="priceAsc" ${sortBy == 'priceAsc' ? 'selected' : ''}>Tổng Số Tiền tăng dần</option>
+                                                    </select>
+                                                </div>
 
-                                        <div class="form-group mr-2">
-                                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                                <div class="col-md-6" style="margin-top: 5px;">
+                                                    <label class="form-label">Ngày Đặt Hàng:</label>
+                                                    <div class="date-group">
+                                                        <input type="date" class="form-control" id="fromDate" name="fromDate" value="${fromDate}">
+                                                        <span>-</span>
+                                                        <input type="date" class="form-control" id="toDate" name="toDate" value="${toDate}">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6" style="margin-top: 5px;">
+                                                    <label class="form-label">Tổng Số Tiền:</label>
+                                                    <div class="price-group">
+                                                        <input type="number" class="form-control" id="minPrice" name="minPrice" 
+                                                               placeholder="Giá tối thiểu" value="${minPrice}">
+                                                        <span>-</span>
+                                                        <input type="number" class="form-control" id="maxPrice" name="maxPrice" 
+                                                               placeholder="Giá tối đa" value="${maxPrice}">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12 text-center mt-4" >
+                                                    <button type="submit" class="btn btn-primary search-btn px-4" style="margin-top: 30px; margin-bottom: 30px">Tìm kiếm</button>
+                                                </div>
+                                            </form>
                                         </div>
-                                    </form>
+                                    </div>
 
 
                                     <div class="list-product">
