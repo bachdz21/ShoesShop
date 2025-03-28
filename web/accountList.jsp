@@ -227,6 +227,7 @@
                                     <a href="javascript:void(0);" onclick="confirmAction('emailReminder?userId=${user.userId}&pageStr1=${currentPageCustomer}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}', 'Gửi email cảnh báo?')">Email cảnh báo</a> | 
                                     <a href="javascript:void(0);" onclick="confirmAction('banUser?userId=${user.userId}&pageStr1=${currentPageCustomer}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}', 'Bạn có chắc chắn muốn khóa tài khoản này?')">Khóa</a> |
                                     <a href="javascript:void(0);" onclick="confirmAction('updateRoleUser?userId=${user.userId}&pageStr1=${currentPageCustomer}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}', 'Bạn có chắc chắn muốn cấp quyền tài khoản này?')">Cấp Quyền</a>
+                                    <a href="userDetail?userId=${user.userId}" class="btn btn-sm btn-info">Chi Tiết</a>
                                 </td>
 
                             </tr>
@@ -305,6 +306,7 @@
                                 <td>
                                     <a href="javascript:void(0);" onclick="confirmAction('updateRoleUser?userId=${user.userId}&pageStr1=${currentPageCustomer}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}', 'Bạn có chắc chắn muốn hủy quyền hạn tài khoản này?')">Hủy quyền</a> | 
                                     <a href="javascript:void(0);" onclick="confirmAction('banUser?userId=${user.userId}&pageStr1=${currentPageCustomer}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}', 'Bạn có chắc chắn muốn khóa tài khoản này?')">Khóa</a>
+                                    <a href="userDetail?userId=${user.userId}" class="btn btn-sm btn-info">Chi Tiết</a>
                                 </td>
 
                             </tr>

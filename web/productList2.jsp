@@ -187,7 +187,6 @@
             }
             
 
-
             .sidebar .navbar .dropdown-item {
                 padding: 10px 35px;
                 border-radius: 0 30px 30px 0;
@@ -304,8 +303,14 @@
                             </div>
                         </div>
                         <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Biểu Đồ</a>
-                        <a href="#" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Danh Sách Tài Khoản</a>
                         <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Hoạt Động</a>
+                            <div class="dropdown-menu bg-transparent border-0">
+                                <a href="activeCustomers" class="dropdown-item">Hoạt Động Khách Hàng</a>
+                                <a href="customerBehavior" class="dropdown-item">Sản Phẩm Ưa Chuộng</a>
+                            </div>
+                        </div>
+                            <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Trang</a>
                             <div class="dropdown-menu bg-transparent border-0">
                                 <a href="#" class="dropdown-item">Sign In</a>

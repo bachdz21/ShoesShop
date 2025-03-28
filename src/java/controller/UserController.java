@@ -29,10 +29,13 @@ import model.User;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.UUID;
+import model.CartStat;
 import model.Order;
 import model.OrderContact;
 import model.OrderDetail;
+import model.ReviewStat;
 import model.WishlistItem;
+import model.WishlistStat;
 import org.json.JSONObject;
 import utils.Encryption;
 
@@ -43,7 +46,9 @@ import utils.Encryption;
 @WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/checkExisting",
     "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
     "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar", "/orderDetail",
-    "/filterBanUser", "/emailReminder", "/banUser","/updateRoleUser", "/filterUser", "/restoreUser"})
+    "/filterBanUser", "/emailReminder", "/banUser","/updateRoleUser", "/filterUser", "/restoreUser", 
+    "/activeCustomers", "/customerBehavior" , "/registerEmployee", "/userDetail"})
+
 @MultipartConfig
 
 public class UserController extends HttpServlet {
@@ -99,7 +104,16 @@ public class UserController extends HttpServlet {
             case "/filterBanUser":
                 filterBanUser(request, response);//get
                 break;
-
+            case "/activeCustomers":
+                getActiveCustomers(request, response);
+                break;
+            case "/customerBehavior":
+                getCustomerBehavior(request, response);
+                break;                
+            case "/userDetail":
+                userDetail(request, response);
+                break;                
+                
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -119,6 +133,10 @@ public class UserController extends HttpServlet {
             case "/register":
                 postRegister(request, response);//post(cần thêm get để check xem trùng email hay tên chưa, xác thực email)
                 break;
+                
+            case "/registerEmployee":
+                registerEmployee(request, response);//post
+                break;
 
             case "/forgotPassword":
                 forgotPassword(request, response);//post(cần thêm get check xem email có tồn tại không)
@@ -137,7 +155,10 @@ public class UserController extends HttpServlet {
             case "/updateAvatar":
                 updateAvatar(request, response);
                 break;
-
+            case "/activeCustomers":
+                exportActiveCustomers(request, response);
+                break;
+                
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -404,7 +425,7 @@ public class UserController extends HttpServlet {
     }
 
     // Cập nhật ảnh đại diện
-    private static final String IMAGE_UPLOAD_DIR = "D:\\DH_FPT\\Semester5\\SWP301\\pj_swp\\ShoesShop\\web\\img";
+    private static final String IMAGE_UPLOAD_DIR = "C:\\Users\\nvhoa\\OneDrive\\Documents\\GitHub\\ShoesShop\\web\\img";
 
     protected void updateAvatar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -521,7 +542,7 @@ public class UserController extends HttpServlet {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
 
-        if (u == null || !u.getRole().equals("Admin")) {
+        if (u == null  ) {
             response.sendRedirect("home");
             return;
         }
@@ -890,7 +911,150 @@ public class UserController extends HttpServlet {
         request.setAttribute("totalEmployees", totalEmployees);
         request.getRequestDispatcher("accountIsLockedList.jsp").forward(request, response);
     }
+    
+protected void getActiveCustomers(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    HttpSession session = request.getSession();
+    User user = (User) session.getAttribute("user");
+    if (user == null || !user.getRole().equals("Admin")) {
+        response.sendRedirect("home");
+        return;
+    }
 
+    String search = request.getParameter("search");
+    String startDate = request.getParameter("start_date");
+    String endDate = request.getParameter("end_date");
+    String sortBy = request.getParameter("sort_by");
+
+    // Lấy danh sách khách hàng hoạt động nhiều nhất
+    List<User> activeCustomers = userDAO.getActiveCustomers(search, startDate, endDate, sortBy);
+    request.setAttribute("customers", activeCustomers);
+    session.setAttribute("customers", activeCustomers);
+
+    // Lấy danh sách khách hàng mới đăng ký (Top 3)
+    List<User> newCustomers = userDAO.getNewCustomers(5);
+    request.setAttribute("newCustomers", newCustomers);
+
+    request.getRequestDispatcher("activeCustomers.jsp").forward(request, response);
+}
+    
+    protected void exportActiveCustomers(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+
+        List<User> activeCustomers = (List<User>) session.getAttribute("customers");
+        if (activeCustomers == null || activeCustomers.isEmpty()) {
+            request.setAttribute("error", "Không có dữ liệu để xuất.");
+            request.getRequestDispatcher("activeCustomers.jsp").forward(request, response);
+            return;
+        }
+
+        // Set response headers for CSV download
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"active_customers.csv\"");
+
+        // Write CSV content
+        try (java.io.PrintWriter writer = response.getWriter()) {
+            writer.write("Khách Hàng,Số Đơn Hàng,Số Sản Phẩm Trong Giỏ,Tổng Hoạt Động\n");
+            for (User customer : activeCustomers) {
+                String line = String.format("%s,%d,%d,%d\n",
+                        customer.getFullName(),
+                        customer.getTotalOrders(),
+                        customer.getCartItemsCount(),
+                        customer.getTotalOrders() + customer.getCartItemsCount());
+                writer.write(line);
+            }
+        }
+    }
+    
+    protected void getCustomerBehavior(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
+
+        List<CartStat> cartStats = userDAO.getCartStats(startDate, endDate);
+        List<WishlistStat> wishlistStats = userDAO.getWishlistStats(startDate, endDate);
+        List<ReviewStat> reviewStats = userDAO.getReviewStats(startDate, endDate);
+
+        request.setAttribute("cartStats", cartStats);
+        request.setAttribute("wishlistStats", wishlistStats);
+        request.setAttribute("reviewStats", reviewStats);
+        
+    // Gắn giá trị startDate và endDate để giữ lại trong form lọc
+        request.setAttribute("startDate", startDate);
+        request.setAttribute("endDate", endDate);
+
+        request.getRequestDispatcher("customerBehavior.jsp").forward(request, response);
+    }
+    
+    protected void registerEmployee(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User admin = (User) session.getAttribute("user");
+
+        if (admin == null || !admin.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String confirmPassword = request.getParameter("confirm_password");
+        String fullname = request.getParameter("fullname");
+        String email = request.getParameter("email");
+        String phonenumber = request.getParameter("phonenumber");
+        String role = request.getParameter("role");
+
+        // Gán lại tất cả các giá trị đã nhập để hiển thị lại nếu có lỗi
+        request.setAttribute("username", username);
+        request.setAttribute("password", password); // Thêm password
+        request.setAttribute("confirm_password", confirmPassword); // Thêm confirm_password
+        request.setAttribute("fullname", fullname);
+        request.setAttribute("email", email);
+        request.setAttribute("phonenumber", phonenumber);
+        request.setAttribute("role", role);
+
+        // Kiểm tra username tồn tại
+        if (userDAO.getUserByUsername(username) != null) {
+            request.setAttribute("error", "Tên tài khoản đã tồn tại. Vui lòng chọn tên tài khoản khác.");
+            request.getRequestDispatcher("registerForEmployee.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra email tồn tại
+        if (userDAO.checkEmailExists(email)) {
+            request.setAttribute("error", "Email đã tồn tại. Vui lòng nhập tài khoản email khác.");
+            request.getRequestDispatcher("registerForEmployee.jsp").forward(request, response);
+            return;
+        }
+
+        // Tạo người dùng mới
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPassword(e.getMd5(password));
+        newUser.setFullName(fullname);
+        newUser.setEmail(email);
+        newUser.setPhoneNumber(phonenumber);
+        newUser.setRole(role); // Gán vai trò từ form
+        userDAO.addUser(newUser);
+
+        // Thông báo thành công và chuyển hướng
+        session.setAttribute("message", "Tạo tài khoản nhân viên thành công!");
+        response.sendRedirect("filterUser");
+    }
+    
     public static void main(String[] args) {
         String username = "1";
         String fullName = null;
@@ -928,6 +1092,78 @@ public class UserController extends HttpServlet {
                 employees.add(user);
             }
         }
+    }
+    
+    protected void userDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+    User admin = (User) session.getAttribute("user");
+    if (admin == null || (!admin.getRole().equals("Admin") && !admin.getRole().equals("Staff"))) {
+        response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
+        return;
+    }
+        // Lấy các tham số từ form
+        String orderCode = request.getParameter("orderCode");
+        String shippingAddress = request.getParameter("shippingAddress");
+        String paymentMethod = request.getParameter("paymentMethod");
+        String sortBy = request.getParameter("sortBy");
+        String fromDate = request.getParameter("fromDate");
+        String toDate = request.getParameter("toDate");
+        String minPriceStr = request.getParameter("minPrice");
+        String maxPriceStr = request.getParameter("maxPrice");
+
+        // Xử lý giá trị minPrice và maxPrice
+        Double minPrice = (minPriceStr != null && !minPriceStr.isEmpty()) ? Double.parseDouble(minPriceStr) : null;
+        Double maxPrice = (maxPriceStr != null && !maxPriceStr.isEmpty()) ? Double.parseDouble(maxPriceStr) : null;
+
+        // Xử lý phương thức thanh toán
+        String selectedPaymentMethod = null;
+        if ("Chuyển Khoản Ngân Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Chuyển Khoản Ngân Hàng";
+        } else if ("Thẻ Tín Dụng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Thẻ Tín Dụng";
+        } else if ("Tiền Mặt Khi Nhận Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Tiền Mặt Khi Nhận Hàng";
+        }
+
+        // Xử lý sắp xếp
+        String orderBy = null;
+        if ("priceDesc".equals(sortBy)) {
+            orderBy = "TotalAmount DESC";
+        } else if ("priceAsc".equals(sortBy)) {
+            orderBy = "TotalAmount ASC";
+        } else {
+            orderBy = "OrderDate DESC";
+        }
+
+        int userId = Integer.parseInt(request.getParameter("userId"));
+        User user = userDAO.getUserById(userId);
+        List<Order> orders = orderDAO.getOrdersByUserId(
+                userId,
+                orderCode, shippingAddress,
+                selectedPaymentMethod,
+                fromDate,
+                toDate,
+                minPrice,
+                maxPrice,
+                orderBy
+        );
+
+        // Gửi dữ liệu sang JSP (bao gồm các giá trị đã nhập)
+        request.setAttribute("orders", orders);
+        request.setAttribute("orderCode", orderCode);
+        request.setAttribute("shippingAddress", shippingAddress);
+
+        request.setAttribute("paymentMethod", paymentMethod);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("fromDate", fromDate);
+        request.setAttribute("toDate", toDate);
+        request.setAttribute("minPrice", minPriceStr); // Giữ nguyên chuỗi để hiển thị
+        request.setAttribute("maxPrice", maxPriceStr); // Giữ nguyên chuỗi để hiển thị
+
+//        request.getRequestDispatcher("userOrder.jsp").forward(request, response);
+        request.setAttribute("user", user);
+        request.setAttribute("orders", orders);
+        request.getRequestDispatcher("userDetail.jsp").forward(request, response);
     }
 
 }

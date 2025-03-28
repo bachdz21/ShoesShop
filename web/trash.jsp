@@ -316,7 +316,7 @@
         <jsp:include page="headerAdmin.jsp"/> 
             <!-- Filter Form -->
             <div class="filter-container" style="margin: 20px 30px;">
-                <form action="list" method="get" class="d-flex">
+                <form action="trash" method="get" class="d-flex">
                     <div class="me-3" style="margin-right: 100px">
                         <label for="category" class="form-label">Danh Mục:</label>
                         <select style="background-color: white;font-size: 13px" name="category" id="category" class="form-select">

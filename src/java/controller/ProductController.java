@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import model.ProductVariant;
 import model.Review;
 
 @WebServlet(name = "ProductController", urlPatterns = {"/product", "/home", "/search", "/list", "/add", "/edit", "/update",
@@ -574,6 +575,10 @@ public class ProductController extends HttpServlet {
         int totalRating = reviews.stream().mapToInt(Review::getRating).sum();
         Collections.reverse(ratings);
 
+        // Lấy danh sách variants
+        List<ProductVariant> productVariants = productDAO.getProductVariantsByProductId(productId); // Thêm phương thức này vào IProductDAO
+        request.setAttribute("productVariants", productVariants);
+        
         // Lấy số trang hiện tại từ request, mặc định là trang 1
         int page = 1;
         int pageSize = 5; // Số lượng review mỗi trang

@@ -2,7 +2,6 @@
 <html lang="vi">
     <head>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-        <%@ page contentType="text/html; charset=UTF-8" %>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -192,7 +191,7 @@
             <!-- Sidebar Start -->
             <div class="sidebar pe-4 pb-3">
                 <nav class="navbar bg-secondary navbar-dark">
-                    <a href="home.jsp" class="navbar-brand mx-5 mb-3">
+                    <a href="home" class="navbar-brand mx-5 mb-3">
                         <h3 class="text-primary"><i class=""></i>ShoeShop</h3>
                     </a>
                     <div class="d-flex align-items-center ms-4 mb-4">
@@ -217,6 +216,13 @@
                         </div>
                         <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Biểu Đồ</a>
                         <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Hoạt Động</a>
+                            <div class="dropdown-menu bg-transparent border-0">
+                                <a href="activeCustomers" class="dropdown-item">Hoạt Động Khách Hàng</a>
+                                <a href="customerBehavior" class="dropdown-item">HSản Phẩm Ưa Chuộng</a>
+                            </div>
+                        </div>
+                            <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Trang</a>
                             <div class="dropdown-menu bg-transparent border-0">
                                 <a href="#" class="dropdown-item">Sign In</a>

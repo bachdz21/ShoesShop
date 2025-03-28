@@ -213,24 +213,76 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
 
     // Lấy danh sách đơn hàng cho một người dùng
     @Override
-    public List<Order> getOrdersByUserId(int userId) {
+    public List<Order> getOrdersByUserId(int userId, String orderCode, String shippingAddress, String paymentMethod,
+            String fromDate, String toDate, Double minPrice,
+            Double maxPrice, String orderBy) {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT * FROM Orders WHERE UserID = ? ORDER BY OrderDate DESC";
+        StringBuilder sql = new StringBuilder("SELECT [OrderID], [UserID], [OrderDate], [TotalAmount], "
+                + "[OrderStatus], [PaymentMethod], [ShippingAddress], [orderCode] "
+                + "FROM [Orders] WHERE [UserID] = ?");
 
-        try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setInt(1, userId);
+        // Danh sách tham số cho PreparedStatement
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
+
+        // Thêm các điều kiện lọc
+        if (orderCode != null && !orderCode.isEmpty()) {
+            sql.append(" AND [orderCode] LIKE ?");
+            params.add("%" + orderCode + "%");
+        }
+
+        if (shippingAddress != null && !shippingAddress.isEmpty()) {
+            sql.append(" AND [ShippingAddress] LIKE ?");
+            params.add("%" + shippingAddress + "%");
+        }
+
+        if (paymentMethod != null && !paymentMethod.isEmpty()) {
+            sql.append(" AND [PaymentMethod] = ?");
+            params.add(paymentMethod);
+        }
+
+        if (fromDate != null && !fromDate.isEmpty()) {
+            sql.append(" AND [OrderDate] >= ?");
+            params.add(fromDate);
+        }
+
+        if (toDate != null && !toDate.isEmpty()) {
+            sql.append(" AND [OrderDate] <= ?");
+            params.add(toDate);
+        }
+
+        if (minPrice != null) {
+            sql.append(" AND [TotalAmount] >= ?");
+            params.add(minPrice);
+        }
+
+        if (maxPrice != null) {
+            sql.append(" AND [TotalAmount] <= ?");
+            params.add(maxPrice);
+        }
+
+        // Thêm điều kiện sắp xếp
+        if (orderBy != null && !orderBy.isEmpty()) {
+            sql.append(" ORDER BY ").append(orderBy);
+        }
+
+        try (PreparedStatement ps = c.prepareStatement(sql.toString())) {
+            // Gán các tham số vào PreparedStatement
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
                 Order order = new Order();
                 order.setOrderId(rs.getInt("OrderID"));
                 order.setUserId(rs.getInt("UserID"));
                 order.setOrderDate(rs.getString("OrderDate"));
-                order.setOrderCode(rs.getString("orderCode"));
                 order.setTotalAmount(rs.getDouble("TotalAmount"));
                 order.setOrderStatus(rs.getString("OrderStatus"));
                 order.setPaymentMethod(rs.getString("PaymentMethod"));
                 order.setShippingAddress(rs.getString("ShippingAddress"));
+                order.setOrderCode(rs.getString("orderCode"));
                 orders.add(order);
             }
         } catch (SQLException e) {

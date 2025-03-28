@@ -23,4 +23,5 @@ public interface ICartDAO {
     void restoreCartItemTrash(int userId, int productId);
     void clearCartForever(int userId);
     void updateQuantityInCart(int userID, int productId, int quantity);
+    void addCartItemWithVariant(int userId, int productId, int quantity, String size, String color);
 }

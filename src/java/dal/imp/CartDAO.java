@@ -85,37 +85,42 @@ public class CartDAO extends DBConnect implements ICartDAO {
     @Override
     public List<CartItem> getCartItems(int userId) {
         List<CartItem> cartItems = new ArrayList<>();
-        try {
-
-            String query = "SELECT ci.CartItemID, ci.ProductID, ci.Quantity, ci.AddedDate, p.ProductName, p.Description, p.Price, p.Stock, "
-                    + "c.CategoryName, p.imageURL, p.Sale, p.brand\n"
-                    + "FROM CartItems ci\n"
-                    + "JOIN Products p ON ci.ProductID = p.ProductID\n"
-                    + "JOIN Categories c on p.CategoryID = c.CategoryID\n"
-                    + "WHERE CartID = (SELECT CartID FROM Cart WHERE UserID = ?)";
-            PreparedStatement stmt = c.prepareStatement(query);
-            stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-
+        String sql = "SELECT ci.CartItemID, ci.CartID, ci.ProductID, ci.Quantity, ci.AddedDate, ci.Size, ci.Color, " +
+                     "p.ProductName, p.Description, p.Price, p.Stock, p.CategoryID, p.ImageURL, p.Sale, p.CreatedDate, p.brand " +
+                     "FROM CartItems ci " +
+                     "JOIN Products p ON ci.ProductID = p.ProductID " +
+                     "JOIN Cart c ON ci.CartID = c.CartID " +
+                     "WHERE c.UserID = ?";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                int cartItemId = rs.getInt("CartItemID");
-                int productId = rs.getInt("ProductID");
-                int quantity = rs.getInt("Quantity");
-                Date addedDate = rs.getDate("AddedDate");
-                Product product = new Product(rs.getInt("ProductID"), rs.getString("ProductName"), rs.getString("Description"),
-                        rs.getDouble("Price"), rs.getInt("Stock"), rs.getString("CategoryName"),
-                        rs.getString("imageURL"), rs.getInt("Sale"), rs.getString("brand"));
-                if (product.getSale() > 0) {
-                    product.setSalePrice((double) product.getPrice() * ((100 - product.getSale()) / 100.0));
-                    DecimalFormat df = new DecimalFormat("0.##");
-                    String formattedPrice = df.format(product.getSalePrice());
-                    product.setSalePrice(Double.parseDouble(formattedPrice));
-                }
-                CartItem item = new CartItem(cartItemId, cartItemId, quantity, addedDate, product);
+                Product product = new Product(
+                    rs.getInt("ProductID"),
+                    rs.getString("ProductName"),
+                    rs.getString("Description"),
+                    rs.getDouble("Price"),
+                    rs.getInt("Stock"),
+                    null, // categoryName không cần thiết ở đây
+                    rs.getString("ImageURL"),
+                    rs.getInt("Sale"),
+                    rs.getDate("CreatedDate"),
+                    rs.getString("brand")
+                );
+                CartItem item = new CartItem(
+                    rs.getInt("CartItemID"),
+                    rs.getInt("CartID"),
+                    rs.getInt("Quantity"),
+                    rs.getDate("AddedDate"),
+                    product,
+                    rs.getString("Color"),
+                    rs.getString("Size")
+                );
                 cartItems.add(item);
             }
-
+            System.out.println("Fetched " + cartItems.size() + " items from DB for UserID: " + userId);
         } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy giỏ hàng: " + e.getMessage());
             e.printStackTrace();
         }
         return cartItems;
@@ -316,7 +321,7 @@ public class CartDAO extends DBConnect implements ICartDAO {
                     String formattedPrice = df.format(product.getSalePrice());
                     product.setSalePrice(Double.parseDouble(formattedPrice));
                 }
-                CartItem item = new CartItem(cartItemId, cartId, quantity, addedDate, product);
+                CartItem item = new CartItem(cartItemId, cartId, quantity, addedDate, product, query, query);
                 cartItems.add(item);
             }
 
@@ -344,6 +349,22 @@ public class CartDAO extends DBConnect implements ICartDAO {
             e.printStackTrace();
         }
     }
+    
+    @Override
+    public void addCartItemWithVariant(int userId, int productId, int quantity, String size, String color) {
+        String sql = "INSERT INTO CartItems (CartID, ProductID, Quantity, AddedDate, Size, Color) " +
+                     "VALUES ((SELECT CartID FROM Cart WHERE UserID = ?), ?, ?, GETDATE(), ?, ?)";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, productId);
+            ps.setInt(3, quantity);
+            ps.setString(4, size);
+            ps.setString(5, color);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }    
     
 
     public static void main(String[] args) {

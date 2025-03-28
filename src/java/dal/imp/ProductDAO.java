@@ -20,6 +20,7 @@ import java.sql.Connection;
 import model.User;
 import java.util.HashMap;
 import java.util.Map;
+import model.ProductVariant;
 /**
  *
  * @author nguye
@@ -965,6 +966,32 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         }
         
         return brands;
+    }
+    
+    public List<ProductVariant> getProductVariantsByProductId(int productId) {
+        List<ProductVariant> variants = new ArrayList<>();
+        String sql = "SELECT pv.VariantID, pv.ProductID, c.ColorName, s.SizeName, pv.Stock " +
+                     "FROM ProductVariants pv " +
+                     "JOIN Colors c ON pv.ColorID = c.ColorID " +
+                     "JOIN Sizes s ON pv.SizeID = s.SizeID " +
+                     "WHERE pv.ProductID = ?";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, productId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductVariant variant = new ProductVariant(
+                    rs.getInt("VariantID"),
+                    rs.getInt("ProductID"),
+                    rs.getString("ColorName"),
+                    rs.getString("SizeName"),
+                    rs.getInt("Stock")
+                );
+                variants.add(variant);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return variants;
     }
 
     public static void main(String[] args) {

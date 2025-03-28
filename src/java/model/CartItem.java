@@ -16,16 +16,20 @@ public class CartItem {
     private int quantity;
     private Date addedDate;
     private Product product;
-
+    private String color;
+    private String size;
+    
     public CartItem() {
     }
 
-    public CartItem(int cartItemId, int cartId, int quantity, Date addedDate, Product product) {
+    public CartItem(int cartItemId, int cartId, int quantity, Date addedDate, Product product, String color, String size) {
         this.cartItemId = cartItemId;
         this.cartId = cartId;
         this.quantity = quantity;
         this.addedDate = addedDate;
         this.product = product;
+        this.color = color;
+        this.size = size;
     }
 
     public int getCartItemId() {
@@ -68,10 +72,26 @@ public class CartItem {
         this.product = product;
     }
 
+    public String getColor() {
+        return color; 
+    }
+    
+    public void setColor(String color) {
+        this.color = color; 
+    }
+    
+    public String getSize() {
+        return size; 
+    }
+    
+    public void setSize(String size) {
+        this.size = size; 
+    }
+    
     @Override
     public String toString() {
-        return "CartItem{" + "cartItemId=" + cartItemId + ", cartId=" + cartId + ", quantity=" + quantity + ", addedDate=" 
-                + addedDate + ", product=" + product + '}';
+        return "CartItem{" + "cartItemId=" + cartItemId + ", cartId=" + cartId + ", quantity=" + quantity + 
+               ", addedDate=" + addedDate + ", product=" + product + ", color=" + color + ", size=" + size + '}';
     }
 
     

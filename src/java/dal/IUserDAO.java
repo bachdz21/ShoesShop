@@ -5,8 +5,11 @@
 package dal;
 
 import java.util.List;
+import model.CartStat;
 import model.OrderContact;
+import model.ReviewStat;
 import model.User;
+import model.WishlistStat;
 
 /**
  *
@@ -36,4 +39,9 @@ public interface IUserDAO {
     List<User> filterUsers(String username, String fullName, String email, String phone, String registrationDate);
     List<User> filterBanUsers(String username, String fullName, String email, String phone, String registrationDate);
     public OrderContact getOrderContactsByOrderID(int orderID);
+    List<User> getActiveCustomers(String search, String startDate, String endDate, String sortBy);
+    List<User> getNewCustomers(int limit);
+    List<CartStat> getCartStats(String startDate, String endDate);
+    List<WishlistStat> getWishlistStats(String startDate, String endDate);
+    List<ReviewStat> getReviewStats(String startDate, String endDate);  
 }
