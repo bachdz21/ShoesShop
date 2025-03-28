@@ -712,7 +712,9 @@
             <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
                     {bodyId: 'pendingOrdersBody', paginationId: 'pendingPagination'},
             </c:if>
+            <c:if test="${sessionScope.user != null && sessionScope.user.role != 'Shipper'}">
                     {bodyId: 'confirmedOrdersBody', paginationId: 'confirmedPagination'},
+            </c:if>
                     {bodyId: 'shippedOrdersBody', paginationId: 'shippedPagination'}
                     ,
                     {bodyId: 'deliveredOrdersBody', paginationId: 'deliveredPagination'}
