@@ -74,25 +74,18 @@
 
                 <!-- Search Bar -->
                 <div class="col-md-6">
-                    <div class="search-bar">
-                        <form style="display: flex; width: 100%" action="search" method="get">
-                            <div class="dropdown-searchbar">
-                                <div id="drop-text" class="dropdown-text">
-                                    <span id="span">All</span>
-                                    <i id="icon" class="fa-solid fa-chevron-down"></i>
-                                </div>
-                                <ul id="list" class="dropdown-list">
-                                    <li class="dropdown-list-item" value="">All</li>
-                                    <li class="dropdown-list-item" value="Sneaker">Sneaker</li>
-                                    <li class="dropdown-list-item" value="Oxford">Oxford</li>
-                                    <li class="dropdown-list-item" value="Boot">Boot</li>
-                                    <li class="dropdown-list-item" value="Sandal">Sandal</li>
-                                </ul>
-                            </div>
-                            <div class="search-box">
-                                <input name="query" type="text" id="search-input" placeholder="Search anything..." />
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </div>
+                    <div class="header-search">
+                        <form action="search" method="get">
+                            <select class="input-select" name="category">
+                                <option value="">All</option>
+                                <option value="Sneaker">Giày Thể Thao</option>
+                                <option value="Oxford">Oxford</option>
+                                <option value="Boot">Boot</option>
+                                <option value="Sandal">Sandal</option>
+                                <!-- Thêm các loại sản phẩm khác nếu cần -->
+                            </select>
+                            <input class="input" name="query" placeholder="Search here">
+                            <button type="submit" class="search-btn">Search</button>
                         </form>
                     </div>
                 </div>

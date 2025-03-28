@@ -406,26 +406,6 @@ public class ProductController extends HttpServlet {
         response.sendRedirect("list"); // Điều hướng lại trang danh sách sản phẩm sau khi xóa
     }
 
-    protected void deleteTrash(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        int productId = Integer.parseInt(request.getParameter("id"));
-        productDAO.deleteTrash(productId); // Chuyển sản phẩm vào thùng rác
-        response.sendRedirect("trash");
-    }
-
-    protected void deleteMultiTrash(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String[] selectedProducts = request.getParameterValues("selectedProducts");
-
-        if (selectedProducts != null) {
-            for (String productIdStr : selectedProducts) {
-                int productId = Integer.parseInt(productIdStr);
-                productDAO.deleteTrash(productId);
-            }
-        }
-        response.sendRedirect("trash");
-    }
-
     protected void restoreProduct(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int productId = Integer.parseInt(request.getParameter("id"));

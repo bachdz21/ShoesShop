@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.vnpay.common;
 
 import dal.imp.OrderDAO;
@@ -19,24 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 import model.Order;
 
-/**
- *
- * @author HP
- */
 @WebServlet(name = "VnpayReturn", urlPatterns = {"/vnpayReturn"})
 public class VnpayReturn extends HttpServlet {
 
     OrderDAO orderDao = new OrderDAO();
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -60,15 +43,15 @@ public class VnpayReturn extends HttpServlet {
             String signValue = Config.hashAllFields(fields);
             if (signValue.equals(vnp_SecureHash)) {
                 String paymentCode = request.getParameter("vnp_TransactionNo");
-
-                String orderId = request.getParameter("vnp_TxnRef");
+                String orderIdStr = request.getParameter("vnp_TxnRef");
+                int orderId = Integer.parseInt(orderIdStr);
 
                 Order order = new Order();
-                order.setOrderId(Integer.parseInt(orderId));
-                System.out.println("Test o");
+                order.setOrderId(orderId);
                 boolean transSuccess = false;
+
                 if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                    //update banking system
+                    // Thanh toán thành công
                     order.setPaymentStatus("Đã thanh toán");
                     System.out.println("Test s");
                     System.out.println("PAYMENT: " + order.getPaymentStatus());
@@ -76,56 +59,41 @@ public class VnpayReturn extends HttpServlet {
                     orderDao.updateOrderPaymentStatus(order);
                     transSuccess = true;
                 } else {
+                    // Thanh toán thất bại, xóa đơn hàng
                     order.setPaymentStatus("Chưa thanh toán");
                     System.out.println("Test f");
+                    boolean deleted = orderDao.deleteOrder(orderId);
+                    if (deleted) {
+                        System.out.println("Đơn hàng " + orderId + " đã được xóa do thanh toán thất bại.");
+                    } else {
+                        System.out.println("Không thể xóa đơn hàng " + orderId + ".");
+                    }
                 }
 
                 request.setAttribute("transResult", transSuccess);
                 request.getRequestDispatcher("paymentResult.jsp").forward(request, response);
             } else {
-                //RETURN PAGE ERROR
+                // Chữ ký không hợp lệ
                 System.out.println("GD KO HOP LE (invalid signature)");
+                // Có thể thêm logic xóa đơn hàng ở đây nếu cần
             }
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
 }
