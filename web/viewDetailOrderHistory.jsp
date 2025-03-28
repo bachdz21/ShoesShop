@@ -408,7 +408,6 @@
 
             <!-- Chi tiết sản phẩm -->
             <h3><i class="fas fa-box-open"></i> Chi tiết sản phẩm</h3>
-            <h3><i class="fas fa-box-open"></i> Chi tiết sản phẩm</h3>
             <table class="product-table">
                 <thead>
                     <tr>
