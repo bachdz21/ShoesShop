@@ -569,7 +569,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public List<Product> getRelativeProducts(String category) {
         List<Product> products = new ArrayList<>();
         try {
-            String query = "SELECT TOP(4) p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale\n"
+            String query = "SELECT TOP(4) p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.AverageRating\n"
                     + "FROM Products p\n"
                     + "INNER JOIN Categories c ON p.CategoryID = c.CategoryID\n"
                     + "WHERE c.CategoryName = ? AND p.isDeleted = 0";
@@ -588,6 +588,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setCategoryName(rs.getString("CategoryName")); // Kiểm tra cột này
                 product.setBrand(rs.getString("brand"));
                 product.setSale(rs.getInt("Sale"));
+                product.setAverageRating(rs.getDouble("AverageRating"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
                     product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Làm tròn đến 2 chữ số thập phân
