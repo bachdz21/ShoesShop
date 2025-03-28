@@ -30,7 +30,6 @@ public interface IProductDAO {
     void deleteProduct(int id);
     List<Product> getDeletedProducts();
     void restoreProduct(int productId);
-    void deleteTrash(int productId);
     List<Product> getRelativeProducts(String category);
     List<Product> getMostSoldProducts(String categoryName);
     List<Integer> getProductRatings(int productID);

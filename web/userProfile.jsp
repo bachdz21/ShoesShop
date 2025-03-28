@@ -518,7 +518,7 @@
                     <!-- NAV -->
                     <ul class="main-nav nav navbar-nav">
                         <li><a href="home">Trang Chủ</a></li>
-                        <li><a href="/product">Danh Mục</a></li>
+                        <li><a href="product">Danh Mục</a></li>
                             <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
                             <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
                             <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
@@ -535,11 +535,6 @@
         <div class="container user-profile">
             <div class="main-body">
                 <div class="row" style="margin-top: 30px; margin-bottom: 30px">
-
-
-
-
-
                     <div class="col-lg-4">
                         <div class="card">
                             <div class="card-body">
@@ -651,19 +646,19 @@
                                         <div class="col-sm-3">
                                             <h6 class="mb-0">Địa chỉ</h6>
                                         </div>
-                                        <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
+                                        <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm" required>
                                             <option value="${requestScope.address != null && requestScope.address.size() > 3 ? requestScope.address.get(3) : ''}" selected>
                                                 ${requestScope.address != null && requestScope.address.size() > 3 ? requestScope.address.get(3) : 'Tỉnh Thành'}
                                             </option>
                                         </select>
 
-                                        <select name="district" class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm">
+                                        <select name="district" class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm" required>
                                             <option value="${requestScope.address != null && requestScope.address.size() > 2 ? requestScope.address.get(2) : ''}" selected>
                                                 ${requestScope.address != null && requestScope.address.size() > 2 ? requestScope.address.get(2) : 'Quận Huyện'}
                                             </option>
                                         </select>
 
-                                        <select name="ward" class="form-select form-select-sm" id="ward" aria-label=".form-select-sm">
+                                        <select name="ward" class="form-select form-select-sm" id="ward" aria-label=".form-select-sm" required>
                                             <option value="${requestScope.address != null && requestScope.address.size() > 1 ? requestScope.address.get(1) : ''}" selected>
                                                 ${requestScope.address != null && requestScope.address.size() > 1 ? requestScope.address.get(1) : 'Xã Phường'}
                                             </option>

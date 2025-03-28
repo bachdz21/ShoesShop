@@ -34,5 +34,5 @@ List<Product> getProductForDetailOrdersByOderId(int oderId);
             Double maxPrice, String orderBy);
     void confirmAllPendingOrders(String orderCode,String shippingAddress, String paymentMethod, String fromDate, String toDate, Double minPrice, Double maxPrice, String orderBy);
     void receiveAllConfirmedOrders(String orderCode,String shippingAddress, String paymentMethod, String fromDate, String toDate, Double minPrice, Double maxPrice, String orderBy, int userID);
-
+    List<Order> getOrdersByUserId(int userId);
 }

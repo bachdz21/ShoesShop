@@ -179,12 +179,12 @@ public class UserController extends HttpServlet {
     protected void getLogin(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-    User user = (User) session.getAttribute("user");
-    if (user != null) {
-        response.sendRedirect("home"); // Nếu đã đăng nhập, chuyển hướng về home
-        return;
-    }
-        
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            response.sendRedirect("home"); // Nếu đã đăng nhập, chuyển hướng về home
+            return;
+        }
+
         // Lấy tất cả các cookies từ yêu cầu
         Cookie[] cookies = request.getCookies();
 
@@ -266,11 +266,11 @@ public class UserController extends HttpServlet {
     protected void getRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-    User user = (User) session.getAttribute("user");
-    if (user != null) {
-        response.sendRedirect("home"); // Nếu đã đăng nhập, chuyển hướng về home
-        return;
-    }
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            response.sendRedirect("home"); // Nếu đã đăng nhập, chuyển hướng về home
+            return;
+        }
         // Tiến hành forward request đến trang register.jsp
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
@@ -395,7 +395,7 @@ public class UserController extends HttpServlet {
         String messageText = "<p>Xin chào</p>"
                 + "<p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn tại Hola Shoes Shop. Vui lòng nhấp vào liên kết bên dưới để thiết lập mật khẩu mới:</p>"
                 + "\n"
-                + "👉 "+ resetLink
+                + "👉 " + resetLink
                 + "\n"
                 + "<p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này hoặc liên hệ với chúng tôi ngay tại Holashoesshop@gmail.com.vn.</p>"
                 + "<p>Trân trọng,</p>"
@@ -468,12 +468,7 @@ public class UserController extends HttpServlet {
                 request.setAttribute("address", address);
             }
         } else {
-            List<String> defaultAddress = new ArrayList<>();
-            defaultAddress.add("");
-            defaultAddress.add("");
-            defaultAddress.add("");
-            defaultAddress.add("");
-            request.setAttribute("address", defaultAddress);
+            request.setAttribute("address", null); // Đặt address là null thay vì danh sách rỗng
         }
 
         //Thông tin đơn hàng
@@ -872,7 +867,6 @@ public class UserController extends HttpServlet {
         // Mã hóa các tham số có dấu
         String encodedPaymentMethod = (selectedPaymentMethod == null) ? "" : URLEncoder.encode(selectedPaymentMethod, StandardCharsets.UTF_8);
 
-
         // Chuyển hướng về trang allUserOrder và giữ lại các tham số tìm kiếm trong URL
         response.sendRedirect("allUserOrder?pageStr=" + pageStr + "&orderCode=" + orderCode + "&shippingAddress=" + shippingAddress + "&paymentMethod=" + encodedPaymentMethod
                 + "&sortBy=" + sortBy + "&fromDate=" + fromDate + "&toDate=" + toDate
@@ -909,11 +903,11 @@ public class UserController extends HttpServlet {
     protected void banUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-    User u = (User) session.getAttribute("user");
-    if (u == null || (!u.getRole().equals("Admin") && !u.getRole().equals("Staff"))) {
-        response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
-        return;
-    }
+        User u = (User) session.getAttribute("user");
+        if (u == null || (!u.getRole().equals("Admin") && !u.getRole().equals("Staff"))) {
+            response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
+            return;
+        }
 
         int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
         userDAO.isLocked(userId); // Gọi phương thức isLocked để khóa tài khoản
@@ -946,11 +940,11 @@ public class UserController extends HttpServlet {
     protected void emailReminder(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-    User u1 = (User) session.getAttribute("user");
-    if (u1 == null || (!u1.getRole().equals("Admin") && !u1.getRole().equals("Staff"))) {
-        response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
-        return;
-    }
+        User u1 = (User) session.getAttribute("user");
+        if (u1 == null || (!u1.getRole().equals("Admin") && !u1.getRole().equals("Staff"))) {
+            response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
+            return;
+        }
 
         int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
         User u = userDAO.getUserById(userId); // Gọi hàm để lấy thông tin người dùng"Xin chào
@@ -1010,11 +1004,11 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         // Lấy thông tin userId từ tham số request
         HttpSession session = request.getSession();
-    User u = (User) session.getAttribute("user");
-    if (u == null || (!u.getRole().equals("Admin") && !u.getRole().equals("Staff"))) {
-        response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
-        return;
-    }
+        User u = (User) session.getAttribute("user");
+        if (u == null || (!u.getRole().equals("Admin") && !u.getRole().equals("Staff"))) {
+            response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
+            return;
+        }
 
         int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
 
@@ -1198,7 +1192,7 @@ public class UserController extends HttpServlet {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
 
-       if (u == null || (!u.getRole().equals("Admin") && !u.getRole().equals("Staff"))) {
+        if (u == null || (!u.getRole().equals("Admin") && !u.getRole().equals("Staff"))) {
             response.sendRedirect("home");
             return;
         }
@@ -1291,11 +1285,11 @@ public class UserController extends HttpServlet {
 
     protected void userDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-    User admin = (User) session.getAttribute("user");
-    if (admin == null || (!admin.getRole().equals("Admin") && !admin.getRole().equals("Staff"))) {
-        response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
-        return;
-    }
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || (!admin.getRole().equals("Admin") && !admin.getRole().equals("Staff"))) {
+            response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
+            return;
+        }
         // Lấy các tham số từ form
         String orderCode = request.getParameter("orderCode");
         String shippingAddress = request.getParameter("shippingAddress");
@@ -1364,11 +1358,11 @@ public class UserController extends HttpServlet {
     protected void shippingInformation(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-    User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect("login"); // Nếu chưa đăng nhập, chuyển hướng về login
-        return;
-    }
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login"); // Nếu chưa đăng nhập, chuyển hướng về login
+            return;
+        }
         int orderId = Integer.parseInt(request.getParameter("orderId"));
 
         // Lấy danh sách Shipping theo OrderID

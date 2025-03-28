@@ -143,6 +143,35 @@
                 color: #333;
                 font-weight: bold;
             }
+
+            .rating-stars {
+                display: inline-flex;
+                position: relative;
+            }
+
+            .rating-stars i {
+                font-size: 16px; /* Kích thước sao */
+                color: #D10024; /* Màu vàng cho sao đầy */
+            }
+
+            .rating-stars .star-wrapper {
+                position: relative;
+                display: inline-block;
+                width: 16px; /* Kích thước sao */
+                height: 16px;
+            }
+
+            .rating-stars .star-fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                overflow: hidden;
+                color: #D10024; /* Màu vàng cho phần đầy */
+            }
+
+            .rating-stars .star-empty {
+                color: #ccc; /* Màu xám cho phần rỗng */
+            }
         </style>
     </head>
     <body>
@@ -372,14 +401,29 @@
                                     <div class="col-md-3">
                                         <div id="rating">
                                             <div class="rating-avg">
-                                                <!-- Hiển thị rating trung bình (ở đây là ví dụ 4.5, bạn cần thay thế bằng giá trị thực tế từ backend) -->
-                                                <span>${product.averageRating}</span> <!-- averageRating sẽ là giá trị trung bình bạn tính từ backend -->
+                                                <span>${product.averageRating}</span>
                                                 <div class="rating-stars">
-                                                    <!-- Tạo sao dựa trên giá trị trung bình (4.5 sẽ có 4 sao đầy và 1 sao rỗng) -->
-                                                    <c:forEach var="i" begin="1" end="${product.averageRating}">
+                                                    <c:set var="rating" value="${product.averageRating}" />
+                                                    <c:set var="fullStars" value="${rating.intValue()}" /> <!-- Phần nguyên -->
+                                                    <c:set var="fraction" value="${rating - fullStars}" /> <!-- Phần thập phân -->
+
+                                                    <!-- Hiển thị sao đầy -->
+                                                    <c:forEach var="i" begin="1" end="${fullStars}">
                                                         <i class="fa fa-star"></i>
                                                     </c:forEach>
-                                                    <c:forEach var="i" begin="${product.averageRating + 1}" end="5">
+
+                                                    <!-- Hiển thị sao phân số (nếu có) -->
+                                                    <c:if test="${fraction > 0}">
+                                                        <div class="star-wrapper">
+                                                            <i class="fa fa-star star-empty"></i>
+                                                            <div class="star-fill" style="width: ${fraction * 100}%;">
+                                                                <i class="fa fa-star"></i>
+                                                            </div>
+                                                        </div>
+                                                    </c:if>
+
+                                                    <!-- Hiển thị sao rỗng cho phần còn lại -->
+                                                    <c:forEach var="i" begin="${fullStars + (fraction > 0 ? 1 : 0) + 1}" end="5">
                                                         <i class="fa fa-star-o"></i>
                                                     </c:forEach>
                                                 </div>

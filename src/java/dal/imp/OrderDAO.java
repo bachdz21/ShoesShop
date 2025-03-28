@@ -529,7 +529,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
     }
 
     @Override
-    public void confirmAllPendingOrders(String orderCode,  String shippingAddress,String paymentMethod, String fromDate, String toDate, Double minPrice, Double maxPrice, String orderBy) {
+    public void confirmAllPendingOrders(String orderCode, String shippingAddress, String paymentMethod, String fromDate, String toDate, Double minPrice, Double maxPrice, String orderBy) {
         // Bước 1: Lấy danh sách OrderID
         StringBuilder selectSql = new StringBuilder("SELECT OrderID FROM [Orders] WHERE [OrderStatus] = ?");
         List<Object> params = new ArrayList<>();
@@ -643,7 +643,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
     }
 
     @Override
-    public void receiveAllConfirmedOrders(String orderCode,  String shippingAddress,String paymentMethod, String fromDate, String toDate, Double minPrice, Double maxPrice, String orderBy, int userID) {
+    public void receiveAllConfirmedOrders(String orderCode, String shippingAddress, String paymentMethod, String fromDate, String toDate, Double minPrice, Double maxPrice, String orderBy, int userID) {
         // Bước 1: Lấy danh sách OrderID
         StringBuilder selectSql = new StringBuilder("SELECT OrderID FROM [Orders] WHERE [OrderStatus] = ?");
         List<Object> params = new ArrayList<>();
@@ -958,7 +958,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
                 orderDetail.setPrice(rs.getInt("Price"));
 
                 Product product = new Product();
-//                product.setProductId(rs.getInt("ProductID"));
+                product.setProductID(rs.getInt("ProductID"));
                 product.setProductName(rs.getString("ProductName"));
                 product.setPrice(rs.getDouble("ProductPrice"));
                 product.setImageURL(rs.getString("ImageURL"));
@@ -973,7 +973,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         return orderDetails; // Trả về danh sách OrderDetails
 
     }
-    
+
     public boolean updateOrderPaymentStatus(Order order) {
         String sql = "UPDATE [dbo].[Orders]\n"
                 + "   SET [PaymentStatus] = ?\n"
@@ -988,12 +988,96 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
         }
         return false;
     }
-    
+
+    @Override
+    public List<Order> getOrdersByUserId(int userId) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM Orders WHERE UserID = ? ORDER BY OrderDate DESC";
+
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getInt("OrderID"));
+                order.setUserId(rs.getInt("UserID"));
+                order.setOrderDate(rs.getString("OrderDate"));
+                order.setOrderCode(rs.getString("orderCode"));
+                order.setTotalAmount(rs.getDouble("TotalAmount"));
+                order.setOrderStatus(rs.getString("OrderStatus"));
+                order.setPaymentMethod(rs.getString("PaymentMethod"));
+                order.setShippingAddress(rs.getString("ShippingAddress"));
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    public boolean deleteOrder(int orderId) {
+        boolean success = false;
+        try {
+            c.setAutoCommit(false); // Bắt đầu giao dịch
+
+            // Xóa từ OrderDetails
+            String deleteOrderDetails = "DELETE FROM OrderDetails WHERE OrderID = ?";
+            try (PreparedStatement stmt = c.prepareStatement(deleteOrderDetails)) {
+                stmt.setInt(1, orderId);
+                stmt.executeUpdate();
+            }
+
+            // Xóa từ OrderContacts
+            String deleteOrderContacts = "DELETE FROM OrderContacts WHERE OrderID = ?";
+            try (PreparedStatement stmt = c.prepareStatement(deleteOrderContacts)) {
+                stmt.setInt(1, orderId);
+                stmt.executeUpdate();
+            }
+
+            // Xóa từ Payments
+            String deletePayments = "DELETE FROM Payments WHERE OrderID = ?";
+            try (PreparedStatement stmt = c.prepareStatement(deletePayments)) {
+                stmt.setInt(1, orderId);
+                stmt.executeUpdate();
+            }
+
+            // Xóa từ Shipping (nếu có)
+            String deleteShipping = "DELETE FROM Shipping WHERE OrderID = ?";
+            try (PreparedStatement stmt = c.prepareStatement(deleteShipping)) {
+                stmt.setInt(1, orderId);
+                stmt.executeUpdate();
+            }
+
+            // Xóa từ Orders
+            String deleteOrder = "DELETE FROM Orders WHERE OrderID = ?";
+            try (PreparedStatement stmt = c.prepareStatement(deleteOrder)) {
+                stmt.setInt(1, orderId);
+                int rowsAffected = stmt.executeUpdate();
+                success = rowsAffected > 0;
+            }
+
+            c.commit(); // Xác nhận giao dịch nếu không có lỗi
+        } catch (SQLException e) {
+            try {
+                c.rollback(); // Quay lại nếu có lỗi
+                System.out.println("Rollback performed due to error: " + e.getMessage());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+        } finally {
+            try {
+                c.setAutoCommit(true); // Trở lại chế độ tự động xác nhận
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return success;
+    }
+
     public static void main(String[] args) {
         OrderDAO o = new OrderDAO();
-        Order od = new Order();
-        od.setOrderId(95);
-        od.setPaymentStatus("Đã thanh toán");
-        System.out.println(od);
+        o.deleteOrder(3);
     }
 }
