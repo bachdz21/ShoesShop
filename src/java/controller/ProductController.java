@@ -583,7 +583,7 @@ public class ProductController extends HttpServlet {
         String[] categories = category != null ? new String[]{category} : new String[0];
         String[] brands = brand != null ? new String[]{brand} : new String[0];
 
-        List<Product> deletedProducts = productDAO2.searchProductsByTable("DeletedProducts", offset, pageSize, categories, brands, search);
+        List<Product> deletedProducts = productDAO2.getDeletedProducts();
 
         request.setAttribute("listDeletedProducts", deletedProducts);
         request.setAttribute("currentPage", page);
@@ -655,6 +655,7 @@ public class ProductController extends HttpServlet {
             restoreMultiple(request, response);
         }
     }
+    
     
     protected void filterProductList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");

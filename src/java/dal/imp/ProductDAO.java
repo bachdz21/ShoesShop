@@ -413,8 +413,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, c.CategoryName, p.ImageURL, p.CreatedDate, p.Sale, p.Brand \n"
                 + "FROM Products p\n"
                 + "JOIN Categories c ON p.CategoryID = c.CategoryID \n"
-                + "WHERE p.isDeleted = 1 \n"
-                + "ORDER by d.CreatedDate DESC";
+                + "WHERE p.isDeleted = 1";
 
         try {
             PreparedStatement stmt = c.prepareStatement(query);
@@ -719,7 +718,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         try {
             StringBuilder sql = new StringBuilder("SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, "
                     + "c.CategoryName, p.Brand, p.Sale, p.CreatedDate, p.Price * (1 - p.Sale / 100.0) AS SalePrice "
-                    + "FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
+                    + "FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE p.isDeleted = 0 AND 1=1");
 
             List<Object> params = new ArrayList<>();
 
@@ -788,7 +787,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public int countProductsByTable(String tableName, String category, String brand, String search) {
         int count = 0;
         try {
-            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
+            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHEREp.isDeleted = 0 AND 1=1");
             List<Object> params = new ArrayList<>();
 
             if (search != null && !search.isEmpty()) {
@@ -886,7 +885,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
 
     public static void main(String[] args) {
         ProductDAO p = new ProductDAO();
-        List<Product> list = p.getMostSoldProducts("Sneaker");
+        List<Product> list = p.getDeletedProducts();
         for (int i = 0; i < list.size(); i++) {
             System.out.println(list.get(i));
         }
