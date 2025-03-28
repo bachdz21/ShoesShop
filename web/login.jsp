@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div class="field">
-                <input type="submit" value="Login">
+                <input type="submit" value="Đăng nhập">
             </div>
             <div class="signup-link">
                 Chưa có tài khoản? <a href="register">Đăng ký</a>

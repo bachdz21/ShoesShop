@@ -7,8 +7,18 @@
         <title>Xác nhận Email</title>
         <link rel="stylesheet" href="css/login-register.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <style>.signup-link {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+
+
+</style>
     </head>
     <body>
+  
+        
         <div class="wrapper">
             <div class="title">
                 Xác nhận Email

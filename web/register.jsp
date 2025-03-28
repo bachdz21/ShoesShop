@@ -59,48 +59,55 @@
         </div>
    <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // JavaScript kiểm tra mật khẩu và xác nhận mật khẩu, cũng như kiểm tra số điện thoại
-        document.querySelector("form").addEventListener("submit", function (event) {
-            // Lấy giá trị từ các ô nhập liệu
-            const username = document.querySelector("input[name='username']");
-            const password = document.querySelector("input[name='password']").value;
-            const confirmPassword = document.querySelector("input[name='confirm_password']").value;
-            const fullname = document.querySelector("input[name='fullname']");
-            const email = document.querySelector("input[name='email']");
-            const phonenumber = document.querySelector("input[name='phonenumber']");
+    document.querySelector("form").addEventListener("submit", function (event) {
+        const username = document.querySelector("input[name='username']");
+        const password = document.querySelector("input[name='password']").value;
+        const confirmPassword = document.querySelector("input[name='confirm_password']").value;
+        const fullname = document.querySelector("input[name='fullname']");
+        const email = document.querySelector("input[name='email']");
+        const phonenumber = document.querySelector("input[name='phonenumber']");
 
-            // Xóa khoảng trắng ở hai bên cho các ô trừ mật khẩu và xác nhận mật khẩu
-            username.value = username.value.trim();
-            fullname.value = fullname.value.trim();
-            email.value = email.value.trim();
-            phonenumber.value = phonenumber.value.trim();
+        // Xóa khoảng trắng ở hai bên
+        username.value = username.value.trim();
+        fullname.value = fullname.value.trim();
+        email.value = email.value.trim();
+        phonenumber.value = phonenumber.value.trim();
 
-            // Regex kiểm tra mật khẩu và số điện thoại
-            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-            const phoneRegex = /^[0-9]{10}$/; // Kiểm tra số điện thoại chỉ chứa 10 chữ số
+        // Regex kiểm tra
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/; // Mật khẩu: ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 số
+        const phoneRegex = /^[0-9]{10}$/; // Số điện thoại: chỉ chứa 10 chữ số
+        const fullnameRegex = /^[a-zA-ZÀ-ỹ\s]+$/u; // Họ và Tên: chỉ chứa chữ cái (kể cả tiếng Việt) và dấu cách
 
-            // Kiểm tra mật khẩu
-            if (!password.match(passwordRegex)) {
-                alert("Mật khẩu phải có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
-                event.preventDefault(); // Ngừng gửi biểu mẫu
-                return;
-            }
+        // Kiểm tra mật khẩu
+        if (!password.match(passwordRegex)) {
+            alert("Mật khẩu phải có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
+            event.preventDefault();
+            return;
+        }
 
-            // Kiểm tra xác nhận mật khẩu
-            if (password !== confirmPassword) {
-                alert("Mật khẩu và xác nhận mật khẩu không khớp.");
-                event.preventDefault(); // Ngừng gửi biểu mẫu
-                return;
-            }
+        // Kiểm tra xác nhận mật khẩu
+        if (password !== confirmPassword) {
+            alert("Mật khẩu và xác nhận mật khẩu không khớp.");
+            event.preventDefault();
+            return;
+        }
 
-            // Kiểm tra số điện thoại
-            if (!phonenumber.value.match(phoneRegex)) {
-                alert("Số điện thoại phải có 10 chữ số và không chứa kí tự khác.");
-                event.preventDefault(); // Ngừng gửi biểu mẫu
-                return;
-            }
-        });
+        // Kiểm tra số điện thoại
+        if (!phonenumber.value.match(phoneRegex)) {
+            alert("Số điện thoại phải có 10 chữ số và không chứa ký tự khác.");
+            event.preventDefault();
+            return;
+        }
+
+        // Kiểm tra Họ và Tên (chỉ chữ cái)
+        if (!fullname.value.match(fullnameRegex)) {
+            alert("Họ và Tên chỉ được chứa chữ cái và khoảng trắng.");
+            event.preventDefault();
+            return;
+        }
     });
+});
+
 </script>
     </body>
 </html>
