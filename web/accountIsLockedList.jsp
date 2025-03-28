@@ -1,355 +1,295 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%> 
-<html>
+<!DOCTYPE html>
+<html lang="vi">
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Danh sách người dùng</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
 
-        <!-- Bootstrap -->
-        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
+        <!-- Bootstrap 5 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Slick -->
-        <link type="text/css" rel="stylesheet" href="css/slick.css"/>
-        <link type="text/css" rel="stylesheet" href="css/slick-theme.css"/>
-
-        <!-- nouislider -->
-        <link type="text/css" rel="stylesheet" href="css/nouislider.min.css"/>
-
-        <!-- Font Awesome Icon -->
-        <link rel="stylesheet" href="css/font-awesome.min.css">
-
-        <!-- Custom styles -->
-        <link type="text/css" rel="stylesheet" href="css/style.css"/>
-        <%@ include file="header.jsp" %>
+        <!-- Custom CSS -->
         <style>
-            /* Trung tâm hóa form tìm kiếm */
-            .form-inline {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                margin-bottom: 30px;
-                flex-wrap: wrap;
+            body {
+                background-color: #f4f6f9;
+                font-family: 'Arial', sans-serif;
             }
-
-            .form-control {
-                width: 250px; /* Tăng kích thước input */
-                margin-bottom: 15px;
-                margin-right: 15px;
-                font-size: 16px; /* Tăng kích thước font */
+            .search-container {
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                padding: 20px;
+                margin-bottom: 20px;
             }
-
-            button {
-                margin-top: 15px;
-                font-size: 16px; /* Tăng kích thước nút */
+            .nav-tabs .nav-link {
+                color: #495057;
             }
-
-            /* Tiêu đề "Danh sách người dùng" màu đỏ */
-            h1 {
-                text-align: center;
-                font-size: 36px; /* Tăng kích thước tiêu đề */
-                color: #d32f2f; /* Màu đỏ cho tiêu đề */
-                margin-bottom: 30px;
-                font-weight: 700;
-            }
-
-            /* Styling cho bảng danh sách người dùng */
-            table {
-                width: 100%;
-                margin-bottom: 30px;
-                border-collapse: collapse;
-                border: 2px solid #d32f2f; /* Viền bảng màu đỏ */
-                border-radius: 10px; /* Tăng bo góc cho bảng */
-            }
-
-            th, td {
-                text-align: left;
-                padding: 20px; /* Tăng padding cho các ô */
-                font-size: 16px; /* Tăng kích thước font */
-            }
-
-            th {
-                background-color: #d32f2f; /* Màu nền đỏ cho tiêu đề bảng */
+            .nav-tabs .nav-link.active {
+                background-color: #007bff;
                 color: white;
-                font-weight: 600;
             }
-
-            tbody tr:nth-child(even) {
-                background-color: #f9f9f9;
+            .table {
+                background-color: white;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             }
-
-            tbody tr:hover {
-                background-color: #f1f1f1;
+            .table thead {
+                background-color: #f8f9fa;
             }
-
-            /*a {
-                color: #007bff;
-                text-decoration: none;
-                font-size: 16px;  Tăng kích thước chữ cho liên kết 
-            }*/
-
-            a:hover {
-                text-decoration: underline;
-            }
-
-            /* Phân trang */
             .pagination {
-                display: flex;
                 justify-content: center;
-                list-style: none;
-                padding: 0;
-                margin-top: 30px;
+                margin-top: 20px;
             }
-
             .pagination a {
-                padding: 10px 20px;
-                border: 2px solid #d32f2f; /* Viền đỏ cho các trang */
-                color: #555;
+                color: #007bff;
+                padding: 8px 16px;
                 text-decoration: none;
-                margin: 0 8px;
-                border-radius: 5px;
-                font-size: 16px; /* Tăng kích thước font */
+                transition: background-color .3s;
             }
-
             .pagination a:hover {
-                background-color: #d32f2f;
+                background-color: #e9ecef;
+            }
+            .pagination a.active {
+                background-color: #007bff;
                 color: white;
+                border-radius: 4px;
             }
-
-            .pagination .active {
-                background-color: #d32f2f;
-                color: white;
-                border: 2px solid #d32f2f;
+            .btn-group .btn {
+                margin-right: 5px;
             }
-
-            .pagination span {
-                margin: 0 8px;
-                color: #555;
-            }
-
-            /* Tinh chỉnh responsive */
-            @media (max-width: 768px) {
-                .form-inline {
-                    flex-direction: column;
-                    align-items: flex-start;
-                }
-
-                .form-control {
-                    width: 100%;
-                    margin-bottom: 15px;
-                }
-
-                .pagination {
-                    flex-wrap: wrap;
-                }
-
-                .pagination a {
-                    padding: 10px 18px; /* Cải thiện hiển thị phân trang trên màn hình nhỏ */
-                }
-            }
-
-
         </style>
-
     </head>
     <body>
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center mb-4">Danh sách tài khoản người dùng bị khóa</h1>
 
-        <h1></h1>
+                    <!-- Search Form -->
+                    <div class="search-container">
+                        <form action="filterBanUser" method="get" class="row g-3">
+                            <div class="col-md-3">
+                                <input type="text" name="username" class="form-control" placeholder="Tài khoản" value="<c:out value='${param.username}' />">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="fullName" class="form-control" placeholder="Tên" value="<c:out value='${param.fullName}' />">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="email" class="form-control" placeholder="Email" value="<c:out value='${param.email}' />">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="phone" class="form-control" placeholder="Số điện thoại" value="<c:out value='${param.phone}' />">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" name="minDelivered" class="form-control" placeholder="Đơn mua tối thiểu" value="<c:out value='${param.minDelivered}' />">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" name="maxDelivered" class="form-control" placeholder="Đơn mua tối đa" value="<c:out value='${param.maxDelivered}' />">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" name="minCancelled" class="form-control" placeholder="Đơn hủy tối thiểu" value="<c:out value='${param.minCancelled}' />">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" name="maxCancelled" class="form-control" placeholder="Đơn hủy tối đa" value="<c:out value='${param.maxCancelled}' />">
+                            </div>
 
-        <!-- Form tìm kiếm -->
-        <form action="filterBanUser" method="get" class="form-inline">
-            <input type="text" name="username" class="form-control mb-2 mr-sm-2" placeholder="Tài khoản"
-                   value="<c:out value='${param.username}' />">
-            <input type="text" name="fullName" class="form-control mb-2 mr-sm-2" placeholder="Tên"
-                   value="<c:out value='${param.fullName}' />">
-            <input type="text" name="email" class="form-control mb-2 mr-sm-2" placeholder="Email"
-                   value="<c:out value='${param.email}' />">
-            <input type="text" name="phone" class="form-control mb-2 mr-sm-2" placeholder="Số điện thoại"
-                   value="<c:out value='${param.phone}' />">
-            <input type="date" name="registrationDate" class="form-control mb-2 mr-sm-2" placeholder="Ngày tạo"
-                   value="<c:out value='${param.registrationDate}' />">
-            <button type="submit" class="btn btn-primary mb-2">Tìm kiếm</button>
-        </form>
+                            <div class="col-md-3">
+                                <input type="date" name="minRegistrationDate" class="form-control" placeholder="Ngày tạo từ" value="<c:out value='${param.minRegistrationDate}' />">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" name="maxRegistrationDate" class="form-control" placeholder="Ngày tạo đến" value="<c:out value='${param.maxRegistrationDate}' />">
+                            </div>
 
+                            <div class="col-md-3">
+                                <select name="sortBy" class="form-select">
+                                    <option value="">Không sắp xếp</option>
+                                    <option value="cancelledDesc" <c:if test="${param.sortBy == 'cancelledDesc'}">selected</c:if>>Đơn hủy giảm dần</option>
+                                    <option value="cancelledAsc" <c:if test="${param.sortBy == 'cancelledAsc'}">selected</c:if>>Đơn hủy tăng dần</option>
+                                    <option value="deliveredDesc" <c:if test="${param.sortBy == 'deliveredDesc'}">selected</c:if>>Đơn mua giảm dần</option>
+                                    <option value="deliveredAsc" <c:if test="${param.sortBy == 'deliveredAsc'}">selected</c:if>>Đơn mua tăng dần</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                                </div>
+                            </form>
+                        </div>
 
-        <!-- Tabs điều hướng -->
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#Customer">Khách hàng</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#Admin">Nhân viên</a>
-            </li>
-        </ul>
-        <%-- Hiển thị thông báo khóa tài khoản thành công nếu có --%>
-        <c:if test="${not empty sessionScope.message}">
-            <div class="alert alert-success" role="alert">
-                ${sessionScope.message}
-            </div>
-            <%-- Xóa thông báo sau khi đã hiển thị --%>
-            <c:remove var="message"/>
-        </c:if>
+                        <!-- Back to Account List Button -->
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <a href="filterUser" class="btn btn-primary">Quay lại Danh sách tài khoản</a>
+                        </div>
 
-        <div class="tab-content">
-            <!-- Tab Khách hàng -->
-            <div id="Customer" class="container tab-pane active"><br>
-                <h3>Danh sách Tài khoản khách hàng bị khóa</h3>
-                <h4>Tổng số tài khoản: <c:out value="${totalCustomers}" /></h4>
-
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Tài khoản</th>
-                            <th>Tên</th>
-                            <th>Email</th>
-                            <th>Số điện thoại</th>
-                            <th>Ngày tạo</th>
-                            <th>Đơn mua</th>
-                            <th>Đơn hủy</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="user" items="${customers}">
-                            <tr>
-                                <td>${user.username}</td>
-                                <td>${user.fullName}</td>
-                                <td>${user.email}</td>
-                                <td>${user.phoneNumber}</td>
-                                <td>${user.registrationDate}</td>
-                                <td>${user.deliveredCount}</td>
-                                <td>${user.cancelledCount}</td>
-                                <td>
-                                    <a href="restoreUser?userId=${user.userId}&pageStr1=${currentPageCustomer}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Khôi phục</a>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-
-                <!-- Phân trang cho khách hàng -->
-                <div class="pagination">
-                    <c:if test="${currentPageCustomer > 1}">
-                        <a href="filterBanUser?pageStr1=1&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; First</a>
+                        <!-- Success Message -->
+                    <c:if test="${not empty sessionScope.message}">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            ${sessionScope.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <c:remove var="message"/>
                     </c:if>
 
-                    <c:if test="${currentPageCustomer > 3}">
-                        <span>...</span>
-                    </c:if>
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs mb-3" id="userTabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#Customer">Khách hàng</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#Admin">Nhân viên</a>
+                        </li>
+                    </ul>
 
-                    <!-- Chỉ hiển thị "Prev" nếu không phải trang đầu tiên -->
-                    <c:if test="${currentPageCustomer > 1}">
-                        <a href="filterBanUser?pageStr1=${currentPageCustomer - 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; Prev</a>
-                    </c:if>
+                    <div class="tab-content">
+                        <!-- Customer Tab -->
+                        <div id="Customer" class="tab-pane fade show active">
+                            <div class="card shadow-lg mt-4 mx-auto" style="max-width: 95%;">
+                                <div class="card-header bg-primary text-white">
+                                    <h4 class="mb-0">Danh sách Tài khoản khách hàng bị khóa</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Tổng số tài khoản: <strong><c:out value="${totalCustomers}" /></strong></p>
 
-                    <!-- Hiển thị trang hiện tại và các trang xung quanh -->
-                    <c:forEach var="i" begin="${currentPageCustomer - 1}" end="${currentPageCustomer + 1}" varStatus="status">
-                        <c:if test="${i > 0 && i <= totalPagesCustomer}">
-                            <a href="filterBanUser?pageStr1=${i}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}" class="<c:if test='${i == currentPageCustomer}'>active</c:if>">
-                                ${i}
-                            </a>
-                        </c:if>
-                    </c:forEach>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tài khoản</th>
+                                                    <th>Tên</th>
+                                                    <th>Email</th>
+                                                    <th>Số điện thoại</th>
+                                                    <th>Ngày tạo</th>
+                                                    <th>Đơn mua</th>
+                                                    <th>Đơn hủy</th>
+                                                    <th>Hành động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <c:forEach var="user" items="${customers}">
+                                                    <tr>
+                                                        <td>${user.username}</td>
+                                                        <td>${user.fullName}</td>
+                                                        <td>${user.email}</td>
+                                                        <td>${user.phoneNumber}</td>
+                                                        <td>${user.registrationDate}</td>
+                                                        <td>${user.deliveredCount}</td>
+                                                        <td>${user.cancelledCount}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                <a href="restoreUser?userId=${user.userId}&pageStr1=${currentPageCustomer}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}" class="btn btn-sm btn-success">Khôi phục</a>
+                                                                <a href="userDetail?userId=${user.userId}" class="btn btn-sm btn-info">Chi tiết</a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
 
-                    <c:if test="${currentPageCustomer < totalPagesCustomer - 2}">
-                        <span>...</span>
-                    </c:if>
+                                    <!-- Customer Pagination -->
+                                    <nav aria-label="Phân trang khách hàng">
+                                        <ul class="pagination">
+                                            <c:if test="${currentPageCustomer > 1}">
+                                                <li class="page-item"><a class="page-link" href="filterBanUser?pageStr1=1&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">« Đầu</a></li>
+                                                <li class="page-item"><a class="page-link" href="filterBanUser?pageStr1=${currentPageCustomer - 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">Trước</a></li>
+                                                </c:if>
 
-                    <c:if test="${currentPageCustomer < totalPagesCustomer}">
-                        <a href="filterBanUser?pageStr1=${currentPageCustomer + 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Next &raquo;</a>
-                    </c:if>
+                                            <c:forEach var="i" begin="${currentPageCustomer - 1}" end="${currentPageCustomer + 1}" varStatus="status">
+                                                <c:if test="${i > 0 && i <= totalPagesCustomer}">
+                                                    <li class="page-item ${i == currentPageCustomer ? 'active' : ''}">
+                                                        <a class="page-link" href="filterBanUser?pageStr1=${i}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">${i}</a>
+                                                    </li>
+                                                </c:if>
+                                            </c:forEach>
 
-                    <c:if test="${currentPageCustomer < totalPagesCustomer}">
-                        <a href="filterBanUser?pageStr1=${totalPagesCustomer}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Last &raquo;</a>
-                    </c:if>
+                                            <c:if test="${currentPageCustomer < totalPagesCustomer}">
+                                                <li class="page-item"><a class="page-link" href="filterBanUser?pageStr1=${currentPageCustomer + 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">Sau</a></li>
+                                                <li class="page-item"><a class="page-link" href="filterBanUser?pageStr1=${totalPagesCustomer}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">Cuối »</a></li>
+                                                </c:if>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+
+                        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                            <!-- Admin Tab -->
+                            <div id="Admin" class="tab-pane fade">
+                                <div class="card shadow-lg mt-4 mx-auto" style="max-width: 95%;">
+                                    <div class="card-header bg-primary text-white">
+                                        <h4 class="mb-0">Danh sách tài khoản nhân viên bị khóa</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">Tổng số tài khoản: <strong><c:out value="${totalEmployees}" /></strong></p>
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tài khoản</th>
+                                                        <th>Tên</th>
+                                                        <th>Email</th>
+                                                        <th>Số điện thoại</th>
+                                                        <th>Ngày tạo</th>
+                                                        <th>Vai trò</th>
+                                                        <th>Hành động</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <c:forEach var="user" items="${employees}">
+                                                        <tr>
+                                                            <td>${user.username}</td>
+                                                            <td>${user.fullName}</td>
+                                                            <td>${user.email}</td>
+                                                            <td>${user.phoneNumber}</td>
+                                                            <td>${user.registrationDate}</td>
+                                                            <td>${user.role}</td>
+                                                            <td>
+                                                                <div class="btn-group" role="group">
+                                                                    <a href="restoreUser?userId=${user.userId}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}" class="btn btn-sm btn-success">Khôi phục</a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Employee Pagination -->
+                                        <nav aria-label="Phân trang nhân viên">
+                                            <ul class="pagination">
+                                                <c:if test="${currentPageEmployee > 1}">
+                                                    <li class="page-item"><a class="page-link" href="filterBanUser?pageStr2=1&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">« Đầu</a></li>
+                                                    <li class="page-item"><a class="page-link" href="filterBanUser?pageStr2=${currentPageEmployee - 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">Trước</a></li>
+                                                    </c:if>
+
+                                                <c:forEach var="i" begin="${currentPageEmployee - 1}" end="${currentPageEmployee + 1}" varStatus="status">
+                                                    <c:if test="${i > 0 && i <= totalPagesEmployee}">
+                                                        <li class="page-item ${i == currentPageEmployee ? 'active' : ''}">
+                                                            <a class="page-link" href="filterBanUser?pageStr2=${i}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">${i}</a>
+                                                        </li>
+                                                    </c:if>
+                                                </c:forEach>
+
+                                                <c:if test="${currentPageEmployee < totalPagesEmployee}">
+                                                    <li class="page-item"><a class="page-link" href="filterBanUser?pageStr2=${currentPageEmployee + 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">Sau</a></li>
+                                                    <li class="page-item"><a class="page-link" href="filterBanUser?pageStr2=${totalPagesEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&minRegistrationDate=${param.minRegistrationDate}&maxRegistrationDate=${param.maxRegistrationDate}&minDelivered=${param.minDelivered}&maxDelivered=${param.maxDelivered}&minCancelled=${param.minCancelled}&maxCancelled=${param.maxCancelled}&sortBy=${param.sortBy}">Cuối »</a></li>
+                                                    </c:if>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </c:if>   
+
+                    </div>
                 </div>
-
-
-
             </div>
-
-            <!-- Tab Nhân viên -->
-            <div id="Admin" class="container tab-pane fade"><br>
-                <h3>Danh sách tài khoản nhân viên bị khóa</h3>
-                <h4>Tổng số tài khoản: <c:out value="${totalEmployees}" /></h4>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Tài khoản</th>
-                            <th>Tên</th>
-                            <th>Email</th>
-                            <th>Số điện thoại</th>
-                            <th>Ngày tạo</th>
-                            <th>Đơn mua</th>
-                            <th>Đơn hủy</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="user" items="${employees}">
-                            <tr>
-                                <td>${user.username}</td>
-                                <td>${user.fullName}</td>
-                                <td>${user.email}</td>
-                                <td>${user.phoneNumber}</td>
-                                <td>${user.registrationDate}</td>
-                                <td>${user.deliveredCount}</td>
-                                <td>${user.cancelledCount}</td>
-                                <td>
-                                    <a href="restoreUser?userId=${user.userId}&pageStr2=${currentPageEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Khôi phục</a>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-
-                <!-- Phân trang cho nhân viên -->
-                <div class="pagination">
-                    <c:if test="${currentPageEmployee > 1}">
-                        <a href="filterBanUser?pageStr2=1&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; First</a>
-                    </c:if>
-
-                    <c:if test="${currentPageEmployee > 3}">
-                        <span>...</span>
-                    </c:if>
-
-                    <!-- Chỉ hiển thị "Prev" nếu không phải trang đầu tiên -->
-                    <c:if test="${currentPageEmployee > 1}">
-                        <a href="filterBanUser?pageStr2=${currentPageEmployee - 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">&laquo; Prev</a>
-                    </c:if>
-
-                    <!-- Hiển thị trang hiện tại và các trang xung quanh -->
-                    <c:forEach var="i" begin="${currentPageEmployee - 1}" end="${currentPageEmployee + 1}" varStatus="status">
-                        <c:if test="${i > 0 && i <= totalPagesEmployee}">
-                            <a href="filterBanUser?pageStr2=${i}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}" class="<c:if test='${i == currentPageEmployee}'>active</c:if>">
-                                ${i}
-                            </a>
-                        </c:if>
-                    </c:forEach>
-
-                    <c:if test="${currentPageEmployee < totalPagesEmployee - 2}">
-                        <span>...</span>
-                    </c:if>
-
-                    <c:if test="${currentPageEmployee < totalPagesEmployee}">
-                        <a href="filterBanUser?pageStr2=${currentPageEmployee + 1}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Next &raquo;</a>
-                    </c:if>
-
-                    <c:if test="${currentPageEmployee < totalPagesEmployee}">
-                        <a href="filterBanUser?pageStr2=${totalPagesEmployee}&username=${param.username}&fullName=${param.fullName}&email=${param.email}&phone=${param.phone}&registrationDate=${param.registrationDate}">Last &raquo;</a>
-                    </c:if>
-                </div>
-
-
-
-
-            </div>
-
         </div>
 
-        <%@ include file="blank.jsp" %>
+        <!-- Bootstrap 5 JS and dependencies -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     </body>
 </html>

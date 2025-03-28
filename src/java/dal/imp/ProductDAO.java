@@ -607,7 +607,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                    + "SUM(CASE WHEN Rating = 4 THEN 1 ELSE 0 END) AS Rating4Count, "
                    + "SUM(CASE WHEN Rating = 5 THEN 1 ELSE 0 END) AS Rating5Count "
                    + "FROM [ProjectSWP].[dbo].[Reviews] "
-                   + "WHERE ProductID = ? AND IsApproved = 1"
+                   + "WHERE ProductID = ? "
                    + "GROUP BY ProductID";
         
         try (PreparedStatement stmt = c.prepareStatement(sql)) {

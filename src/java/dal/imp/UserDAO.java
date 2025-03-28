@@ -272,6 +272,7 @@ public class UserDAO extends DBConnect implements IUserDAO {
                 user.setAddress(rs.getString("Address"));
                 user.setProfileImageURL(rs.getString("ProfileImageURL"));
                 user.setRole(rs.getString("Role"));
+                user.setRegistrationDate(rs.getDate("RegistrationDate"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -418,154 +419,134 @@ public class UserDAO extends DBConnect implements IUserDAO {
         }
     }
 
-    @Override
-    public List<User> filterUsers(String username, String fullName, String email, String phone, String registrationDate) {
-        List<User> users = new ArrayList<>();
+   @Override
+public List<User> filterUsers(String username, String fullName, String email, String phone, 
+        String minRegistrationDate, String maxRegistrationDate, Integer minDelivered, Integer maxDelivered, 
+        Integer minCancelled, Integer maxCancelled) {
+    List<User> users = new ArrayList<>();
+    StringBuilder query = new StringBuilder("SELECT * FROM Users WHERE locked = 0");
 
-        // Bắt đầu xây dựng câu truy vấn SQL với điều kiện cơ bản là lọc người dùng chưa bị khóa
-        StringBuilder query = new StringBuilder("SELECT * FROM Users WHERE locked = 0");
+    if (username != null && !username.isEmpty()) query.append(" AND Username LIKE ?");
+    if (fullName != null && !fullName.isEmpty()) query.append(" AND FullName LIKE ?");
+    if (email != null && !email.isEmpty()) query.append(" AND Email LIKE ?");
+    if (phone != null && !phone.isEmpty()) query.append(" AND PhoneNumber LIKE ?");
+    if (minRegistrationDate != null && !minRegistrationDate.isEmpty()) query.append(" AND RegistrationDate >= ?");
+    if (maxRegistrationDate != null && !maxRegistrationDate.isEmpty()) query.append(" AND RegistrationDate <= ?");
 
-        // Thêm các điều kiện tìm kiếm vào câu truy vấn
-        if (username != null && !username.isEmpty()) {
-            query.append(" AND Username LIKE ?");
-        }
-        if (fullName != null && !fullName.isEmpty()) {
-            query.append(" AND FullName LIKE ?");
-        }
-        if (email != null && !email.isEmpty()) {
-            query.append(" AND Email LIKE ?");
-        }
-        if (phone != null && !phone.isEmpty()) {
-            query.append(" AND PhoneNumber LIKE ?");
-        }
-        if (registrationDate != null && !registrationDate.isEmpty()) {
-            query.append(" AND  CAST(registrationDate AS DATE) =  ?");
-        }
+    try (PreparedStatement stmt = c.prepareStatement(query.toString())) {
+        int paramIndex = 1;
 
-        try (PreparedStatement stmt = c.prepareStatement(query.toString())) {
+        if (username != null && !username.isEmpty()) stmt.setString(paramIndex++, "%" + username + "%");
+        if (fullName != null && !fullName.isEmpty()) stmt.setString(paramIndex++, "%" + fullName + "%");
+        if (email != null && !email.isEmpty()) stmt.setString(paramIndex++, "%" + email + "%");
+        if (phone != null && !phone.isEmpty()) stmt.setString(paramIndex++, "%" + phone + "%");
+        if (minRegistrationDate != null && !minRegistrationDate.isEmpty()) stmt.setString(paramIndex++, minRegistrationDate);
+        if (maxRegistrationDate != null && !maxRegistrationDate.isEmpty()) stmt.setString(paramIndex++, maxRegistrationDate);
 
-            int paramIndex = 1; // Chỉ số tham số cho PreparedStatement
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setUsername(rs.getString("Username"));
+                user.setPassword(rs.getString("Password"));
+                user.setFullName(rs.getString("FullName"));
+                user.setEmail(rs.getString("Email"));
+                user.setPhoneNumber(rs.getString("PhoneNumber"));
+                user.setAddress(rs.getString("Address"));
+                user.setRole(rs.getString("Role"));
+                user.setRegistrationDate(rs.getDate("RegistrationDate"));
+                user.setLocked(rs.getInt("locked"));
 
-            // Gán các tham số vào PreparedStatement
-            if (username != null && !username.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + username + "%");
-            }
-            if (fullName != null && !fullName.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + fullName + "%");
-            }
-            if (email != null && !email.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + email + "%");
-            }
-            if (phone != null && !phone.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + phone + "%");
-            }
-            if (registrationDate != null && !registrationDate.isEmpty()) {
-                stmt.setString(paramIndex++, registrationDate); // Định dạng ngày theo kiểu yyyy-mm-dd
-            }
+                ArrayList<Order> orders = getOrdersByUserId(user.getUserId());
+                user.setOrders(orders);
 
-            // Thực hiện truy vấn và lấy kết quả
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    User user = new User();
-                    user.setUserId(rs.getInt("UserID"));
-                    user.setUsername(rs.getString("Username"));
-                    user.setPassword(rs.getString("Password"));
-                    user.setFullName(rs.getString("FullName"));
-                    user.setEmail(rs.getString("Email"));
-                    user.setPhoneNumber(rs.getString("PhoneNumber"));
-                    user.setAddress(rs.getString("Address"));
-                    user.setRole(rs.getString("Role"));
-                    user.setRegistrationDate(rs.getDate("RegistrationDate"));
-                    user.setLocked(rs.getInt("locked")); // Lưu trạng thái locked
+                int deliveredCount = 0, cancelledCount = 0;
+                for (Order order : orders) {
+                    if ("Delivered".equals(order.getOrderStatus())) deliveredCount++;
+                    else if ("Cancelled".equals(order.getOrderStatus())) cancelledCount++;
+                }
+                user.setDeliveredCount(deliveredCount);
+                user.setCancelledCount(cancelledCount);
 
-                    // Lấy danh sách đơn hàng của người dùng và gán vào thuộc tính 'orders'
-                    ArrayList<Order> orders = getOrdersByUserId(user.getUserId());
-                    user.setOrders(orders);
-
+                // Lọc theo đơn mua và đơn hủy
+                if ((minDelivered == null || deliveredCount >= minDelivered) &&
+                    (maxDelivered == null || deliveredCount <= maxDelivered) &&
+                    (minCancelled == null || cancelledCount >= minCancelled) &&
+                    (maxCancelled == null || cancelledCount <= maxCancelled)) {
                     users.add(user);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace(); // In ra lỗi nếu có
         }
-
-        return users;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return users;
+}
 
-    @Override
-    public List<User> filterBanUsers(String username, String fullName, String email, String phone, String registrationDate) {
-        List<User> users = new ArrayList<>();
+@Override
+public List<User> filterBanUsers(String username, String fullName, String email, String phone, 
+        String minRegistrationDate, String maxRegistrationDate, Integer minDelivered, Integer maxDelivered, 
+        Integer minCancelled, Integer maxCancelled) {
+    List<User> users = new ArrayList<>();
+    StringBuilder query = new StringBuilder("SELECT * FROM Users WHERE locked = 1");
 
-        // Bắt đầu xây dựng câu truy vấn SQL với điều kiện cơ bản là lọc người dùng chưa bị khóa
-        StringBuilder query = new StringBuilder("SELECT * FROM Users WHERE locked = 1");
+    if (username != null && !username.isEmpty()) query.append(" AND Username LIKE ?");
+    if (fullName != null && !fullName.isEmpty()) query.append(" AND FullName LIKE ?");
+    if (email != null && !email.isEmpty()) query.append(" AND Email LIKE ?");
+    if (phone != null && !phone.isEmpty()) query.append(" AND PhoneNumber LIKE ?");
+    if (minRegistrationDate != null && !minRegistrationDate.isEmpty()) query.append(" AND RegistrationDate >= ?");
+    if (maxRegistrationDate != null && !maxRegistrationDate.isEmpty()) query.append(" AND RegistrationDate <= ?");
 
-        // Thêm các điều kiện tìm kiếm vào câu truy vấn
-        if (username != null && !username.isEmpty()) {
-            query.append(" AND Username LIKE ?");
-        }
-        if (fullName != null && !fullName.isEmpty()) {
-            query.append(" AND FullName LIKE ?");
-        }
-        if (email != null && !email.isEmpty()) {
-            query.append(" AND Email LIKE ?");
-        }
-        if (phone != null && !phone.isEmpty()) {
-            query.append(" AND PhoneNumber LIKE ?");
-        }
-        if (registrationDate != null && !registrationDate.isEmpty()) {
-            query.append(" AND  CAST(registrationDate AS DATE) =  ?");
-        }
+    try (PreparedStatement stmt = c.prepareStatement(query.toString())) {
+        int paramIndex = 1;
 
-        try (PreparedStatement stmt = c.prepareStatement(query.toString())) {
+        if (username != null && !username.isEmpty()) stmt.setString(paramIndex++, "%" + username + "%");
+        if (fullName != null && !fullName.isEmpty()) stmt.setString(paramIndex++, "%" + fullName + "%");
+        if (email != null && !email.isEmpty()) stmt.setString(paramIndex++, "%" + email + "%");
+        if (phone != null && !phone.isEmpty()) stmt.setString(paramIndex++, "%" + phone + "%");
+        if (minRegistrationDate != null && !minRegistrationDate.isEmpty()) stmt.setString(paramIndex++, minRegistrationDate);
+        if (maxRegistrationDate != null && !maxRegistrationDate.isEmpty()) stmt.setString(paramIndex++, maxRegistrationDate);
 
-            int paramIndex = 1; // Chỉ số tham số cho PreparedStatement
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setUsername(rs.getString("Username"));
+                user.setPassword(rs.getString("Password"));
+                user.setFullName(rs.getString("FullName"));
+                user.setEmail(rs.getString("Email"));
+                user.setPhoneNumber(rs.getString("PhoneNumber"));
+                user.setAddress(rs.getString("Address"));
+                user.setRole(rs.getString("Role"));
+                user.setRegistrationDate(rs.getDate("RegistrationDate"));
+                user.setLocked(rs.getInt("locked"));
 
-            // Gán các tham số vào PreparedStatement
-            if (username != null && !username.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + username + "%");
-            }
-            if (fullName != null && !fullName.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + fullName + "%");
-            }
-            if (email != null && !email.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + email + "%");
-            }
-            if (phone != null && !phone.isEmpty()) {
-                stmt.setString(paramIndex++, "%" + phone + "%");
-            }
-            if (registrationDate != null && !registrationDate.isEmpty()) {
-                stmt.setString(paramIndex++, registrationDate); // Định dạng ngày theo kiểu yyyy-mm-dd
-            }
+                ArrayList<Order> orders = getOrdersByUserId(user.getUserId());
+                user.setOrders(orders);
 
-            // Thực hiện truy vấn và lấy kết quả
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    User user = new User();
-                    user.setUserId(rs.getInt("UserID"));
-                    user.setUsername(rs.getString("Username"));
-                    user.setPassword(rs.getString("Password"));
-                    user.setFullName(rs.getString("FullName"));
-                    user.setEmail(rs.getString("Email"));
-                    user.setPhoneNumber(rs.getString("PhoneNumber"));
-                    user.setAddress(rs.getString("Address"));
-                    user.setRole(rs.getString("Role"));
-                    user.setRegistrationDate(rs.getDate("RegistrationDate"));
-                    user.setLocked(rs.getInt("locked")); // Lưu trạng thái locked
+                int deliveredCount = 0, cancelledCount = 0;
+                for (Order order : orders) {
+                    if ("Delivered".equals(order.getOrderStatus())) deliveredCount++;
+                    else if ("Cancelled".equals(order.getOrderStatus())) cancelledCount++;
+                }
+                user.setDeliveredCount(deliveredCount);
+                user.setCancelledCount(cancelledCount);
 
-                    // Lấy danh sách đơn hàng của người dùng và gán vào thuộc tính 'orders'
-                    ArrayList<Order> orders = getOrdersByUserId(user.getUserId());
-                    user.setOrders(orders);
-
+                // Lọc theo đơn mua và đơn hủy
+                if ((minDelivered == null || deliveredCount >= minDelivered) &&
+                    (maxDelivered == null || deliveredCount <= maxDelivered) &&
+                    (minCancelled == null || cancelledCount >= minCancelled) &&
+                    (maxCancelled == null || cancelledCount <= maxCancelled)) {
                     users.add(user);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace(); // In ra lỗi nếu có
         }
-
-        return users;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
     
+    return users;
+}
     // Lấy một Employee bất kỳ (dùng cho Customer)
     public User getEmployee() {
         String query = "SELECT TOP 1 * FROM Users WHERE Role = 'Employee'";
@@ -592,6 +573,7 @@ public class UserDAO extends DBConnect implements IUserDAO {
         return employee;
     }
 
+    
     @Override
     public OrderContact getOrderContactsByOrderID(int orderID) {
         String query = "SELECT * FROM OrderContacts WHERE OrderID = ?";

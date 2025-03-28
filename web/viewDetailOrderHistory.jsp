@@ -1,452 +1,394 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Thông tin đơn hàng</title>
-        <link rel="stylesheet" href="styles.css"> <!-- Optional: add your custom styles -->
-        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
-
-        <!-- Bootstrap -->
-        <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
-
-        <!-- Slick -->
-        <link type="text/css" rel="stylesheet" href="css/slick.css"/>
-        <link type="text/css" rel="stylesheet" href="css/slick-theme.css"/>
-
-        <!-- nouislider -->
-        <link type="text/css" rel="stylesheet" href="css/nouislider.min.css"/>
-
-        <!-- Font Awesome Icon -->
-        <link rel="stylesheet" href="css/font-awesome.min.css">
-
-        <!-- Custom styles -->
-        <link type="text/css" rel="stylesheet" href="css/style.css"/>
-        <%@ include file="header.jsp" %>
-
-    </head>
-    <body>
-        <style type="text/css">
-            /* Thu hẹp chiều rộng và cải tiến phần thông tin người nhận */
-            .user-profile {
-                width: 90%; /* Thu hẹp chiều rộng */
-                max-width: 800px; /* Giới hạn chiều rộng tối đa */
-                background-color: #fff;
-                padding: 15px;
-                border-radius: 10px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                margin: 30px auto; /* Căn giữa và tạo khoảng cách với các phần khác */
-                margin-top: 30px;
-                border-left: 8px solid #ff5722; /* Viền đậm hơn với màu đỏ cam */
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+        <style>
+            :root {
+                --primary-color: #d32f2f;
+                --primary-light: #ffcdd2;
+                --primary-dark: #b71c1c;
+                --secondary-color: #f8f9fa;
+                --text-color: #333;
+                --border-color: #e0e0e0;
+                --success-color: #689f38;
+                --light-gray: #f5f5f5;
             }
-
-            /* Tiêu đề thông tin người nhận */
-            .user-profile h3 {
+            
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: 'Roboto', Arial, sans-serif;
+            }
+            
+            body {
+                background-color: var(--light-gray);
+                color: var(--text-color);
+                line-height: 1.6;
+                padding: 20px;
+            }
+            
+            .container {
+                max-width: 1000px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                padding: 30px;
+            }
+            
+            header {
+                margin-bottom: 30px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            
+            h1 {
+                color: red;
+                font-size: 28px;
+                margin-bottom: 10px;
+            }
+            
+            h3 {
+                color: red;
                 font-size: 20px;
-                color: #333;
-                font-weight: 700; /* Chữ in đậm hơn */
-                margin-bottom: 12px;
+                margin: 25px 0 15px 0;
+                padding-bottom: 8px;
+                border-bottom: 1px solid var(--border-color);
             }
-
-            /* Cải tiến bảng đơn hàng */
-            table {
+            
+            .nav-buttons {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .back-btn {
+                display: inline-flex;
+                align-items: center;
+                padding: 10px 15px;
+                background-color: red;
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+                font-weight: 500;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                transition: all 0.3s ease;
+            }
+            
+            .back-btn:hover {
+                background-color: var(--primary-dark);
+                transform: translateY(-2px);
+            }
+            
+            .back-btn i {
+                margin-right: 8px;
+            }
+            
+            .info-card {
+                background-color: var(--secondary-color);
+                border-radius: 6px;
+                padding: 20px;
+                margin-bottom: 25px;
+                box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+                border-left: 4px solid red;
+            }
+            
+            .info-item {
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .info-item i {
+                margin-right: 10px;
+                color: red;
+                width: 20px;
+                text-align: center;
+            }
+            
+            .info-item:last-child {
+                margin-bottom: 0;
+            }
+            
+            .product-table {
                 width: 100%;
                 border-collapse: collapse;
-                margin-bottom: 15px;
-                border-radius: 8px;
+                margin: 20px 0 30px;
+                border-radius: 6px;
                 overflow: hidden;
+                box-shadow: 0 1px 5px rgba(0,0,0,0.05);
             }
-
-            th, td {
-                padding: 10px 15px; /* Giảm padding để bảng gọn hơn */
-                text-align: left;
-                border-bottom: 2px solid #ff5722; /* Đổi màu viền bảng sang đỏ cam */
-                font-weight: 700; /* Chữ trong bảng đậm hơn */
-            }
-
-            th {
-                background-color: #ff5722; /* Màu nền đỏ cam cho header bảng */
+            
+            .product-table th {
+                background-color:red;
                 color: white;
-                text-transform: uppercase;
-                font-size: 14px;
+                font-weight: 500;
+                text-align: left;
+                padding: 15px;
             }
-
-            td {
-                background-color: #f9f9f9;
-                font-size: 14px;
+            
+            .product-table td {
+                padding: 15px;
+                border-bottom: 1px solid var(--border-color);
+                vertical-align: middle;
             }
-
-            td img {
-                width: 70px;
-                height: 70px;
+            
+            .product-table tr:last-child td {
+                border-bottom: none;
+            }
+            
+            .product-table tr:nth-child(even) {
+                background-color: var(--secondary-color);
+            }
+            
+            .product-table tr:hover {
+                background-color: rgba(211, 47, 47, 0.05);
+            }
+            
+            .product-img {
+                width: 80px;
+                height: 80px;
                 object-fit: cover;
                 border-radius: 4px;
+                border: 1px solid var(--border-color);
             }
-
-            /* Phần vận chuyển và tổng tiền */
-            .user-profile div p {
-                font-size: 16px;
-                color: #555;
-                margin-bottom: 10px;
+            
+            .price {
+                font-weight: 500;
+                color: red;
             }
-
-            /* Khung cho phần vận chuyển và tổng tiền */
-            .border {
-                padding: 15px;
-                border: 2px solid #ff5722; /* Viền đỏ cam đậm cho phần vận chuyển và tổng tiền */
-                border-radius: 8px;
-                background-color: #fff;
-                margin-top: 15px;
-                margin-bottom: 15px;
+            
+            .total-price {
+                font-weight: 700;
+                color: var(--primary-dark);
             }
-
-            /* Footer */
-            footer {
-                padding: 10px 0;
-                text-align: center;
-                background-color: #ff5722; /* Màu nền đỏ cam cho footer */
+            
+            .button {
+                display: inline-block;
+                padding: 8px 15px;
+                background-color: red;
                 color: white;
-                font-size: 16px;
-                border-radius: 8px;
-                margin-top: 20px;
-            }
-
-            /* Responsive: Thu nhỏ giao diện trên thiết bị di động */
-            @media screen and (max-width: 768px) {
-                .user-profile {
-                    width: 100%; /* Đảm bảo rằng đơn hàng sẽ chiếm toàn bộ chiều rộng màn hình di động */
-                    margin-top: 20px;
-                }
-
-                table {
-                    font-size: 12px;
-                }
-
-                td img {
-                    width: 60px;
-                    height: 60px;
-                }
-            }
-
-            .review-form {
-                background-color: #fff;
-                padding: 20px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
-            .form-group {
-                margin-bottom: 15px;
-            }
-            .form-group label {
-                display: block;
-                margin-bottom: 5px;
-                color: #666;
-                font-size: 14px;
-            }
-            .product-info {
-                margin-bottom: 20px;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
-            .product-image {
-                max-width: 200px;
-                height: auto;
-                margin-bottom: 10px;
-            }
-            .star-rating {
-                display: flex;
-                gap: 5px;
-                margin-bottom: 10px;
-            }
-            .star {
-                font-size: 24px;
-                color: #ccc;
-                cursor: pointer;
-                transition: color 0.3s ease;
-            }
-            .star.active {
-                color: #ffd700;
-            }
-            textarea {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                box-sizing: border-box;
-                font-size: 14px;
-                height: 100px;
-                resize: vertical;
-            }
-            .file-input {
-                margin-top: 5px;
-            }
-            .submit-btn {
-                background-color: #ffd700;
-                color: #fff;
-                padding: 10px 20px;
                 border: none;
                 border-radius: 4px;
-                font-size: 16px;
                 cursor: pointer;
-                width: 100%;
+                font-size: 14px;
+                font-weight: 500;
+                transition: background-color 0.2s;
             }
-            .submit-btn:hover {
-                background-color: #e0a400;
+            
+            .button:hover {
+                background-color: var(--primary-dark);
             }
-            .note {
-                color: #888;
-                font-size: 12px;
-                margin-bottom: 15px;
+            
+            .button:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+            
+            .summary-section {
+                background-color: var(--secondary-color);
+                border-radius: 6px;
+                padding: 20px;
+                margin-top: 20px;
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+            
+            .summary-item {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .summary-label {
+                font-size: 14px;
+                color: #757575;
+            }
+            
+            .summary-value {
+                font-size: 18px;
+                font-weight: 700;
+                color: red;
+            }
+            
+            .order-status {
+                display: inline-block;
+                padding: 6px 12px;
+                border-radius: 50px;
+                font-size: 14px;
+                font-weight: 500;
+                background-color: var(--primary-light);
+                color: var(--primary-dark);
+            }
+            
+            .order-delivered {
+                background-color: rgba(104, 159, 56, 0.2);
+                color: var(--success-color);
+            }
+            
+            footer {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid var(--border-color);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .payment-method {
+                display: flex;
+                align-items: center;
+            }
+            
+            .payment-method i {
+                margin-right: 10px;
+                color: red;
+            }
+            
+            @media (max-width: 768px) {
+                .container {
+                    padding: 15px;
+                }
+                
+                .nav-buttons {
+                    flex-direction: column;
+                    width: 100%;
+                }
+                
+                .back-btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+                
+                .product-table {
+                    display: block;
+                    overflow-x: auto;
+                }
+                
+                .summary-section {
+                    flex-direction: column;
+                    gap: 15px;
+                    align-items: flex-start;
+                }
+                
+                footer {
+                    flex-direction: column;
+                    gap: 15px;
+                }
             }
         </style>
-        <div class="user-profile-page">
-            <div class="container user-profile">
-                <h1>Thông tin đơn hàng</h1>
-
-                <!-- User's Information -->
-                <div class="border">
-                    <h3>Thông tin người nhận</h3>
-                    <p>Tên người nhận: ${orderContact.recipientName}</p>
-                    <p>Địa chỉ: ${order.shippingAddress}</p>
-                    <p>Số điện thoại: ${orderContact.recipientPhone}</p>
-                    <p>Ghi chú: ${orderContact.note}</p>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1><i class="fas fa-receipt"></i> Chi tiết đơn hàng</h1>
+                <div class="order-status ${order.orderStatus == 'Delivered' ? 'order-delivered' : ''}">
+                    <i class="fas fa-${order.orderStatus == 'Delivered' ? 'check-circle' : 'clock'}"></i>
+                    ${order.orderStatus}
                 </div>
-
-                <!-- Order Details -->
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>Sản Phẩm</th>
-                            <th>Ảnh Sản Phẩm</th>
-                            <th>Đơn Giá</th>
-                            <th>Số Lượng</th>
-                            <th>Số Tiền</th>
-                            <th>Đánh Giá</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Lặp qua orderDetails và lấy thông tin sản phẩm -->
-                        <c:forEach var="orderDetail" items="${orderDetails}">
-                            <tr>
-                                <td>${orderDetail.product.productName}</td>
-                                <!-- Hiển thị ảnh sản phẩm -->
-                                <td><img src="${orderDetail.product.imageURL}" alt="Product Image" width="100" height="100" /></td>
-                                <td>${orderDetail.product.price} $</td>
-                                <td>${orderDetail.quantity}</td>
-                                <td>${orderDetail.price} $</td>
-                                <td>
-                                    <!-- Gán biến existingReview và kiểm tra -->
-                                    <c:set var="existingReview" value="${reviewDAO.getReviewByUserAndProduct(sessionScope.user.userId, orderDetail.product.productID)}" />
-                                    <!-- Nút Đánh Giá/Sửa Đánh Giá -->
-                                    <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#reviewModal" 
-                                            data-orderid="${order.orderId}" 
-                                            data-productid="${orderDetail.product.productID}" 
-                                            data-productname="<c:out value='${orderDetail.product.productName}'/>" 
-                                            data-imageurl="${orderDetail.product.imageURL}"
-                                            data-rating="${existingReview != null ? existingReview.rating : ''}"
-                                            data-comment="${existingReview != null ? existingReview.comment : ''}"
-                                            ${order.orderStatus != 'Delivered' ? 'disabled' : ''}>
-                                        ${existingReview != null ? 'Sửa Đánh Giá' : 'Đánh Giá'}
-                                    </button>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-
-                <!-- Review Modal -->
-                <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header border-bottom-0">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-title text-center">
-                                    <h4>Đánh Giá Sản Phẩm</h4>
-                                </div>
-                                <div class="d-flex flex-column text-center">
-                                    <form action="addReview" method="POST" class="review-form" enctype="multipart/form-data" style="text-align: start">
-                                        <div class="form-group product-info">
-                                            <label>Sản phẩm được đánh giá:</label>
-                                            <div class="selected-product-info" id="selectedProductInfo">
-                                                <img id="selectedProductImage" src="" alt="Selected Product" class="product-image">
-                                                <p id="selectedProductName"></p>
-                                            </div>
-                                            <!-- Input ẩn để gửi productID -->
-                                            <input type="hidden" name="productID" id="productID" value="">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="rating">Your Rating * :</label>
-                                            <div class="star-rating" id="starRating">
-                                                <span class="star" data-value="1">★</span>
-                                                <span class="star" data-value="2">★</span>
-                                                <span class="star" data-value="3">★</span>
-                                                <span class="star" data-value="4">★</span>
-                                                <span class="star" data-value="5">★</span>
-                                            </div>
-                                            <input type="hidden" name="rating" id="ratingValue" value="">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="review">Your Review:</label>
-                                            <textarea id="review" name="review"></textarea>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Upload Media (Optional):</label>
-                                            <input type="file" name="media" class="file-input" accept="image/*,video/*" multiple>
-                                            <input type="hidden" name="mediaType" id="mediaType">
-                                        </div>
-                                        <input type="hidden" name="orderId" value="${orderId}">
-                                        <button type="submit" class="submit-btn">Leave Your Review</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Shipping and Total -->
-                <div class="border">
-                    <p>Vận chuyển: 0 đ</p>
-                    <p>Tổng: ${order.totalAmount} đ</p>
-                </div>
-
-                <!-- Footer -->
-                <footer>
-                    <p>Phương thức thanh toán: ${order.paymentMethod}</p>
-                </footer>
+            </header>
+            
+            <div class="nav-buttons">
+                <a href="./userOrder" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Trở về danh sách đơn hàng
+                </a>
+                <a href="./shippingInformation?orderId=${order.orderId}" class="back-btn">
+                    <i class="fas fa-shipping-fast"></i> Thông tin vận chuyển
+                </a>
             </div>
+            
+            <!-- Thông tin người nhận -->
+            <div class="info-card">
+                <h3><i class="fas fa-user-circle"></i> Thông tin người nhận</h3>
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <span><strong>Tên người nhận:</strong> ${orderContact.recipientName}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span><strong>Địa chỉ:</strong> ${order.shippingAddress}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <span><strong>Số điện thoại:</strong> ${orderContact.recipientPhone}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-sticky-note"></i>
+                    <span><strong>Ghi chú:</strong> ${orderContact.note != null && !orderContact.note.isEmpty() ? orderContact.note : 'Không có ghi chú'}</span>
+                </div>
+            </div>
+            
+            <!-- Chi tiết sản phẩm -->
+            <h3><i class="fas fa-box-open"></i> Chi tiết sản phẩm</h3>
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Ảnh</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Tổng tiền</th>
+                        <th>Đánh giá</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="orderDetail" items="${orderDetails}">
+                        <tr>
+                            <td>${orderDetail.product.productName}</td>
+                            <td>
+                                <img src="${orderDetail.product.imageURL}" alt="${orderDetail.product.productName}" class="product-img" />
+                            </td>
+                            <td class="price">${orderDetail.price} $</td>
+                            <td>${orderDetail.quantity}</td>
+                            <td class="total-price">${orderDetail.price * orderDetail.quantity} $</td>
+                            <td>
+                                <button type="button" class="button" data-toggle="modal" data-target="#reviewModal" 
+                                        data-orderid="${order.orderId}" 
+                                        data-productid="${orderDetail.product.productID}" 
+                                        data-productname="<c:out value='${orderDetail.product.productName}'/>" 
+                                        data-imageurl="${orderDetail.product.imageURL}"
+                                        ${order.orderStatus != 'Delivered' ? 'disabled' : ''}>
+                                    <i class="fas fa-star"></i> Đánh giá
+                                </button>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+            
+            <!-- Tổng kết đơn hàng -->
+            <div class="summary-section">
+                <div class="summary-item">
+                    <span class="summary-label">Phí vận chuyển</span>
+                    <span class="summary-value">0 đ</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Tổng tiền hàng</span>
+                    <span class="summary-value">${order.totalAmount} đ</span>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer>
+                <div class="payment-method">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span><strong>Phương thức thanh toán:</strong> ${order.paymentMethod}</span>
+                </div>
+                <div>
+                    <span><strong>Mã đơn hàng:</strong> #${order.orderCode}</span>
+                </div>
+            </footer>
         </div>
-
-        <%@ include file="blank.jsp" %>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const buttons = document.querySelectorAll(".btn-info");
-
-                buttons.forEach(function (button) {
-                    button.addEventListener("click", function () {
-                        const productID = button.getAttribute('data-productid');
-                        const productName = button.getAttribute('data-productname');
-                        const imageURL = button.getAttribute('data-imageurl');
-                        const rating = button.getAttribute('data-rating');
-                        const comment = button.getAttribute('data-comment');
-
-                        // Gán thông tin sản phẩm vào modal
-                        document.getElementById("productID").value = productID;
-                        document.getElementById("selectedProductImage").src = imageURL;
-                        document.getElementById("selectedProductName").textContent = productName;
-                        document.getElementById("selectedProductInfo").style.display = "block";
-
-                        // Load rating hiện tại (nếu có)
-                        if (rating) {
-                            document.getElementById("ratingValue").value = rating;
-                            const stars = document.querySelectorAll('.star');
-                            stars.forEach(star => {
-                                if (star.getAttribute('data-value') <= rating) {
-                                    star.classList.add('active');
-                                } else {
-                                    star.classList.remove('active');
-                                }
-                            });
-                        }
-
-                        // Load comment hiện tại (nếu có)
-                        if (comment) {
-                            document.getElementById("review").value = comment;
-                        }
-                    });
-                });
-
-                // Reset modal khi đóng
-                function resetModal() {
-                    document.getElementById("selectedProductImage").src = "";
-                    document.getElementById("selectedProductName").textContent = "";
-                    document.getElementById("selectedProductInfo").style.display = "none";
-                    document.getElementById("productID").value = "";
-                    document.getElementById("ratingValue").value = "";
-                    document.getElementById("review").value = "";
-                    document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
-                }
-
-                document.querySelector(".close").addEventListener("click", function () {
-                    $('#reviewModal').modal('hide');
-                    resetModal();
-                });
-
-                window.onclick = function (event) {
-                    var modal = document.getElementById("reviewModal");
-                    if (event.target === modal) {
-                        $('#reviewModal').modal('hide');
-                        resetModal();
-                    }
-                };
-
-                $('#reviewModal').on('hidden.bs.modal', function () {
-                    $('body').css('padding-right', '');
-                });
-            });
-
-            // Xử lý file upload và mediaType
-            document.querySelector('.file-input').addEventListener('change', function (event) {
-                var files = event.target.files;
-                var mediaTypes = [];
-
-                Array.from(files).forEach(file => {
-                    var fileType = file.type;
-                    if (fileType.startsWith('image/')) {
-                        mediaTypes.push('image');
-                    } else if (fileType.startsWith('video/')) {
-                        mediaTypes.push('video');
-                    } else {
-                        mediaTypes.push('other');
-                    }
-                });
-                document.getElementById('mediaType').value = JSON.stringify(mediaTypes);
-            });
-
-            // Xử lý đánh giá sao
-            const stars = document.querySelectorAll('.star');
-            const ratingInput = document.getElementById('ratingValue');
-            stars.forEach(star => {
-                star.addEventListener('click', function () {
-                    const value = this.getAttribute('data-value');
-                    ratingInput.value = value;
-                    stars.forEach(s => s.classList.remove('active'));
-                    this.classList.add('active');
-                    for (let i = 0; i < value; i++) {
-                        stars[i].classList.add('active');
-                    }
-                });
-                star.addEventListener('mouseover', function () {
-                    const value = this.getAttribute('data-value');
-                    stars.forEach((s, index) => {
-                        if (index < value)
-                            s.classList.add('active');
-                        else
-                            s.classList.remove('active');
-                    });
-                });
-                star.addEventListener('mouseout', function () {
-                    stars.forEach(s => s.classList.remove('active'));
-                    const currentRating = ratingInput.value;
-                    if (currentRating) {
-                        for (let i = 0; i < currentRating; i++) {
-                            stars[i].classList.add('active');
-                        }
-                    }
-                });
-            });
-        </script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     </body>
 </html>

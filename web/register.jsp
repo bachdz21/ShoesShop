@@ -1,4 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
@@ -21,27 +23,28 @@
             </c:if>
             <form action="register" method="POST" id="registerForm">
                 <div class="field">
-                    <input type="text" name="username" required>
+                    <input type="text" name="username" value="<c:out value='${username}'/>" required>
                     <label>Tài Khoản</label>
                 </div>
                 <div class="field">
-                    <input type="password" name="password" required>
+                    <input type="password" name="password" value="<c:out value='${password}'/>" required>
                     <label>Mật Khẩu</label>
                 </div>
+
                 <div class="field">
-                    <input type="password" name="confirm_password" required>
+                    <input type="password" name="confirm_password" value="<c:out value='${confirm_password}'/>" required>
                     <label>Nhập Lại Mật Khẩu</label>
                 </div>
                 <div class="field">
-                    <input type="text" name="fullname" required>
+                    <input type="text" name="fullname" value="<c:out value='${fullname}'/>" required>
                     <label>Họ Và Tên</label>
                 </div>
                 <div class="field">
-                    <input type="email" name="email" required>
+                    <input type="email" name="email" value="<c:out value='${email}'/>" required>
                     <label>Email</label>
                 </div>
                 <div class="field">
-                    <input type="text" name="phonenumber" required>
+                    <input type="text" name="phonenumber" value="<c:out value='${phonenumber}'/>" required>
                     <label>Số Điện Thoại</label>
                 </div>
                 <br>
@@ -49,80 +52,62 @@
                     <input type="submit" value="Đăng ký" id="submitBtn">
                 </div>
                 <div class="signup-link">
-                    Bạn đã có tài khoản rồi? <a href="login.jsp">Đăng Nhập</a>
+                    Bạn đã có tài khoản rồi? <a href="login">Đăng Nhập</a>
                 </div>
             </form>
+
         </div>
-        <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        const usernameInput = document.querySelector("input[name='username']");
-                        const emailInput = document.querySelector("input[name='email']");
-                        const submitButton = document.querySelector("#submitBtn");
-        
-                        function checkExisting() {
-                            const username = usernameInput.value;
-                            const email = emailInput.value;
-        
-                            // Kiểm tra xem giá trị đã được lấy đúng hay chưa
-                            console.log("Checking username: ", username, "and email: ", email);
-        
-                            fetch(`/checkExisting?username=${username}&email=${email}`, {
-                                method: "GET"
-                            })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        console.log(data);  // Kiểm tra phản hồi từ server
-                                        if (data.isUsernameExists) {
-                                            alert("Tên đăng nhập đã tồn tại.");
-                                            submitButton.disabled = true;
-                                        } else if (data.isEmailExists) {
-                                            alert("Email đã tồn tại.");
-                                            submitButton.disabled = true;
-                                        } else {
-                                            submitButton.disabled = false;
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error("Có lỗi xảy ra:", error);
-                                    });
-                        }
-        
-        
-                        // Gọi kiểm tra khi người dùng nhập username hoặc email
-                        usernameInput.addEventListener("input", checkExisting);
-                        emailInput.addEventListener("input", checkExisting);
-        
-                        // JavaScript kiểm tra mật khẩu và xác nhận mật khẩu, cũng như kiểm tra số điện thoại
-                        document.querySelector("form").addEventListener("submit", function (event) {
-                            const password = document.querySelector("input[name='password']").value;
-                            const confirmPassword = document.querySelector("input[name='confirm_password']").value;
-                            const phoneNumber = document.querySelector("input[name='phonenumber']").value;
-        
-                            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-                            const phoneRegex = /^[0-9]{10}$/; // Kiểm tra số điện thoại chỉ chứa 10 chữ số
-        
-                            // Kiểm tra mật khẩu
-                            if (!password.match(passwordRegex)) {
-                                alert("Mật khẩu phải có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
-                                event.preventDefault(); // Ngừng gửi biểu mẫu
-                                return;
-                            }
-        
-                            // Kiểm tra xác nhận mật khẩu
-                            if (password !== confirmPassword) {
-                                alert("Mật khẩu và xác nhận mật khẩu không khớp.");
-                                event.preventDefault(); // Ngừng gửi biểu mẫu
-                                return;
-                            }
-        
-                            // Kiểm tra số điện thoại
-                            if (!phoneNumber.match(phoneRegex)) {
-                                alert("Số điện thoại phải có 10 chữ số và không chứa kí tự khác.");
-                                event.preventDefault(); // Ngừng gửi biểu mẫu
-                                return;
-                            }
-                        });
-                    });
-        </script>
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector("form").addEventListener("submit", function (event) {
+        const username = document.querySelector("input[name='username']");
+        const password = document.querySelector("input[name='password']").value;
+        const confirmPassword = document.querySelector("input[name='confirm_password']").value;
+        const fullname = document.querySelector("input[name='fullname']");
+        const email = document.querySelector("input[name='email']");
+        const phonenumber = document.querySelector("input[name='phonenumber']");
+
+        // Xóa khoảng trắng ở hai bên
+        username.value = username.value.trim();
+        fullname.value = fullname.value.trim();
+        email.value = email.value.trim();
+        phonenumber.value = phonenumber.value.trim();
+
+        // Regex kiểm tra
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/; // Mật khẩu: ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 số
+        const phoneRegex = /^[0-9]{10}$/; // Số điện thoại: chỉ chứa 10 chữ số
+        const fullnameRegex = /^[a-zA-ZÀ-ỹ\s]+$/u; // Họ và Tên: chỉ chứa chữ cái (kể cả tiếng Việt) và dấu cách
+
+        // Kiểm tra mật khẩu
+        if (!password.match(passwordRegex)) {
+            alert("Mật khẩu phải có ít nhất 6 ký tự, bao gồm ít nhất 1 chữ cái và 1 chữ số.");
+            event.preventDefault();
+            return;
+        }
+
+        // Kiểm tra xác nhận mật khẩu
+        if (password !== confirmPassword) {
+            alert("Mật khẩu và xác nhận mật khẩu không khớp.");
+            event.preventDefault();
+            return;
+        }
+
+        // Kiểm tra số điện thoại
+        if (!phonenumber.value.match(phoneRegex)) {
+            alert("Số điện thoại phải có 10 chữ số và không chứa ký tự khác.");
+            event.preventDefault();
+            return;
+        }
+
+        // Kiểm tra Họ và Tên (chỉ chữ cái)
+        if (!fullname.value.match(fullnameRegex)) {
+            alert("Họ và Tên chỉ được chứa chữ cái và khoảng trắng.");
+            event.preventDefault();
+            return;
+        }
+    });
+});
+
+</script>
     </body>
 </html>

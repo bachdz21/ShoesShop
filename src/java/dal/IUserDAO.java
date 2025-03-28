@@ -33,7 +33,11 @@ public interface IUserDAO {
     void changePassword(int userId, String newPassword);
     void isLocked(int userId);
     void isUnlocked(int userId);
-    List<User> filterUsers(String username, String fullName, String email, String phone, String registrationDate);
-    List<User> filterBanUsers(String username, String fullName, String email, String phone, String registrationDate);
     public OrderContact getOrderContactsByOrderID(int orderID);
+    List<User> filterUsers(String username, String fullName, String email, String phone, 
+        String minRegistrationDate, String maxRegistrationDate, Integer minDelivered, Integer maxDelivered, 
+        Integer minCancelled, Integer maxCancelled);
+    List<User> filterBanUsers(String username, String fullName, String email, String phone, 
+        String minRegistrationDate, String maxRegistrationDate, Integer minDelivered, Integer maxDelivered, 
+        Integer minCancelled, Integer maxCancelled) ;
 }

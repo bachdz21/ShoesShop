@@ -3,7 +3,6 @@ package controller;
 
 import dal.ICategoryDAO;
 import dal.IProductDAO;
-import dal.IReviewDAO;
 import dal.IUserDAO;
 import dal.imp.CategoryDAO;
 import dal.imp.ProductDAO;
