@@ -89,7 +89,7 @@
 
             
         </div>
-        <script>
+<!--        <script>
             document.addEventListener("DOMContentLoaded", function () {
                 // JavaScript kiểm tra mật khẩu và xác nhận mật khẩu, cũng như kiểm tra số điện thoại
                 document.querySelector("form").addEventListener("submit", function (event) {
@@ -133,6 +133,6 @@
                     }
                 });
             });
-        </script>
+        </script>-->
     </body>
 </html>
