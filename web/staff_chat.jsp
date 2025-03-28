@@ -3,7 +3,7 @@
 <% 
     Integer userId = (Integer) session.getAttribute("userId");
     String role = (String) session.getAttribute("role");
-    if (userId == null || !"Employee".equals(role)) {
+    if (userId == null || !"Staff".equals(role)) {
         response.sendRedirect("login.jsp");
         return;
     }
@@ -13,7 +13,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Employee Chat</title>
+        <title>Staff Chat</title>
         <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900&display=swap" rel="stylesheet">
         <!-- Thêm Font Awesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9FtM8jKkS6z/JXzP5rN8eT2S4GOhB9ANlR1yO7hX7+p8eKLi9Uzr7Nwdp91tT7BXnuJrs9NYV8Nzg8QvHA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -215,7 +215,7 @@
                                         if (selectedFiles.length > 0) {
                                             const formData = new FormData();
                                             formData.append("userId", userId);
-                                            formData.append("employeeId", selectedCustomerId);
+                                            formData.append("staffId", selectedCustomerId);
                                             formData.append("messageContent", msg || "");
                                             selectedFiles.forEach(file => formData.append("files", file));
 

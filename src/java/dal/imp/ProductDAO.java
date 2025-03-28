@@ -28,7 +28,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public List<Product> getSaleProducts() {
         List<Product> products = new ArrayList<>();
         try {
-            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale\n"
+            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.AverageRating\n"
                     + "FROM Products p\n"
                     + "INNER JOIN Categories c ON p.CategoryID = c.CategoryID\n"
                     + "WHERE p.Sale != 0 AND p.isDeleted = 0";
@@ -46,6 +46,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setCategoryName(rs.getString("CategoryName"));
                 product.setBrand(rs.getString("brand"));
                 product.setSale(rs.getInt("Sale"));
+                product.setAverageRating(rs.getDouble("AverageRating"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
                     product.setSalePrice(Math.round(salePrice * 100.0) / 100.0);
@@ -62,7 +63,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
         try {
-            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.CreatedDate\n"
+            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.CreatedDate, p.AverageRating\n"
                     + "FROM Products p\n"
                     + "JOIN Categories c ON p.CategoryID = c.CategoryID\n"
                     + "WHERE p.isDeleted = 0";
@@ -81,6 +82,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setBrand(rs.getString("brand"));
                 product.setSale(rs.getInt("Sale"));
                 product.setCreatedDate(rs.getDate("CreatedDate"));
+                product.setAverageRating(rs.getDouble("AverageRating"));
                 product.setSalePrice(rs.getDouble("Price"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
@@ -885,7 +887,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
 
     public static void main(String[] args) {
         ProductDAO p = new ProductDAO();
-        List<Product> list = p.getDeletedProducts();
+        List<Product> list = p.getSaleProducts();
         for (int i = 0; i < list.size(); i++) {
             System.out.println(list.get(i));
         }

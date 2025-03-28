@@ -5,6 +5,7 @@
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -113,13 +114,13 @@
                                 <h3 class="aside-title">Loại sản phẩm</h3>
                                 <div class="checkbox-filter">
 
-                                <div class="input-checkbox">
-                                    <input type="checkbox" id="category-1" name="categories" value="Sneaker">
-                                    <label for="category-1">
-                                        <span></span>
-                                        Sneaker
-                                    </label>
-                                </div>
+                                    <div class="input-checkbox">
+                                        <input type="checkbox" id="category-1" name="categories" value="Sneaker">
+                                        <label for="category-1">
+                                            <span></span>
+                                            Sneaker
+                                        </label>
+                                    </div>
 
                                     <div class="input-checkbox">
                                         <input type="checkbox" id="category-2" name="categories" value="Oxford">
@@ -303,12 +304,20 @@
                                         <div class="product-body">
                                             <p class="product-category">${i.categoryName}</p>
                                             <h3 class="product-name"><a href="productDetail?id=${i.productID}">${i.productName}</a></h3>
-                                                <c:choose>
-                                                    <c:when test="${i.sale > 0}">
-                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
+                                            <c:choose>
+                                                <c:when test="${i.sale > 0}">
+                                                    <h4 class="product-price">
+                                                        <fmt:formatNumber value="${i.salePrice}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        <br>
+                                                        <del class="product-old-price">
+                                                            <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        </del>
+                                                    </h4>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <h4 class="product-price">$${i.price}</h4>
+                                                    <h4 class="product-price">
+                                                        <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                    </h4>
                                                 </c:otherwise>
                                             </c:choose>
                                             <div class="product-rating">

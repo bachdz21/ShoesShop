@@ -182,6 +182,35 @@
                 display: inline-block; /* Ensure the button is centered */
                 background-color: #D10024; /* Match the theme color */
             }
+            
+            .rating-stars {
+                display: inline-flex;
+                position: relative;
+            }
+
+            .rating-stars i {
+                font-size: 16px; /* Kích thước sao */
+                color: #D10024; /* Màu vàng cho sao đầy */
+            }
+
+            .rating-stars .star-wrapper {
+                position: relative;
+                display: inline-block;
+                width: 16px; /* Kích thước sao */
+                height: 16px;
+            }
+
+            .rating-stars .star-fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                overflow: hidden;
+                color: #D10024; /* Màu vàng cho phần đầy */
+            }
+
+            .rating-stars .star-empty {
+                color: #ccc; /* Màu xám cho phần rỗng */
+            }
         </style>
     </head>
 
@@ -292,37 +321,62 @@
 
                                     <div class="products-slick" data-nav="#slick-nav-sale">
                                         <!-- product -->
-                                        <c:forEach var="i" items="${requestScope.listSaleProducts}">
+                                        <c:forEach var="product" items="${requestScope.listSaleProducts}">
                                             <div class="product">
-                                                <a href="productDetail?id=${i.productID}&category=${i.categoryName}" class="product-img">
-                                                    <img src="${i.imageURL}" alt="">
+                                                <a href="productDetail?id=${product.productID}&category=${product.categoryName}" class="product-img">
+                                                    <img src="${product.imageURL}" alt="">
                                                     <div class="product-label">
-                                                        <span class="sale">-${i.sale}%</span>
+                                                        <span class="sale">-${product.sale}%</span>
                                                         <span class="new">Mới</span>
                                                     </div>
                                                 </a>
+                                                        
                                                 <div class="product-body">
-                                                    <p class="product-category">${i.categoryName}</p>
-                                                    <h3 class="product-name"><a href="productDetail?id=${i.productID}">${i.productName}</a></h3>
-                                                    <h4 class="product-price">$${i.salePrice} <del class="product-old-price">$${i.price}</del></h4>
-                                                    <div class="product-rating">
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
+                                                    <p class="product-category">${product.categoryName}</p>
+                                                    <h3 class="product-name"><a href="productDetail?id=${product.productID}">${product.productName}</a></h3>
+                                                    <h4 class="product-price">
+                                                        <fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        <br>
+                                                        <del class="product-old-price">
+                                                            <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        </del>
+                                                    </h4>
+                                                    <div class="rating-avg">
+                                                        <div class="rating-stars">
+                                                            <c:set var="rating" value="${product.averageRating}" />
+                                                            <c:set var="fullStars" value="${rating.intValue()}" /> <!-- Phần nguyên -->
+                                                            <c:set var="fraction" value="${rating - fullStars}" /> <!-- Phần thập phân -->
+                                                            <!-- Hiển thị sao đầy -->
+                                                            <c:forEach var="i" begin="1" end="${fullStars}">
+                                                                <i class="fa fa-star"></i>
+                                                            </c:forEach>
+                                                            <!-- Hiển thị sao phân số (nếu có) -->
+                                                            <c:if test="${fraction > 0}">
+                                                                <div class="star-wrapper">
+                                                                    <i class="fa fa-star star-empty"></i>
+                                                                    <div class="star-fill" style="width: ${fraction * 100}%;">
+                                                                        <i class="fa fa-star"></i>
+                                                                    </div>
+                                                                </div>
+                                                            </c:if>
+                                                            
+                                                            <!-- Hiển thị sao rỗng cho phần còn lại -->
+                                                            <c:forEach var="i" begin="${fullStars + (fraction > 0 ? 1 : 0) + 1}" end="5">
+                                                                <i class="fa fa-star-o"></i>
+                                                            </c:forEach>
+                                                        </div>
                                                     </div>
 
                                                     <!-- Kiểm tra nếu sản phẩm đã có trong wishlist -->
                                                     <c:set var="isInWishlist" value="false" />
                                                     <c:forEach var="item" items="${sessionScope.wishlist}">
-                                                        <c:if test="${item.product.productID == i.productID}">
+                                                        <c:if test="${item.product.productID == product.productID}">
                                                             <c:set var="isInWishlist" value="true" />
                                                         </c:if>
                                                     </c:forEach>
 
                                                     <form action="addWishlist" method="GET" style="display: inline-block">
-                                                        <input type="hidden" name="productID" value="${i.productID}">
+                                                        <input type="hidden" name="productID" value="${product.productID}">
                                                         <div class="product-btns">
                                                             <!-- Hiển thị icon trái tim đỏ nếu đã có trong wishlist, nếu không thì hiển thị trái tim trắng -->
                                                             <button class="add-to-wishlist">
@@ -339,8 +393,7 @@
 
                                                 <form action="addCartQuick" method="GET">
                                                     <div class="add-to-cart">
-                                                        <input type="hidden" name="quantity" value="1">
-                                                        <input type="hidden" name="productID" value="${i.productID}">
+                                                        <input type="hidden" name="productID" value="${product.productID}">
                                                         <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
                                                     </div>
                                                 </form>
@@ -368,8 +421,8 @@
         <div id="hot-deal" class="section">
             <!-- container -->
             <div class="container">
-                <!-- Icon Settings cho Employee -->
-                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+                <!-- Icon Settings cho Staff -->
+                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Staff'}">
                     <button class="settings-btn hot-deal-setting" onclick="openSettingsModal()">
                         <i class="fa fa-cog"></i>
                     </button>
@@ -397,7 +450,7 @@
         <!-- /container -->
 
         <!-- Modal Settings -->
-        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Staff'}">
             <div id="settingsModal" class="modal">
                 <div class="modal-content">
                     <span class="close" onclick="closeSettingsModal()">×</span>
@@ -435,8 +488,8 @@
         <div class="section">
             <!-- container -->
             <div class="container">
-                <!-- Icon Settings cho Employee -->
-                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+                <!-- Icon Settings cho Staff -->
+                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Staff'}">
                     <button class="settings-btn" onclick="openMostSoldSettingsModal()">
                         <i class="fa fa-cog"></i>
                     </button>
@@ -466,10 +519,17 @@
                                                 <h3 class="product-name"><a href="#">${product.productName}</a></h3>
                                                     <c:choose>
                                                         <c:when test="${product.sale > 0}">
-                                                        <h4 class="product-price">$${product.salePrice} <del class="product-old-price">$${product.price}</del></h4>
+                                                        <h4 class="product-price">
+                                                            <fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                            <del class="product-old-price">
+                                                                <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                            </del>
+                                                        </h4>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <h4 class="product-price">$${product.price}</h4>
+                                                        <h4 class="product-price">
+                                                            <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        </h4>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -487,10 +547,17 @@
                                                 <h3 class="product-name"><a href="#">${product.productName}</a></h3>
                                                     <c:choose>
                                                         <c:when test="${product.sale > 0}">
-                                                        <h4 class="product-price">$${product.salePrice} <del class="product-old-price">$${product.price}</del></h4>
+                                                        <h4 class="product-price">
+                                                            <fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                            <del class="product-old-price">
+                                                                <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                            </del>
+                                                        </h4>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <h4 class="product-price">$${product.price}</h4>
+                                                        <h4 class="product-price">
+                                                            <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        </h4>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -508,8 +575,8 @@
             </div>
             <!-- /container -->
 
-            <!-- Modal Settings cho Employee -->
-            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+            <!-- Modal Settings cho Staff -->
+            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Staff'}">
                 <div id="settingsMostSoldModal" class="modal">
                     <div class="modal-content">
                         <span class="close" onclick="closeMostSoldSettingsModal()">×</span>
@@ -617,8 +684,8 @@
                                                 const hotDealSection = document.getElementById("hot-deal");
                                                 const isTimeExpired = data.endTime ? updateCountdown(data.endTime) : true;
 
-                                                // Nếu thời gian hết và không phải Employee, ẩn Hot Deal
-                                                if (isTimeExpired && userRole !== "Employee") {
+                                                // Nếu thời gian hết và không phải Staff, ẩn Hot Deal
+                                                if (isTimeExpired && userRole !== "Staff") {
                                                     hotDealSection.style.display = "none";
                                                     return; // Thoát hàm nếu không hiển thị
                                                 } else {
@@ -635,8 +702,8 @@
                                                 document.getElementById("hot-deal-title").innerText = data.title ? data.title.toUpperCase() : "TIÊU ĐỀ";
                                                 document.getElementById("hot-deal-subtitle").innerText = data.subtitle || "Phụ Đề";
 
-                                                // Chỉ cập nhật các input trong modal nếu người dùng là Employee
-                                                if (userRole === "Employee") {
+                                                // Chỉ cập nhật các input trong modal nếu người dùng là Staff
+                                                if (userRole === "Staff") {
                                                     document.getElementById("hot-deal-title-input").value = data.title || "TIÊU ĐỀ";
                                                     document.getElementById("hot-deal-subtitle-input").value = data.subtitle || "Phụ Đề";
                                                     document.getElementById("hot-deal-endtime").value = data.endTime ? data.endTime.slice(0, 16) : "";

@@ -31,7 +31,14 @@ public class CartItem {
         this.color = color;
         this.size = size;
     }
-
+    
+    public CartItem(int cartItemId, int cartItemId0, int quantity, Date addedDate, Product product) {
+        this.cartItemId = cartItemId;
+        this.quantity = quantity;
+        this.addedDate = addedDate;
+        this.product = product;
+    }
+    
     public int getCartItemId() {
         return cartItemId;
     }

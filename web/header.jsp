@@ -77,7 +77,7 @@
                     <div class="header-search">
                         <form action="search" method="get">
                             <select class="input-select" name="category">
-                                <option value="">All</option>
+                                <option value="">Tất Cả</option>
                                 <option value="Sneaker">Giày Thể Thao</option>
                                 <option value="Oxford">Oxford</option>
                                 <option value="Boot">Boot</option>
@@ -188,8 +188,8 @@
     <!-- /MAIN HEADER -->
 
     <!-- Thêm box chat ở cuối header -->
-    <% if (user != null && "Employee".equals(user.getRole())) { %>
-    <jsp:include page="employee_chat.jsp"/>
+    <% if (user != null && "Staff".equals(user.getRole())) { %>
+    <jsp:include page="staff_chat.jsp"/>
     <% } else if (user != null && "Customer".equals(user.getRole())) { %>
     <jsp:include page="customer_chat.jsp"/>
     <% } %>

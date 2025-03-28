@@ -95,7 +95,7 @@ public class ProductController extends HttpServlet {
         // Lấy danh sách danh mục được chọn hiển thị
         List<Category> displayedCategories = categoryDAO.getDisplayedCategories();
 
-        // Lấy tất cả danh mục để hiển thị trong modal (dành cho Employee)
+        // Lấy tất cả danh mục để hiển thị trong modal (dành cho Staff)
         List<Category> allCategories = categoryDAO.getAllCategories();
 
         // Tạo một Map để lưu danh sách sản phẩm bán chạy nhất theo từng danh mục
@@ -117,7 +117,7 @@ public class ProductController extends HttpServlet {
     protected void showUpdateDisplayedCategoriesForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (request.getSession().getAttribute("user") != null && 
-            "Employee".equals(((User) request.getSession().getAttribute("user")).getRole())) {
+            "Staff".equals(((User) request.getSession().getAttribute("user")).getRole())) {
             List<Category> allCategories = categoryDAO.getAllCategories();
             List<Category> displayedCategories = categoryDAO.getDisplayedCategories();
             request.setAttribute("allCategories", allCategories);
@@ -131,7 +131,7 @@ public class ProductController extends HttpServlet {
     protected void updateDisplayedCategories(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (request.getSession().getAttribute("user") != null && 
-            "Employee".equals(((User) request.getSession().getAttribute("user")).getRole())) {
+            "Staff".equals(((User) request.getSession().getAttribute("user")).getRole())) {
             String[] selectedCategories = request.getParameterValues("selectedCategories");
             List<Integer> selectedCategoryIds = new ArrayList<>();
             if (selectedCategories != null) {

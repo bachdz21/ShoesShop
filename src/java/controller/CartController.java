@@ -252,7 +252,6 @@ public class CartController extends HttpServlet {
     protected void addCartQuick(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int productId = Integer.parseInt(request.getParameter("productID"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -260,7 +259,7 @@ public class CartController extends HttpServlet {
             return;
         }
         int userId = user.getUserId();
-        cartDAO.addCartItem(userId, productId, quantity);
+        cartDAO.addCartItem(userId, productId, 1);
         List<CartItem> updatedCart = cartDAO.getCartItems(userId);
         updateCartInSession(request, updatedCart);
         response.sendRedirect("cart");
