@@ -130,9 +130,6 @@ public class UserController extends HttpServlet {
             case "/activeCustomers":
                 getActiveCustomers(request, response);
                 break;
-            case "/customerBehavior":
-                getCustomerBehavior(request, response);
-                break;
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -179,10 +176,6 @@ public class UserController extends HttpServlet {
             case "/addShippingInformation":
                 addShippingInformation(request, response);// get confirmOrder
                 break;
-            case "/activeCustomers":
-                exportActiveCustomers(request, response);
-                break;
-
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -1522,77 +1515,4 @@ public class UserController extends HttpServlet {
         // }
         // }
     }
-
-    protected void userDetail(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User admin = (User) session.getAttribute("user");
-        if (admin == null || (!admin.getRole().equals("Admin") && !admin.getRole().equals("Staff"))) {
-            response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
-            return;
-        }
-        // Lấy các tham số từ form
-        String orderCode = request.getParameter("orderCode");
-        String shippingAddress = request.getParameter("shippingAddress");
-        String paymentMethod = request.getParameter("paymentMethod");
-        String sortBy = request.getParameter("sortBy");
-        String fromDate = request.getParameter("fromDate");
-        String toDate = request.getParameter("toDate");
-        String minPriceStr = request.getParameter("minPrice");
-        String maxPriceStr = request.getParameter("maxPrice");
-
-        // Xử lý giá trị minPrice và maxPrice
-        Double minPrice = (minPriceStr != null && !minPriceStr.isEmpty()) ? Double.parseDouble(minPriceStr) : null;
-        Double maxPrice = (maxPriceStr != null && !maxPriceStr.isEmpty()) ? Double.parseDouble(maxPriceStr) : null;
-
-        // Xử lý phương thức thanh toán
-        String selectedPaymentMethod = null;
-        if ("Chuyển Khoản Ngân Hàng".equals(paymentMethod)) {
-            selectedPaymentMethod = "Chuyển Khoản Ngân Hàng";
-        } else if ("Thẻ Tín Dụng".equals(paymentMethod)) {
-            selectedPaymentMethod = "Thẻ Tín Dụng";
-        } else if ("Tiền Mặt Khi Nhận Hàng".equals(paymentMethod)) {
-            selectedPaymentMethod = "Tiền Mặt Khi Nhận Hàng";
-        }
-
-        // Xử lý sắp xếp
-        String orderBy = null;
-        if ("priceDesc".equals(sortBy)) {
-            orderBy = "TotalAmount DESC";
-        } else if ("priceAsc".equals(sortBy)) {
-            orderBy = "TotalAmount ASC";
-        } else {
-            orderBy = "OrderDate DESC";
-        }
-
-        int userId = Integer.parseInt(request.getParameter("userId"));
-        User user = userDAO.getUserById(userId);
-        List<Order> orders = orderDAO.getOrdersByUserId(
-                userId,
-                orderCode, shippingAddress,
-                selectedPaymentMethod,
-                fromDate,
-                toDate,
-                minPrice,
-                maxPrice,
-                orderBy);
-
-        // Gửi dữ liệu sang JSP (bao gồm các giá trị đã nhập)
-        request.setAttribute("orders", orders);
-        request.setAttribute("orderCode", orderCode);
-        request.setAttribute("shippingAddress", shippingAddress);
-
-        request.setAttribute("paymentMethod", paymentMethod);
-        request.setAttribute("sortBy", sortBy);
-        request.setAttribute("fromDate", fromDate);
-        request.setAttribute("toDate", toDate);
-        request.setAttribute("minPrice", minPriceStr); // Giữ nguyên chuỗi để hiển thị
-        request.setAttribute("maxPrice", maxPriceStr); // Giữ nguyên chuỗi để hiển thị
-
-        // request.getRequestDispatcher("userOrder.jsp").forward(request, response);
-        request.setAttribute("user", user);
-        request.setAttribute("orders", orders);
-        request.getRequestDispatcher("userDetail.jsp").forward(request, response);
-    }
-
 }

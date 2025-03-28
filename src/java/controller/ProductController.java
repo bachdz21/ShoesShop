@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import model.Category;
+import model.ProductVariant;
 import model.Review;
 
 @WebServlet(name = "ProductController", urlPatterns = {"/product", "/home", "/search", "/list", "/add", "/edit", "/update",
@@ -43,7 +44,6 @@ import model.Review;
 public class ProductController extends HttpServlet {
     private ReviewDAO reviewDAO = new ReviewDAO();
     IProductDAO productDAO = new ProductDAO();
-    ReviewDAO reviewDAO = new ReviewDAO();
     ICategoryDAO categoryDAO = new CategoryDAO();
     
     private static final String IMAGE_UPLOAD_DIR = "D:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
@@ -69,8 +69,6 @@ public class ProductController extends HttpServlet {
             showTrash(request, response);
         } else if (request.getServletPath().equals("/restore")) {
             restoreProduct(request, response);
-        } else if (request.getServletPath().equals("/deleteTrash")) {
-            deleteTrash(request, response);
         } else if (request.getServletPath().equals("/productDetail")) {
             productDetail(request, response);
         } else if (request.getServletPath().equals("/deleteMultipleProducts")) {
@@ -653,9 +651,7 @@ public class ProductController extends HttpServlet {
     protected void getAction(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        if ("deleteMultiple".equals(action)) {
-            deleteMultiTrash(request, response);
-        } else if ("restoreMultiple".equals(action)) {
+        if ("restoreMultiple".equals(action)) {
             restoreMultiple(request, response);
         }
     }
@@ -732,8 +728,6 @@ public class ProductController extends HttpServlet {
             showTrash(request, response);
         } else if (request.getServletPath().equals("/restore")) {
             restoreProduct(request, response);
-        } else if (request.getServletPath().equals("/deleteTrash")) {
-            deleteTrash(request, response);
         } else if (request.getServletPath().equals("/productDetail")) {
             productDetail(request, response);
         } else if (request.getServletPath().equals("/deleteMultipleProducts")) {

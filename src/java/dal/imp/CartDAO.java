@@ -324,4 +324,9 @@ public class CartDAO extends DBConnect implements ICartDAO {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void addCartItemWithVariant(int userId, int productId, int quantity, String size, String color) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
