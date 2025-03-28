@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Product;
+import model.ProductVariant;
 import model.User;
 
 /**
@@ -33,4 +34,5 @@ public interface IProductDAO {
     List<Product> getRelativeProducts(String category);
     List<Product> getMostSoldProducts(String categoryName);
     List<Integer> getProductRatings(int productID);
+    List<ProductVariant> getProductVariantsByProductId(int productId);
 }

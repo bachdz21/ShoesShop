@@ -113,13 +113,13 @@
                                 <h3 class="aside-title">Loại sản phẩm</h3>
                                 <div class="checkbox-filter">
 
-                                    <div class="input-checkbox">
-                                        <input type="checkbox" id="category-1" name="categories" value="Sneakers">
-                                        <label for="category-1">
-                                            <span></span>
-                                            Sneakers
-                                        </label>
-                                    </div>
+                                <div class="input-checkbox">
+                                    <input type="checkbox" id="category-1" name="categories" value="Sneaker">
+                                    <label for="category-1">
+                                        <span></span>
+                                        Sneaker
+                                    </label>
+                                </div>
 
                                     <div class="input-checkbox">
                                         <input type="checkbox" id="category-2" name="categories" value="Oxford">

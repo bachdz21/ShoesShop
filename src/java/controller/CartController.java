@@ -222,6 +222,15 @@ public class CartController extends HttpServlet {
         }
         int userId = user.getUserId();
         List<CartItem> listCartItem = cartDAO.getCartItems(userId);
+        System.out.println("Fetched " + listCartItem.size() + " items for UserID: " + userId);
+        if (listCartItem.isEmpty()) {
+            System.out.println("No items found in cart for UserID: " + userId);
+        } else {
+            for (CartItem item : listCartItem) {
+                System.out.println("CartItem: ProductID=" + item.getProduct().getProductID() + 
+                                   ", Size=" + item.getSize() + ", Color=" + item.getColor());
+            }
+        }
         request.setAttribute("listCartItem", listCartItem);
         request.getRequestDispatcher("cart.jsp").forward(request, response);
     }
@@ -278,6 +287,8 @@ public class CartController extends HttpServlet {
             throws ServletException, IOException {
         int productId = Integer.parseInt(request.getParameter("productID"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
+        String selectedSize = request.getParameter("selectedSize");
+        String selectedColor = request.getParameter("selectedColor");        
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -285,7 +296,7 @@ public class CartController extends HttpServlet {
             return;
         }
         int userId = user.getUserId();
-        cartDAO.addCartItem(userId, productId, quantity);
+        cartDAO.addCartItemWithVariant(userId, productId, quantity, selectedSize, selectedColor);
         List<CartItem> updatedCart = cartDAO.getCartItems(userId);
         updateCartInSession(request, updatedCart);
         request.getRequestDispatcher("cartItem").forward(request, response);

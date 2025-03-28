@@ -41,7 +41,7 @@
     <style>
         .sidebar {
     position: fixed;
-    margin-top: 140px;
+    margin-top: 10px;
     width: 250px;
     height: 100vh;
     overflow-y: auto;
@@ -51,8 +51,8 @@
 }
 
 .content {
-    margin-left: -1600px;
-    margin-top: 140px;
+    margin-left: 278px;
+    margin-top: 60px;
     min-height: 100vh;
     background: var(--dark);
     transition: 0.5s;
@@ -80,16 +80,18 @@ a {
             }
     </style>
     </head>
-        <%@page import="model.User"%>
-        <%@page import="model.CartItem"%>
-        <%@ page import="java.util.List" %>
-
-        <%@page import="jakarta.servlet.http.HttpSession"%>
-        <%
-            // Sử dụng biến session từ request mà không cần khai báo lại
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ page contentType="text/html; charset=UTF-8" %>
+    <%@page import="model.User" %>
+    <%@page import="model.CartItem" %>
+    <%@page import="model.WishlistItem" %>
+    <%@ page import="java.util.List" %>
+    <%@ page import="java.util.Calendar" %>
+    <%@page import="jakarta.servlet.http.HttpSession"%>
+    <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+    <%
+        // Sử dụng biến session từ request mà không cần khai báo lại
             User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
-        %>
-        <% 
         // Lấy danh sách sản phẩm trong giỏ hàng từ session
         List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
         int totalQuantity = 0;
@@ -97,10 +99,22 @@ a {
         if (cartItems != null) {
             for (CartItem item : cartItems) {
                 totalQuantity += item.getQuantity();
-                subtotal += item.getProduct().getPrice() * item.getQuantity();
+                subtotal += item.getProduct().getSalePrice() * item.getQuantity();
             }
         }
-        %>
+        // Lấy danh sách wishlist từ session
+        List<WishlistItem> wishlistItems = (List<WishlistItem>) session.getAttribute("wishlist");
+        int total = 0;
+        if (wishlistItems != null) {
+            for (WishlistItem item : wishlistItems) {
+                total += 1;
+            }
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+    %>  
     <body>
         <div class="container-fluid position-relative d-flex p-0">
             <!-- Spinner Start -->
@@ -115,19 +129,34 @@ a {
             <!-- Sidebar Start -->
             <div class="sidebar pe-4 pb-3">
                 <nav class="navbar bg-secondary navbar-dark">
+                    
                     <div class="navbar-nav w-100">
-                        <a href="revenue?year=2025&month=3" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
+                    <a href="home" class="navbar-brand mx-5 mb-3">
+                        <h3 class="text-primary"><i class=""></i>ShoeShop</h3>
+                    </a>
+                    <div class="d-flex align-items-center ms-4 mb-4">
+                        <div class="position-relative">
+                            <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                            <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+                        </div>
+                        <div class="ms-3">
+                            <h6 style="color: red" class="mb-0"><%= user.getUsername() %></h6>
+                            <span style="color: red">Admin</span>
+                        </div>
+                    </div>
+                        <a href="/ShoesStoreWed/revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Danh Sách</a>
                             <div class="dropdown-menu bg-transparent border-0">
-                                <a href="#" class="dropdown-item">Danh sách đơn hàng</a>
-                                <a href="list" class="dropdown-item">Danh sách sản phẩm</a>
-                                <a href="#" class="dropdown-item">Khác</a>
+                                <a href="getAllOrders" class="dropdown-item">Danh Sách Đơn Hàng</a>
+                                <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
+                                <a href="activeCustomers" class="dropdown-item">Khác</a>
                             </div>
                         </div>
-                        <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link active"><i class="fa fa-chart-bar me-2"></i>Charts</a>
+                        <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Biểu Đồ</a>
+                        <a href="activeCustomers" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Hoạt Động</a>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Trang</a>
                             <div class="dropdown-menu bg-transparent border-0">
                                 <a href="#" class="dropdown-item">Sign In</a>
                                 <a href="#" class="dropdown-item">Sign Up</a>
@@ -138,7 +167,7 @@ a {
             </div>
             <!-- Sidebar End -->
 
-            <jsp:include page="header.jsp" />
+            
             <!-- Content Start -->
             <div style="background-color: white" class="content">
                 <!-- Chart Start -->
@@ -183,7 +212,6 @@ a {
                                 <canvas id="revenueChart" height="100"></canvas>
                             </div>
                         </div>
-                        <jsp:include page="footer.jsp" />
                         <!--                    <div class="col-sm-12 col-xl-6">
                                                 <div class="bg-secondary rounded h-100 p-4">
                                                     <h6 class="mb-4">Multiple Line Chart</h6>

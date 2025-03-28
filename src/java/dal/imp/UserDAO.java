@@ -17,12 +17,16 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.sql.Date;
 
 // Vì class này thực hiện thao tác trên database => Ta phải có 1 cái connections => kết nối đến database
 import java.util.*;
+import model.CartStat;
 import model.Order;
 import model.OrderContact;
+import model.ReviewStat;
 import model.User;
+import model.WishlistStat;
 
 // UserDAO => Đã có connections
 public class UserDAO extends DBConnect implements IUserDAO {
@@ -599,6 +603,197 @@ public List<User> filterBanUsers(String username, String fullName, String email,
         return orderContact; // Trả về đối tượng OrderContact nếu tìm thấy, ngược lại trả về null
     }
 
-   
+    @Override
+    public List<User> getActiveCustomers(String search, String startDate, String endDate, String sortBy) {
+        List<User> customers = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+            "SELECT u.UserID, u.Username, u.FullName, u.Email, u.ProfileImageURL, u.RegistrationDate, " +
+            "COUNT(DISTINCT o.OrderID) AS TotalOrders, " +
+            "COUNT(ci.CartItemID) AS CartItemsCount " +
+            "FROM Users u " +
+            "LEFT JOIN Orders o ON u.UserID = o.UserID " +
+            "LEFT JOIN Cart c ON u.UserID = c.UserID " +
+            "LEFT JOIN CartItems ci ON c.CartID = ci.CartID " +
+            "WHERE u.Role = 'Customer' AND u.locked = 0 "
+        );
 
+        // Add search condition
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append("AND u.FullName LIKE ? ");
+        }
+
+        // Add date range condition only if both dates are valid
+        boolean hasValidDates = startDate != null && !startDate.trim().isEmpty() && 
+                               endDate != null && !endDate.trim().isEmpty();
+        if (hasValidDates) {
+            sql.append("AND (o.OrderDate BETWEEN ? AND ? OR ci.AddedDate BETWEEN ? AND ?) ");
+        }
+
+        // Group and Order By clause (fixed grouping to include all non-aggregated columns)
+        sql.append("GROUP BY u.UserID, u.Username, u.FullName, u.Email, u.ProfileImageURL, u.RegistrationDate ");
+        sql.append("ORDER BY ");
+        if (sortBy != null && sortBy.equals("total_orders")) {
+            sql.append("TotalOrders DESC");
+        } else {
+            sql.append("(COUNT(DISTINCT o.OrderID) + COUNT(ci.CartItemID)) DESC");
+        }
+
+        try (PreparedStatement stmt = c.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+
+            // Set search parameter
+            if (search != null && !search.trim().isEmpty()) {
+                stmt.setString(paramIndex++, "%" + search + "%");
+            }
+
+            // Set date parameters only if valid
+            if (hasValidDates) {
+                stmt.setDate(paramIndex++, Date.valueOf(startDate));
+                stmt.setDate(paramIndex++, Date.valueOf(endDate));
+                stmt.setDate(paramIndex++, Date.valueOf(startDate));
+                stmt.setDate(paramIndex++, Date.valueOf(endDate));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setUsername(rs.getString("Username"));
+                user.setFullName(rs.getString("FullName"));
+                user.setEmail(rs.getString("Email"));
+                user.setProfileImageURL(rs.getString("ProfileImageURL")); // Set the avatar URL
+                user.setRegistrationDate(rs.getDate("RegistrationDate")); // Set the registration date
+                user.setTotalOrders(rs.getInt("TotalOrders"));
+                user.setCartItemsCount(rs.getInt("CartItemsCount"));
+                customers.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
+    @Override
+    public List<User> getNewCustomers(int limit) {
+        List<User> newCustomers = new ArrayList<>();
+        String sql = "SELECT TOP (?) u.UserID, u.Username, u.FullName, u.Email, u.ProfileImageURL, u.RegistrationDate, " +
+                     "COUNT(DISTINCT o.OrderID) AS TotalOrders, " +
+                     "COUNT(ci.CartItemID) AS CartItemsCount " +
+                     "FROM Users u " +
+                     "LEFT JOIN Orders o ON u.UserID = o.UserID " +
+                     "LEFT JOIN Cart c ON u.UserID = c.UserID " +
+                     "LEFT JOIN CartItems ci ON c.CartID = ci.CartID " +
+                     "WHERE u.Role = 'Customer' AND u.locked = 0 " +
+                     "GROUP BY u.UserID, u.Username, u.FullName, u.Email, u.ProfileImageURL, u.RegistrationDate " +
+                     "ORDER BY u.RegistrationDate DESC";
+
+        try (PreparedStatement stmt = c.prepareStatement(sql)) {
+            stmt.setInt(1, limit);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setUsername(rs.getString("Username"));
+                user.setFullName(rs.getString("FullName"));
+                user.setEmail(rs.getString("Email"));
+                user.setProfileImageURL(rs.getString("ProfileImageURL"));
+                user.setRegistrationDate(rs.getDate("RegistrationDate"));
+                user.setTotalOrders(rs.getInt("TotalOrders"));
+                user.setCartItemsCount(rs.getInt("CartItemsCount"));
+                newCustomers.add(user);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving new customers", e);
+        }
+        return newCustomers;
+    }
+    
+public List<CartStat> getCartStats(String startDate, String endDate) {
+    List<CartStat> cartStats = new ArrayList<>();
+    String sql = "SELECT p.ProductName, p.brand AS Brand, COUNT(ci.CartItemID) AS AddToCartCount, " +
+                 "SUM(ci.Quantity) AS TotalQuantity " +
+                 "FROM CartItems ci " +
+                 "JOIN Products p ON ci.ProductID = p.ProductID " +
+                 "WHERE ci.AddedDate BETWEEN ISNULL(?, '1900-01-01') AND ISNULL(?, GETDATE()) " +
+                 "GROUP BY p.ProductName, p.brand " +
+                 "ORDER BY AddToCartCount DESC";
+
+    try (PreparedStatement ps = c.prepareStatement(sql)) {
+        ps.setString(1, startDate);
+        ps.setString(2, endDate);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            CartStat stat = new CartStat(
+                rs.getString("ProductName"),
+                rs.getString("Brand"),
+                rs.getInt("AddToCartCount"),
+                rs.getDouble("TotalQuantity") // Thay vì AvgQuantity, dùng TotalQuantity
+            );
+            cartStats.add(stat);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return cartStats;
+}
+
+    @Override
+    public List<WishlistStat> getWishlistStats(String startDate, String endDate) {
+        List<WishlistStat> wishlistStats = new ArrayList<>();
+        String sql = "SELECT p.ProductName, c.CategoryName, COUNT(wi.WishlistItemID) AS WishlistCount " +
+                     "FROM WishlistItems wi " +
+                     "JOIN Products p ON wi.ProductID = p.ProductID " +
+                     "JOIN Categories c ON p.CategoryID = c.CategoryID " +
+                     "WHERE (wi.AddedDate BETWEEN ISNULL(?, '1900-01-01') AND ISNULL(?, GETDATE()) OR wi.AddedDate IS NULL) " +
+                     "GROUP BY p.ProductName, c.CategoryName " +
+                     "ORDER BY WishlistCount DESC";
+
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, startDate);
+            ps.setString(2, endDate);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                WishlistStat stat = new WishlistStat(
+                    rs.getString("ProductName"),
+                    rs.getString("CategoryName"),
+                    rs.getInt("WishlistCount")
+                );
+                wishlistStats.add(stat);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return wishlistStats;
+    }
+
+    @Override
+    public List<ReviewStat> getReviewStats(String startDate, String endDate) {
+        List<ReviewStat> reviewStats = new ArrayList<>();
+        String sql = "SELECT p.ProductName, AVG(CAST(r.Rating AS FLOAT)) AS AvgRating, " +
+                     "COUNT(r.ReviewID) AS ReviewCount, " +
+                     "(SUM(CASE WHEN r.Rating >= 4 THEN 1 ELSE 0 END) * 100.0 / COUNT(r.ReviewID)) AS SatisfactionRate " +
+                     "FROM Reviews r " +
+                     "JOIN Products p ON r.ProductID = p.ProductID " +
+                     "WHERE r.ReviewDate BETWEEN ISNULL(?, '1900-01-01') AND ISNULL(?, GETDATE()) " +
+                     "GROUP BY p.ProductName " +
+                     "ORDER BY ReviewCount DESC";
+
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, startDate);
+            ps.setString(2, endDate);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ReviewStat stat = new ReviewStat(
+                    rs.getString("ProductName"),
+                    rs.getDouble("AvgRating"),
+                    rs.getInt("ReviewCount"),
+                    rs.getDouble("SatisfactionRate")
+                );
+                reviewStats.add(stat);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reviewStats;
+    }
 }

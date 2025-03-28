@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,10 +38,10 @@ import model.Review;
 
 @WebServlet(name = "ProductController", urlPatterns = {"/product", "/home", "/search", "/list", "/add", "/edit", "/update",
     "/deleteProduct", "/trash", "/restore", "/deleteTrash", "/productDetail", "/deleteMultipleProducts", "/productAction", "/sortProduct",
-    "/updateDisplayedCategories"})
+    "/updateDisplayedCategories", "/searchAdmin"})
 @MultipartConfig
 public class ProductController extends HttpServlet {
-
+    private ReviewDAO reviewDAO = new ReviewDAO();
     IProductDAO productDAO = new ProductDAO();
     ReviewDAO reviewDAO = new ReviewDAO();
     ICategoryDAO categoryDAO = new CategoryDAO();
@@ -56,8 +57,6 @@ public class ProductController extends HttpServlet {
             getFilteredSortedPagedProducts(request, response);
         } else if (request.getServletPath().equals("/search")) {
             search(request, response);
-        } else if (request.getServletPath().equals("/list")) {
-            getAllProduct(request, response);
         } else if (request.getServletPath().equals("/add")) {
             addProduct(request, response);
         } else if (request.getServletPath().equals("/edit")) {
@@ -80,10 +79,11 @@ public class ProductController extends HttpServlet {
             getAction(request, response);
         } else if (request.getServletPath().equals("/updateDisplayedCategories")) {
             updateDisplayedCategories(request, response);
+        } else if (request.getServletPath().equals("/list")) {
+            filterProductList(request, response);      
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }
-
     }
 
     protected void getHomeProducts(HttpServletRequest request, HttpServletResponse response)
@@ -214,71 +214,89 @@ public class ProductController extends HttpServlet {
         request.getRequestDispatcher("store.jsp").forward(request, response);
     }
 
-    protected void getAllProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        List<Product> list = productDAO.getAllProducts();
-        User user = (User) session.getAttribute("user");
-
-        if (user == null || !user.getRole().equals("Admin")) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-        request.setAttribute("list", list);
-        request.getRequestDispatcher("productList2.jsp").forward(request, response);
-    }
-
     protected void addProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productName = request.getParameter("productName");
         String description = request.getParameter("description");
-        double price = Double.parseDouble(request.getParameter("price"));
+        String priceParam = request.getParameter("price");
         String saleParam = request.getParameter("sale");
-        int sale = 0; // Giá trị mặc định
-        if (saleParam != null && !saleParam.isEmpty()) {
-            sale = Integer.parseInt(saleParam);
-        }
-        int stock = Integer.parseInt(request.getParameter("stock"));
+        String stockParam = request.getParameter("stock");
         String category = request.getParameter("category");
         String otherCategory = request.getParameter("otherCategory");
-
-        // Nếu chọn "Khác", sử dụng giá trị nhập vào
-        if ("Khác".equals(category) && otherCategory != null && !otherCategory.isEmpty()) {
-            category = otherCategory; // Thay đổi danh mục thành giá trị nhập vào
-        }
         String brand = request.getParameter("brand");
 
-        // Xử lý ảnh
-        Collection<Part> fileParts = request.getParts(); // Lấy tất cả các tệp được tải lên
-        List<String> imageUrls = new ArrayList<>();
+        // Kiểm tra input không được để trống
+        if (productName == null || productName.trim().isEmpty() ||
+            priceParam == null || priceParam.trim().isEmpty() ||
+            stockParam == null || stockParam.trim().isEmpty() ||
+            brand == null || brand.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin sản phẩm.");
+            request.getRequestDispatcher("/addProduct2.jsp").forward(request, response);
+            return;
+        }
 
-        for (Part filePart : fileParts) {
-            if (filePart.getName().equals("images") && filePart.getSize() > 0) {
-                String fileName = UUID.randomUUID().toString() + ".jpg"; // Tên tệp hình ảnh duy nhất
-                File imageFile = new File(IMAGE_UPLOAD_DIR, fileName);
-                filePart.write(imageFile.getAbsolutePath());
-                String imageUrl = "/img/" + fileName;
+        try {
+            double price = Double.parseDouble(priceParam);
+            int stock = Integer.parseInt(stockParam);
+            int sale = (saleParam != null && !saleParam.isEmpty()) ? Integer.parseInt(saleParam) : 0;
 
-                // Thêm vào danh sách ảnh
-                imageUrls.add(imageUrl);
+            // Kiểm tra số không được âm
+            if (price < 0 || stock < 0 || sale < 0) {
+                request.setAttribute("error", "Giá, số lượng và giảm giá không được là số âm.");
+                request.getRequestDispatcher("/addProduct2.jsp").forward(request, response);
+                return;
             }
-        }
 
-        // Tạo và lưu sản phẩm
-        Product newProduct = new Product();
-        newProduct.setProductName(productName);
-        newProduct.setDescription(description);
-        newProduct.setPrice(price);
-        newProduct.setStock(stock);
-        newProduct.setCategoryName(category); // Ghi danh mục sản phẩm
-        // Lưu ảnh chính và ảnh chi tiết
-        if (!imageUrls.isEmpty()) {
-            newProduct.setImageURL(imageUrls.get(0)); // Ảnh chính là ảnh đầu tiên
-            newProduct.setImageURLDetail(imageUrls.subList(1, imageUrls.size())); // Ảnh chi tiết là các ảnh còn lại
+            // Kiểm tra sale không vượt quá 100
+            if (sale > 100) {
+                request.setAttribute("error", "Giảm giá không được vượt quá 100%.");
+                request.getRequestDispatcher("/addProduct2.jsp").forward(request, response);
+                return;
+            }
+
+            // Nếu chọn "Khác", sử dụng giá trị nhập vào
+            if ("Khác".equals(category) && otherCategory != null && !otherCategory.trim().isEmpty()) {
+                category = otherCategory;
+            }
+
+            // Xử lý ảnh
+            Collection<Part> fileParts = request.getParts();
+            List<String> imageUrls = new ArrayList<>();
+
+            for (Part filePart : fileParts) {
+                if (filePart.getName().equals("images") && filePart.getSize() > 0) {
+                    String fileName = UUID.randomUUID().toString() + ".jpg";
+                    File imageFile = new File(IMAGE_UPLOAD_DIR, fileName);
+                    filePart.write(imageFile.getAbsolutePath());
+                    String imageUrl = "./img/" + fileName;
+                    imageUrls.add(imageUrl);
+                }
+            }
+
+            // Tạo và lưu sản phẩm
+            Product newProduct = new Product();
+            newProduct.setProductName(productName);
+            newProduct.setDescription(description);
+            newProduct.setPrice(price);
+            newProduct.setStock(stock);
+            newProduct.setCategoryName(category);
+            newProduct.setSale(sale);
+            newProduct.setBrand(brand);
+
+            // Lưu ảnh chính và ảnh chi tiết
+            if (!imageUrls.isEmpty()) {
+                newProduct.setImageURL(imageUrls.get(0)); // Ảnh chính
+                newProduct.setImageURLDetail(imageUrls.subList(1, imageUrls.size())); // Ảnh chi tiết
+            }
+
+            productDAO.addProduct(newProduct);
+            response.sendRedirect("./list");
+
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Vui lòng nhập số hợp lệ cho giá, số lượng và giảm giá.");
+            request.getRequestDispatcher("/addProduct2.jsp").forward(request, response);
         }
-        newProduct.setSale(sale);
-        newProduct.setBrand(brand);
-        productDAO.addProduct(newProduct);
-        response.sendRedirect("./list");
     }
+
 
     protected void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String idParam = request.getParameter("id");
@@ -289,7 +307,17 @@ public class ProductController extends HttpServlet {
     }
 
     protected void editProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy thông tin từ form
+        // Validate the product first
+        if (!validateProduct(request, response)) {
+            // If validation fails, forward back to the edit form with error messages
+            int productId = Integer.parseInt(request.getParameter("productId"));
+            Product product = productDAO.getProductById(productId);
+            request.setAttribute("product", product);
+            request.getRequestDispatcher("updateProduct.jsp").forward(request, response);
+            return;
+        }
+
+        // If validation passes, proceed with updating the product
         int productId = Integer.parseInt(request.getParameter("productId"));
         String productName = request.getParameter("productName");
         String description = request.getParameter("description");
@@ -305,22 +333,21 @@ public class ProductController extends HttpServlet {
         String otherCategory = request.getParameter("otherCategory");
 
         // Nếu chọn "Khác", sử dụng giá trị nhập vào
-        if ("Khác".equals(category) && otherCategory != null && !otherCategory.isEmpty()) {
+        if ("Other".equals(category) && otherCategory != null && !otherCategory.isEmpty()) {
             category = otherCategory; // Thay đổi danh mục thành giá trị nhập vào
         }
+
         String brand = request.getParameter("brand");
 
         // Xử lý ảnh
         Collection<Part> fileParts = request.getParts(); // Lấy tất cả các tệp được tải lên
         List<String> imageUrls = new ArrayList<>();
-
         for (Part filePart : fileParts) {
             if (filePart.getName().equals("images") && filePart.getSize() > 0) {
                 String fileName = UUID.randomUUID().toString() + ".jpg"; // Tên tệp hình ảnh duy nhất
                 File imageFile = new File(IMAGE_UPLOAD_DIR, fileName);
                 filePart.write(imageFile.getAbsolutePath());
                 String imageUrl = "./img/" + fileName;
-
                 // Thêm vào danh sách ảnh
                 imageUrls.add(imageUrl);
             }
@@ -335,10 +362,9 @@ public class ProductController extends HttpServlet {
         if (!imageUrls.isEmpty()) {
             // Xóa các ảnh cũ
             deleteImages(existingProduct);
-
             // Cập nhật ảnh mới
             imageUrl = imageUrls.get(0); // Ảnh chính là ảnh đầu tiên
-            imageURLDetail = imageUrls.subList(1, imageUrls.size()); // Ảnh chi tiết là các ảnh còn lại
+            imageURLDetail = imageUrls.size() > 1 ? imageUrls.subList(1, imageUrls.size()) : new ArrayList<>(); // Ảnh chi tiết là các ảnh còn lại
         }
 
         // Tạo đối tượng Product mới với thông tin đã cập nhật
@@ -360,6 +386,101 @@ public class ProductController extends HttpServlet {
 
         // Chuyển hướng về trang danh sách sản phẩm sau khi cập nhật thành công
         response.sendRedirect("list");
+    }
+    
+    private boolean validateProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String productName = request.getParameter("productName");
+        String price = request.getParameter("price");
+        String sale = request.getParameter("sale");
+        String stock = request.getParameter("stock");
+        String category = request.getParameter("category");
+        String brand = request.getParameter("brand");
+        String otherCategory = request.getParameter("otherCategory");
+
+        boolean isValid = true;
+        String errorMessage = "";
+
+        // Validate ProductName (not empty)
+        if (productName == null || productName.trim().isEmpty()) {
+            errorMessage += "Tên sản phẩm không được để trống.<br>";
+            isValid = false;
+        }
+
+        // Validate Price (not empty, numeric, and non-negative)
+        if (price == null || price.trim().isEmpty()) {
+            errorMessage += "Giá không được để trống.<br>";
+            isValid = false;
+        } else {
+            try {
+                double priceValue = Double.parseDouble(price);
+                if (priceValue < 0) {
+                    errorMessage += "Giá không được là số âm.<br>";
+                    isValid = false;
+                }
+            } catch (NumberFormatException e) {
+                errorMessage += "Giá phải là số.<br>";
+                isValid = false;
+            }
+        }
+
+        // Validate Sale (not empty, numeric, between 0 and 100)
+        if (sale == null || sale.trim().isEmpty()) {
+            // If sale is empty, set default value to 0
+            request.setAttribute("sale", "0");
+        } else {
+            try {
+                int saleValue = Integer.parseInt(sale);
+                if (saleValue < 0) {
+                    errorMessage += "Phần trăm giảm giá không được là số âm.<br>";
+                    isValid = false;
+                } else if (saleValue > 100) {
+                    errorMessage += "Phần trăm giảm giá không được vượt quá 100%.<br>";
+                    isValid = false;
+                }
+            } catch (NumberFormatException e) {
+                errorMessage += "Phần trăm giảm giá phải là số.<br>";
+                isValid = false;
+            }
+        }
+
+        // Validate Stock (not empty, numeric, and non-negative)
+        if (stock == null || stock.trim().isEmpty()) {
+            errorMessage += "Số lượng không được để trống.<br>";
+            isValid = false;
+        } else {
+            try {
+                int stockValue = Integer.parseInt(stock);
+                if (stockValue < 0) {
+                    errorMessage += "Số lượng không được là số âm.<br>";
+                    isValid = false;
+                }
+            } catch (NumberFormatException e) {
+                errorMessage += "Số lượng phải là số nguyên.<br>";
+                isValid = false;
+            }
+        }
+
+        // Validate Category (not empty)
+        if (category == null || category.trim().isEmpty()) {
+            errorMessage += "Danh mục không được để trống.<br>";
+            isValid = false;
+        } else if ("Other".equals(category) && (otherCategory == null || otherCategory.trim().isEmpty())) {
+            errorMessage += "Vui lòng nhập danh mục khác.<br>";
+            isValid = false;
+        }
+
+        // Validate Brand (not empty)
+        if (brand == null || brand.trim().isEmpty()) {
+            errorMessage += "Thương hiệu không được để trống.<br>";
+            isValid = false;
+        }
+
+        // If validation fails, set error message and return false
+        if (!isValid) {
+            request.setAttribute("error", errorMessage);
+        }
+
+        return isValid;
     }
 
 // Phương thức để xóa các ảnh cũ của sản phẩm
@@ -425,10 +546,56 @@ public class ProductController extends HttpServlet {
         response.sendRedirect("trash");
     }
 
-    private void showTrash(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        List<Product> deletedProducts = productDAO.getDeletedProducts();
+    private ProductDAO productDAO2 = new ProductDAO();
+
+    protected void showTrash(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.getRole().equals("Admin")) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        int page = 1;
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+                if (page < 1) page = 1;
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
+
+        int pageSize = 10;
+        String category = request.getParameter("category");
+        String brand = request.getParameter("brand");
+        String search = request.getParameter("search");
+
+        category = (category != null && !category.trim().isEmpty()) ? category : null;
+        brand = (brand != null && !brand.trim().isEmpty()) ? brand : null;
+        search = (search != null && !search.trim().isEmpty()) ? search : null;
+
+        int totalProducts = productDAO2.countProductsByTable("DeletedProducts", category, brand, search);
+        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+        if (totalProducts == 0) page = 1;
+        else if (page > totalPages) page = totalPages;
+
+        int offset = (page - 1) * pageSize;
+        String[] categories = category != null ? new String[]{category} : new String[0];
+        String[] brands = brand != null ? new String[]{brand} : new String[0];
+
+        List<Product> deletedProducts = productDAO2.searchProductsByTable("DeletedProducts", offset, pageSize, categories, brands, search);
+
         request.setAttribute("listDeletedProducts", deletedProducts);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalProducts", totalProducts);
+        request.setAttribute("pageSize", pageSize);
+        request.setAttribute("categories", productDAO2.getAllCategories());
+        request.setAttribute("brands", productDAO2.getAllBrands());
+
+        System.out.println("Page: " + page + ", Total Deleted Products: " + totalProducts + ", Products on page: " + deletedProducts.size());
         request.getRequestDispatcher("trash.jsp").forward(request, response);
     }
 
@@ -444,6 +611,10 @@ public class ProductController extends HttpServlet {
         List<Integer> ratingLevels = Arrays.asList(5, 4, 3, 2, 1);
         Collections.reverse(ratings);
 
+        // Lấy danh sách variants
+        List<ProductVariant> productVariants = productDAO.getProductVariantsByProductId(productId); // Thêm phương thức này vào IProductDAO
+        request.setAttribute("productVariants", productVariants);
+        
         // Lấy số trang hiện tại từ request, mặc định là trang 1
         int page = 1;
         int pageSize = 5; // Số lượng review mỗi trang
@@ -488,6 +659,57 @@ public class ProductController extends HttpServlet {
             restoreMultiple(request, response);
         }
     }
+    
+    protected void filterProductList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        try {
+            ProductDAO productDAO = new ProductDAO();
+            int page = 1;
+            if (request.getParameter("page") != null) {
+                try {
+                    page = Integer.parseInt(request.getParameter("page"));
+                    if (page < 1) page = 1;
+                } catch (NumberFormatException e) {
+                    page = 1;
+                }
+            }
+
+            int pageSize = 10;
+            String category = request.getParameter("category");
+            String brand = request.getParameter("brand");
+            String search = request.getParameter("search");
+
+            category = (category != null && !category.trim().isEmpty()) ? category : null;
+            brand = (brand != null && !brand.trim().isEmpty()) ? brand : null;
+            search = (search != null && !search.trim().isEmpty()) ? search : null;
+
+            int totalProducts = productDAO.countProductsByTable("Products", category, brand, search);
+            int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+            if (totalProducts == 0) page = 1;
+            else if (page > totalPages) page = totalPages;
+
+            int offset = (page - 1) * pageSize;
+            String[] categories = category != null ? new String[]{category} : new String[0];
+            String[] brands = brand != null ? new String[]{brand} : new String[0];
+
+            List<Product> products = productDAO.searchProductsByTable("Products", offset, pageSize, categories, brands, search);
+
+            request.setAttribute("list", products);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("totalProducts", totalProducts);
+            request.setAttribute("pageSize", pageSize);
+            request.setAttribute("categories", productDAO.getAllCategories());
+            request.setAttribute("brands", productDAO.getAllBrands());
+
+            System.out.println("Page: " + page + ", Total Products: " + totalProducts + ", Products on page: " + products.size());
+            request.getRequestDispatcher("productList2.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("list");
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -498,8 +720,6 @@ public class ProductController extends HttpServlet {
             getFilteredSortedPagedProducts(request, response);
         } else if (request.getServletPath().equals("/search")) {
             search(request, response);
-        } else if (request.getServletPath().equals("/list")) {
-            getAllProduct(request, response);
         } else if (request.getServletPath().equals("/add")) {
             addProduct(request, response);
         } else if (request.getServletPath().equals("/edit")) {
@@ -522,6 +742,8 @@ public class ProductController extends HttpServlet {
             getAction(request, response);
         } else if (request.getServletPath().equals("/updateDisplayedCategories")) {
             updateDisplayedCategories(request, response);
+        } else if (request.getServletPath().equals("/list")) {
+            filterProductList(request, response);  
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }

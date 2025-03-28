@@ -315,31 +315,39 @@
                                 <div class="product-options">
                                     <label>
                                         Size
-                                        <select class="input-select">
-                                            <option value="0">X</option>
+                                        <select class="input-select" name="size" id="sizeSelect">
+                                            <c:forEach var="variant" items="${productVariants}">
+                                                <option value="${variant.sizeName}">${variant.sizeName}</option>
+                                            </c:forEach>
                                         </select>
                                     </label>
                                     <label>
                                         Color
-                                        <select class="input-select">
-                                            <option value="0">Red</option>
+                                        <select class="input-select" name="color" id="colorSelect">
+                                            <c:forEach var="variant" items="${productVariants}">
+                                                <option value="${variant.colorName}">${variant.colorName}</option>
+                                            </c:forEach>
                                         </select>
                                     </label>
                                 </div>
-                                <form style="display: flex; align-items: center;" action="addCart" method="GET">
+                                
+                                <form style="display: flex; align-items: center;" action="addCart" method="POST"> <!-- Đổi sang POST -->
                                     <div class="add-to-cart">
                                         <div class="qty-label">
                                             Qty
                                             <div class="input-number">
-                                                <input type="number" name="quantity" id="amount" value="1">
+                                                <input type="number" name="quantity" id="amount" value="1" min="1">
                                                 <span class="qty-up" onclick="handlePlus()">+</span>
-                                                <span class="qty-down" onclick="handleMinus()" > - </span>
+                                                <span class="qty-down" onclick="handleMinus()"> - </span>
                                             </div>
                                         </div>
-
                                         <div class="add-to-cart">
-                                            <input type="hidden" name="productID" value="${product.productID}"> <!-- Gửi productID -->
-                                            <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
+                                            <input type="hidden" name="productID" value="${product.productID}">
+                                            <input type="hidden" name="selectedSize" id="selectedSize">
+                                            <input type="hidden" name="selectedColor" id="selectedColor">
+                                            <button type="submit" class="add-to-cart-btn" onclick="updateHiddenFields()">
+                                                <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -877,6 +885,13 @@
                 if (value > 1) {
                     amount.value = value - 1;
                 }
+        
+        <script>
+            function updateHiddenFields() {
+                var size = document.getElementById("sizeSelect").value;
+                var color = document.getElementById("colorSelect").value;
+                document.getElementById("selectedSize").value = size;
+                document.getElementById("selectedColor").value = color;
             }
         </script>
     </body>

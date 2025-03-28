@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
-
-    
-        <meta charset="UTF-8">
+    <head>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-        <title>Dashboard</title>
+        <meta charset="UTF-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
+        <title>Dashboard</title>
 
         <!-- Favicon -->
         <link href="img/favicon.ico" rel="icon">
@@ -39,10 +37,33 @@
         
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
+        
+        <!-- Google font -->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
+        <!-- Slick -->
+        <link type="text/css" rel="stylesheet" href="css/slick.css"/>
+        <link type="text/css" rel="stylesheet" href="css/slick-theme.css"/>
+
+        <!-- nouislider -->
+        <link type="text/css" rel="stylesheet" href="css/nouislider.min.css"/>
+
+        <!-- Font Awesome Icon -->
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+
+        <!-- Custom styles -->
+        <link type="text/css" rel="stylesheet" href="css/style.css"/>
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
         <style>
         .sidebar {
-            position: fixed;
-            margin-top: 140px;
+            position: fix;
+            margin-top: 10px;
             width: 250px;
             height: 100vh;
             overflow-y: auto;
@@ -52,12 +73,13 @@
         }
 
         .content {
-            margin-left: -1600px;
-            margin-top: 140px;
+            margin-left: 278px;
+            margin-top: 60px;
             min-height: 100vh;
-            background: var(--dark);
+            background: #ffffff;
             transition: 0.5s;
         }
+        
 
         #top-header {
             width: 1850px;
@@ -83,26 +105,36 @@
         .bg-secondary {
             display: block !important;
         }
-        .content {
-            margin-left: -1600px;
-            margin-top: 140px;
-            min-height: 100vh;
-            background: #ffffff;
-            transition: 0.5s;
-        }
-    </style>
+
+            .sidebar .navbar .navbar-nav .nav-link {
+                padding: 10px 20px;
+                color: var(--light);
+                font-weight: 500;
+                border-left: 3px solid var(--secondary);
+                border-radius: 0 30px 30px 0;
+                outline: none;
+            }
+
+            .sidebar .navbar .dropdown-item {
+                padding: 10px 35px;
+                border-radius: 0 30px 30px 0;
+                color: var(--light);
+            }   
+        </style>
+    </head>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ page contentType="text/html; charset=UTF-8" %>
+    <%@page import="model.User" %>
+    <%@page import="model.CartItem" %>
+    <%@page import="model.WishlistItem" %>
+    <%@ page import="java.util.List" %>
+    <%@ page import="java.util.Calendar" %>
+    <%@page import="jakarta.servlet.http.HttpSession"%>
+    <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
     
-        <%@page import="model.User"%>
-        <%@page import="model.CartItem"%>
-        <%@ page import="java.util.List" %>
-        <%@ page import="java.util.Calendar" %>
-        <%@page import="jakarta.servlet.http.HttpSession"%>
-        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-        <%
-            // Sử dụng biến session từ request mà không cần khai báo lại
+    <%
+        // Sử dụng biến session từ request mà không cần khai báo lại
             User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
-        %>
-        <% 
         // Lấy danh sách sản phẩm trong giỏ hàng từ session
         List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cart");
         int totalQuantity = 0;
@@ -110,38 +142,64 @@
         if (cartItems != null) {
             for (CartItem item : cartItems) {
                 totalQuantity += item.getQuantity();
-                subtotal += item.getProduct().getPrice() * item.getQuantity();
+                subtotal += item.getProduct().getSalePrice() * item.getQuantity();
             }
         }
+        // Lấy danh sách wishlist từ session
+        List<WishlistItem> wishlistItems = (List<WishlistItem>) session.getAttribute("wishlist");
+        int total = 0;
+        if (wishlistItems != null) {
+            for (WishlistItem item : wishlistItems) {
+                total += 1;
+            }
+        }
+
         Calendar calendar = Calendar.getInstance();
         int currentYear = calendar.get(Calendar.YEAR);
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
-        %>
+    %>
+    
+
     <body>
         <div class="container-fluid position-relative d-flex p-0">
-            <!-- Spinner Start -->
+            <!-- Spinner Start 
             <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
                 <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
-            <!-- Spinner End -->
+            Spinner End -->
 
 
             <!-- Sidebar Start -->
             <div class="sidebar pe-4 pb-3">
                 <nav class="navbar bg-secondary navbar-dark">
+                    
                     <div class="navbar-nav w-100">
+                    <a href="home" class="navbar-brand mx-5 mb-3">
+                        <h3 class="text-primary"><i class=""></i>ShoeShop</h3>
+                    </a>
+                    <div class="d-flex align-items-center ms-4 mb-4">
+                        <div class="position-relative">
+                            <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                            <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+                        </div>
+                        <div class="ms-3">
+                            <h6 style="color: red" class="mb-0"><%= user.getUsername() %></h6>
+                            <span style="color: red">Admin</span>
+                        </div>
+                    </div>
                         <a href="/ShoesStoreWeb/revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Danh Sách</a>
                             <div class="dropdown-menu bg-transparent border-0">
                                 <a href="getAllOrders" class="dropdown-item">Danh Sách Đơn Hàng</a>
                                 <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
-                                <a href="#" class="dropdown-item">Khác</a>
+                                <a href="activeCustomers" class="dropdown-item">Khác</a>
                             </div>
                         </div>
                         <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Biểu Đồ</a>
+                        <a href="activeCustomers" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Hoạt Động</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Trang</a>
                             <div class="dropdown-menu bg-transparent border-0">
@@ -153,10 +211,11 @@
                 </nav>
             </div>
             <!-- Sidebar End -->
-            <jsp:include page="header.jsp" />
+            
 
             <!-- Content Start -->
             <div class="content">
+              
                 <!-- Sale & Revenue Start -->
                 <div class="container-fluid pt-4 px-4">
                     <div class="row g-4">
@@ -183,7 +242,7 @@
                                 <i class="fa fa-chart-area fa-3x text-primary"></i>
                                 <div class="ms-3">
                                     <p class="mb-2">Doanh thu hôm nay</p>
-                                    <h6 class="mb-0">$${requestScope.todayRevenue}</h6>
+                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ</h6>
                                 </div>
                             </div>
                         </div>
@@ -192,7 +251,7 @@
                                 <i class="fa fa-chart-pie fa-3x text-primary"></i>
                                 <div class="ms-3">
                                     <p class="mb-2">Tổng doanh thu</p>
-                                    <h6 class="mb-0">$${requestScope.totalRevenue}</h6>
+                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.totalRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ</h6>
                                 </div>
                             </div>
                         </div>
@@ -232,7 +291,6 @@
                                 <canvas id="worldwide-sales"></canvas>
                             </div>
                         </div>
-                        <jsp:include page="footer.jsp" />
                     </div>
                     
                 </div>
@@ -251,8 +309,9 @@
         <script src="lib/owlcarousel/owl.carousel.min.js"></script>
         <script src="lib/tempusdominus/js/moment.min.js"></script>
         <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-<!--        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>-->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>-->
+        <script src="js/bootstrap.min.js"></script>
+        
         <script>
             // Hàm JavaScript để tự động submit form
             function submitStatusForm(orderId) {

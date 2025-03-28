@@ -5,8 +5,11 @@
 package dal;
 
 import java.util.List;
+import model.CartStat;
 import model.OrderContact;
+import model.ReviewStat;
 import model.User;
+import model.WishlistStat;
 
 /**
  *

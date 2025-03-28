@@ -20,8 +20,9 @@ public class User {
     private int locked; // Thêm thuộc tính locked (1 - bị ban, 0 - chưa bị ban)
     private int deliveredCount;
     private int cancelledCount;
+    private int totalOrders;
+    private int cartItemsCount;
 
-    // Getter và Setter cho deliveredCount và cancelledCount
     public int getDeliveredCount() {
         return deliveredCount;
     }
@@ -37,7 +38,23 @@ public class User {
     public void setCancelledCount(int cancelledCount) {
         this.cancelledCount = cancelledCount;
     }
+    
+    public int getTotalOrders() {
+        return totalOrders;
+    }
 
+    public void setTotalOrders(int totalOrders) {
+        this.totalOrders = totalOrders;
+    }
+
+    public int getCartItemsCount() {
+        return cartItemsCount;
+    }
+
+    public void setCartItemsCount(int cartItemsCount) {
+        this.cartItemsCount = cartItemsCount;
+    }
+    
     public User() {
     }
 
@@ -58,6 +75,22 @@ public class User {
         this.registrationDate = registrationDate;
         this.avatarUrl = avatarUrl;
     }
+    public User(int userId, String username, String password, String fullName, String email, 
+                    String phoneNumber, String address, String profileImageURL, Date registrationDate, 
+                    String avatarUrl, int totalOrders, int cartItemsCount) {
+            this.userId = userId;
+            this.username = username;
+            this.password = password;
+            this.fullName = fullName;
+            this.email = email;
+            this.phoneNumber = phoneNumber;
+            this.address = address;
+            this.profileImageURL = profileImageURL;
+            this.registrationDate = registrationDate;
+            this.avatarUrl = avatarUrl;
+            this.totalOrders = totalOrders;
+            this.cartItemsCount = cartItemsCount;
+        }
 
     public int getUserId() {
         return userId;

@@ -14,4 +14,5 @@ public interface ICartDAO {
     void deleteMultipleCartItems(int userId, List<Integer> productIds);
     void deleteMultipleTrashCartItems(int userId, List<Integer> productIds);
     void restoreMultipleCartItemsTrash(int userId, List<Integer> productIds);
+    void addCartItemWithVariant(int userId, int productId, int quantity, String size, String color);
 }

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.UUID;
+import model.CartStat;
 import model.Order;
 import model.OrderContact;
 import model.OrderDetail;
@@ -42,18 +43,21 @@ import model.Shipping;
 import model.WishlistItem;
 //import org.json.JSONObject;
 import utils.Encryption;
+import model.ReviewStat;
+import model.WishlistStat;
 
 /**
  *
  * @author nguye
  */
-@WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/confirmEmail",
-    "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
-    "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar",
-    "/userOrder", "/orderDetail", "/allUserOrder", "/confirmOrder",
-    "/filterBanUser", "/emailReminder", "/banUser", "/registerEmployee",
-    "/filterUser", "/restoreUser", "/userDetail",
-    "/shippingInformation", "/addShippingInformation"})
+@WebServlet(name = "UserController", urlPatterns = { "/login", "/register", "/confirmEmail",
+        "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
+        "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar",
+        "/userOrder", "/orderDetail", "/allUserOrder", "/confirmOrder",
+        "/filterBanUser", "/emailReminder", "/banUser", "/registerEmployee",
+        "/filterUser", "/restoreUser", "/userDetail",
+        "/shippingInformation", "/addShippingInformation",
+        "/activeCustomers", "/customerBehavior" })
 @MultipartConfig
 
 public class UserController extends HttpServlet {
@@ -74,56 +78,61 @@ public class UserController extends HttpServlet {
 
         switch (path) {
             case "/login":
-                getLogin(request, response);//get
+                getLogin(request, response);// get
                 break;
             case "/register":
-                getRegister(request, response);//get 
+                getRegister(request, response);// get
                 break;
 
             case "/logout":
-                getLogout(request, response);//get
+                getLogout(request, response);// get
                 break;
             case "/confirmLink":
-                confirmLink(request, response);//get của resetPassword lấy giá trị của reset code
+                confirmLink(request, response);// get của resetPassword lấy giá trị của reset code
                 break;
             case "/userProfile":
-                userProfile(request, response);//get
+                userProfile(request, response);// get
                 break;
             case "/filterUser":
-                filterUser(request, response);//get
+                filterUser(request, response);// get
                 break;
             case "/emailReminder":
-                emailReminder(request, response);//get
+                emailReminder(request, response);// get
                 break;
             case "/banUser":
-                banUser(request, response);//get
+                banUser(request, response);// get
                 break;
 
             case "/restoreUser":
-                restoreUser(request, response);//get
+                restoreUser(request, response);// get
                 break;
             case "/filterBanUser":
-                filterBanUser(request, response);//get
+                filterBanUser(request, response);// get
                 break;
             case "/userOrder":
-                userOrder(request, response);//get
+                userOrder(request, response);// get
                 break;
             case "/orderDetail":
-                orderDetail(request, response);//get confirmOrder
+                orderDetail(request, response);// get confirmOrder
                 break;
             case "/allUserOrder":
-                allUserOrder(request, response);//get
+                allUserOrder(request, response);// get
                 break;
             case "/confirmOrder":
-                confirmOrder(request, response);//get confirmOrder
+                confirmOrder(request, response);// get confirmOrder
                 break;
             case "/shippingInformation":
-                shippingInformation(request, response);//get confirmOrder
+                shippingInformation(request, response);// get confirmOrder
                 break;
             case "/userDetail":
-                userDetail(request, response);//get confirmOrder
+                userDetail(request, response);// get confirmOrder
                 break;
-
+            case "/activeCustomers":
+                getActiveCustomers(request, response);
+                break;
+            case "/customerBehavior":
+                getCustomerBehavior(request, response);
+                break;
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -138,23 +147,24 @@ public class UserController extends HttpServlet {
 
         switch (path) {
             case "/login":
-                postLogin(request, response);//post
+                postLogin(request, response);// post
                 break;
             case "/register":
-                postRegister(request, response);//post(cần thêm get để check xem trùng email hay tên chưa, xác thực email)
+                postRegister(request, response);// post(cần thêm get để check xem trùng email hay tên chưa, xác thực
+                                                // email)
                 break;
             case "/registerEmployee":
-                registerEmployee(request, response);//get
+                registerEmployee(request, response);// get
                 break;
             case "/confirmEmail":
                 confirmEmail(request, response);
                 break;
             case "/forgotPassword":
-                forgotPassword(request, response);//post(cần thêm get check xem email có tồn tại không)
+                forgotPassword(request, response);// post(cần thêm get check xem email có tồn tại không)
                 break;
 
             case "/resetPassword":
-                resetPassword(request, response);//post lấy giá trị code, mk, nlmk
+                resetPassword(request, response);// post lấy giá trị code, mk, nlmk
                 break;
 
             case "/updateProfile":
@@ -167,8 +177,12 @@ public class UserController extends HttpServlet {
                 updateAvatar(request, response);
                 break;
             case "/addShippingInformation":
-                addShippingInformation(request, response);//get confirmOrder
+                addShippingInformation(request, response);// get confirmOrder
                 break;
+            case "/activeCustomers":
+                exportActiveCustomers(request, response);
+                break;
+
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -226,7 +240,8 @@ public class UserController extends HttpServlet {
             // Lấy thông tin giỏ hàng của người dùng từ database và lưu vào session
             List<CartItem> cartItems = cartDAO.getCartItems(user.getUserId());
             session.setAttribute("cart", cartItems);
-            // Lấy thông tin danh sách yêu thích của người dùng từ database và lưu vào session
+            // Lấy thông tin danh sách yêu thích của người dùng từ database và lưu vào
+            // session
             List<WishlistItem> wishlistItems = wishlistDAO.getWishlistItems(user.getUserId());
             session.setAttribute("wishlist", wishlistItems);
             // Nếu người dùng chọn "Ghi nhớ đăng nhập"
@@ -316,7 +331,7 @@ public class UserController extends HttpServlet {
         newUser.setFullName(fullname);
         newUser.setEmail(email);
         newUser.setPhoneNumber(phonenumber);
-//        userDAO.addUser(newUser);
+        // userDAO.addUser(newUser);
         // Lưu thông tin tạm thời vào session
         HttpSession session = request.getSession();
         session.setAttribute("tempUser", newUser);
@@ -325,14 +340,15 @@ public class UserController extends HttpServlet {
         // Gửi email với mã xác nhận
         String subject = "Xác nhận đăng ký tài khoản";
         String encodedSubject = MimeUtility.encodeText(subject, "UTF-8", "B");
-        String messageText = "Mã xác nhận của bạn là: <strong>" + verificationCode + "</strong>. Vui lòng nhập mã này để hoàn tất đăng ký.";
+        String messageText = "Mã xác nhận của bạn là: <strong>" + verificationCode
+                + "</strong>. Vui lòng nhập mã này để hoàn tất đăng ký.";
         EmailService.sendEmail(email, encodedSubject, messageText);
 
         // Chuyển hướng đến trang confirmEmail.jsp
         request.getRequestDispatcher("confirmEmail.jsp").forward(request, response);
     }
 
-// Hàm tạo mã xác nhận 6 chữ số
+    // Hàm tạo mã xác nhận 6 chữ số
     private String generateVerificationCode() {
         Random rand = new Random();
         int code = 100000 + rand.nextInt(900000); // Tạo số ngẫu nhiên từ 100000 đến 999999
@@ -369,11 +385,13 @@ public class UserController extends HttpServlet {
         }
     }
 
-    protected void forgotPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void forgotPassword(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // Lấy email người dùng từ form quên mật khẩu
         String userEmail = request.getParameter("email");
 
-        // Kiểm tra email trong database (giả sử bạn đã có hàm kiểm tra email trong UserDAO)
+        // Kiểm tra email trong database (giả sử bạn đã có hàm kiểm tra email trong
+        // UserDAO)
         boolean emailExists = userDAO.checkEmailExists(userEmail);
         if (!emailExists) {
             // Nếu email không tồn tại, chuyển hướng hoặc thông báo lỗi
@@ -418,13 +436,15 @@ public class UserController extends HttpServlet {
         return java.util.UUID.randomUUID().toString();
     }
 
-    protected void confirmLink(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void confirmLink(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String resetCode = request.getParameter("code");
         request.setAttribute("code", resetCode);
         request.getRequestDispatcher("reset-password.jsp").forward(request, response);
     }
 
-    protected void resetPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void resetPassword(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String resetCode = request.getParameter("code");
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
@@ -445,8 +465,9 @@ public class UserController extends HttpServlet {
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
-    //Hiển thị trang hồ sơ người dùng
-    protected void userProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // Hiển thị trang hồ sơ người dùng
+    protected void userProfile(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -471,15 +492,16 @@ public class UserController extends HttpServlet {
             request.setAttribute("address", null); // Đặt address là null thay vì danh sách rỗng
         }
 
-        //Thông tin đơn hàng
-//        List<Order> orders = orderDAO.getOrdersByUserId(user.getUserId());
-        //Gửi dữ liệu
+        // Thông tin đơn hàng
+        // List<Order> orders = orderDAO.getOrdersByUserId(user.getUserId());
+        // Gửi dữ liệu
         request.setAttribute("user", u);
-//        request.setAttribute("orders", orders);
+        // request.setAttribute("orders", orders);
         request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển hướng đến trang JSP
     }
 
-    protected void updateAvatar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void updateAvatar(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
         if (user == null) {
@@ -507,8 +529,9 @@ public class UserController extends HttpServlet {
 
     }
 
-    //Chức năng cập nhật hồ sơ
-    protected void updateProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // Chức năng cập nhật hồ sơ
+    protected void updateProfile(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // Lấy UserID từ session hoặc request
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
@@ -521,7 +544,7 @@ public class UserController extends HttpServlet {
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
-        //Xử lý address
+        // Xử lý address
 
         String city = request.getParameter("city");
         String district = request.getParameter("district");
@@ -543,7 +566,8 @@ public class UserController extends HttpServlet {
         response.sendRedirect("userProfile"); // Chuyển hướng tới trang userProfile
     }
 
-    protected void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void changePassword(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // Lấy UserID từ session hoặc request
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
@@ -566,14 +590,15 @@ public class UserController extends HttpServlet {
             message = "Đổi mật khẩu thành công.";
         }
 
-//        String message = "Thay đổi mật khẩu thành công!";
+        // String message = "Thay đổi mật khẩu thành công!";
         System.out.println(message);
         session.setAttribute("messageChangePassword", message);
         // Sử dụng sendRedirect để chuyển hướng đến trang userProfile
         response.sendRedirect("userProfile"); // Chuyển hướng tới trang userProfile
     }
 
-    protected void userOrder(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void userOrder(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // Lấy UserID từ session
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
@@ -627,8 +652,7 @@ public class UserController extends HttpServlet {
                     toDate,
                     minPrice,
                     maxPrice,
-                    orderBy
-            );
+                    orderBy);
             System.out.println("11111111111");
         } else if (user.getRole().equals("Customer")) {
             // Lấy danh sách đơn hàng với các điều kiện lọc
@@ -640,8 +664,7 @@ public class UserController extends HttpServlet {
                     toDate,
                     minPrice,
                     maxPrice,
-                    orderBy
-            );
+                    orderBy);
             System.out.println("222222222222");
         } else {
             // Lấy danh sách đơn hàng với các điều kiện lọc
@@ -653,8 +676,7 @@ public class UserController extends HttpServlet {
                     toDate,
                     minPrice,
                     maxPrice,
-                    orderBy
-            );
+                    orderBy);
             System.out.println("3333333333333");
         }
 
@@ -673,7 +695,8 @@ public class UserController extends HttpServlet {
         request.getRequestDispatcher("userOrder.jsp").forward(request, response);
     }
 
-    protected void allUserOrder(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void allUserOrder(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // Lấy UserID từ session
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
@@ -736,8 +759,7 @@ public class UserController extends HttpServlet {
                     toDate,
                     minPrice,
                     maxPrice,
-                    orderBy
-            );
+                    orderBy);
         } else {
             orders = orderDAO.getAllPendingOrders("Confirmed",
                     orderCode, shippingAddress,
@@ -837,7 +859,8 @@ public class UserController extends HttpServlet {
         if (user.getRole().equals("Admin") || user.getRole().equals("Staff")) {
             if (request.getParameter("orderId") == null) {
                 // Gọi phương thức confirmAllPendingOrders
-                orderDAO.confirmAllPendingOrders(orderCode, shippingAddress, selectedPaymentMethod, fromDate, toDate, minPriceValue, maxPriceValue, orderBy);
+                orderDAO.confirmAllPendingOrders(orderCode, shippingAddress, selectedPaymentMethod, fromDate, toDate,
+                        minPriceValue, maxPriceValue, orderBy);
 
                 // Đặt thông báo
                 session.setAttribute("message", "Đã xác nhận tất cả đơn hàng đang chờ!");
@@ -850,7 +873,8 @@ public class UserController extends HttpServlet {
         } else {
             if (request.getParameter("orderId") == null) {
                 // Gọi phương thức confirmAllPendingOrders
-                orderDAO.receiveAllConfirmedOrders(orderCode, shippingAddress, selectedPaymentMethod, fromDate, toDate, minPriceValue, maxPriceValue, orderBy, user.getUserId());
+                orderDAO.receiveAllConfirmedOrders(orderCode, shippingAddress, selectedPaymentMethod, fromDate, toDate,
+                        minPriceValue, maxPriceValue, orderBy, user.getUserId());
 
                 // Đặt thông báo
                 session.setAttribute("message", "Đã xác nhận tất cả đơn hàng đang chờ!");
@@ -865,15 +889,18 @@ public class UserController extends HttpServlet {
         }
 
         // Mã hóa các tham số có dấu
-        String encodedPaymentMethod = (selectedPaymentMethod == null) ? "" : URLEncoder.encode(selectedPaymentMethod, StandardCharsets.UTF_8);
+        String encodedPaymentMethod = (selectedPaymentMethod == null) ? ""
+                : URLEncoder.encode(selectedPaymentMethod, StandardCharsets.UTF_8);
 
         // Chuyển hướng về trang allUserOrder và giữ lại các tham số tìm kiếm trong URL
-        response.sendRedirect("allUserOrder?pageStr=" + pageStr + "&orderCode=" + orderCode + "&shippingAddress=" + shippingAddress + "&paymentMethod=" + encodedPaymentMethod
+        response.sendRedirect("allUserOrder?pageStr=" + pageStr + "&orderCode=" + orderCode + "&shippingAddress="
+                + shippingAddress + "&paymentMethod=" + encodedPaymentMethod
                 + "&sortBy=" + sortBy + "&fromDate=" + fromDate + "&toDate=" + toDate
                 + "&minPrice=" + minPrice + "&maxPrice=" + maxPrice);
     }
 
-    protected void orderDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void orderDetail(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         // Lấy UserID từ session hoặc request
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
@@ -912,7 +939,8 @@ public class UserController extends HttpServlet {
         int userId = Integer.parseInt(request.getParameter("userId")); // Lấy userId từ URL
         userDAO.isLocked(userId); // Gọi phương thức isLocked để khóa tài khoản
 
-        // Lấy thông tin các tham số tìm kiếm và đảm bảo rằng nếu chúng là null thì sẽ mặc định là ""
+        // Lấy thông tin các tham số tìm kiếm và đảm bảo rằng nếu chúng là null thì sẽ
+        // mặc định là ""
         String pageStr1 = request.getParameter("pageStr1");
         String pageStr2 = request.getParameter("pageStr2");
         String username = request.getParameter("username");
@@ -934,7 +962,9 @@ public class UserController extends HttpServlet {
         session.setAttribute("message", message);
 
         // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
-        response.sendRedirect("filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName=" + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
+        response.sendRedirect(
+                "filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName="
+                        + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
     }
 
     protected void emailReminder(HttpServletRequest request, HttpServletResponse response)
@@ -970,10 +1000,11 @@ public class UserController extends HttpServlet {
         EmailService.sendEmail(u.getEmail(), encodedSubject, messageText);
 
         // Hiển thị thông báo thành công
-//        String message = "Khôi phục tài khoản thành công.";
-//        session.setAttribute("message", message);
+        // String message = "Khôi phục tài khoản thành công.";
+        // session.setAttribute("message", message);
         // Chuyển hướng về trang danh sách người dùng bị khóa
-        // Lấy thông tin các tham số tìm kiếm và đảm bảo rằng nếu chúng là null thì sẽ mặc định là ""
+        // Lấy thông tin các tham số tìm kiếm và đảm bảo rằng nếu chúng là null thì sẽ
+        // mặc định là ""
         String pageStr1 = request.getParameter("pageStr1");
         String pageStr2 = request.getParameter("pageStr2");
         String username = request.getParameter("username");
@@ -996,7 +1027,9 @@ public class UserController extends HttpServlet {
         session.setAttribute("message", message);
 
         // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
-        response.sendRedirect("filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName=" + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
+        response.sendRedirect(
+                "filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName="
+                        + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
 
     }
 
@@ -1033,11 +1066,14 @@ public class UserController extends HttpServlet {
         session.setAttribute("message", message);
 
         // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
-        response.sendRedirect("filterBanUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName=" + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
+        response.sendRedirect(
+                "filterBanUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName="
+                        + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
 
     }
 
-    protected void filterUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void filterUser(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
 
@@ -1064,7 +1100,8 @@ public class UserController extends HttpServlet {
         String maxCancelled = request.getParameter("maxCancelled");
         String sortBy = request.getParameter("sortBy");
 
-        List<User> filteredUsers = userDAO.filterUsers(username, fullName, email, phone, minRegistrationDate, maxRegistrationDate,
+        List<User> filteredUsers = userDAO.filterUsers(username, fullName, email, phone, minRegistrationDate,
+                maxRegistrationDate,
                 minDelivered != null && !minDelivered.isEmpty() ? Integer.parseInt(minDelivered) : null,
                 maxDelivered != null && !maxDelivered.isEmpty() ? Integer.parseInt(maxDelivered) : null,
                 minCancelled != null && !minCancelled.isEmpty() ? Integer.parseInt(minCancelled) : null,
@@ -1115,13 +1152,17 @@ public class UserController extends HttpServlet {
         int totalPagesCustomer = (int) Math.ceil((double) totalCustomers / pageSize);
         int startIndexCustomer = (pageCustomer - 1) * pageSize;
         int endIndexCustomer = Math.min(startIndexCustomer + pageSize, totalCustomers);
-        request.setAttribute("customers", startIndexCustomer < totalCustomers ? customers.subList(startIndexCustomer, endIndexCustomer) : new ArrayList<>());
+        request.setAttribute("customers",
+                startIndexCustomer < totalCustomers ? customers.subList(startIndexCustomer, endIndexCustomer)
+                        : new ArrayList<>());
 
         int totalEmployees = employees.size();
         int totalPagesEmployee = (int) Math.ceil((double) totalEmployees / pageSize);
         int startIndexEmployee = (pageEmployee - 1) * pageSize;
         int endIndexEmployee = Math.min(startIndexEmployee + pageSize, totalEmployees);
-        request.setAttribute("employees", startIndexEmployee < totalEmployees ? employees.subList(startIndexEmployee, endIndexEmployee) : new ArrayList<>());
+        request.setAttribute("employees",
+                startIndexEmployee < totalEmployees ? employees.subList(startIndexEmployee, endIndexEmployee)
+                        : new ArrayList<>());
 
         request.setAttribute("currentPageCustomer", pageCustomer);
         request.setAttribute("currentPageEmployee", pageEmployee);
@@ -1188,7 +1229,8 @@ public class UserController extends HttpServlet {
         response.sendRedirect("filterUser");
     }
 
-    protected void filterBanUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void filterBanUser(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
 
@@ -1215,7 +1257,8 @@ public class UserController extends HttpServlet {
         String maxCancelled = request.getParameter("maxCancelled");
         String sortBy = request.getParameter("sortBy");
 
-        List<User> filteredUsers = userDAO.filterBanUsers(username, fullName, email, phone, minRegistrationDate, maxRegistrationDate,
+        List<User> filteredUsers = userDAO.filterBanUsers(username, fullName, email, phone, minRegistrationDate,
+                maxRegistrationDate,
                 minDelivered != null && !minDelivered.isEmpty() ? Integer.parseInt(minDelivered) : null,
                 maxDelivered != null && !maxDelivered.isEmpty() ? Integer.parseInt(maxDelivered) : null,
                 minCancelled != null && !minCancelled.isEmpty() ? Integer.parseInt(minCancelled) : null,
@@ -1266,13 +1309,17 @@ public class UserController extends HttpServlet {
         int totalPagesCustomer = (int) Math.ceil((double) totalCustomers / pageSize);
         int startIndexCustomer = (pageCustomer - 1) * pageSize;
         int endIndexCustomer = Math.min(startIndexCustomer + pageSize, totalCustomers);
-        request.setAttribute("customers", startIndexCustomer < totalCustomers ? customers.subList(startIndexCustomer, endIndexCustomer) : new ArrayList<>());
+        request.setAttribute("customers",
+                startIndexCustomer < totalCustomers ? customers.subList(startIndexCustomer, endIndexCustomer)
+                        : new ArrayList<>());
 
         int totalEmployees = employees.size();
         int totalPagesEmployee = (int) Math.ceil((double) totalEmployees / pageSize);
         int startIndexEmployee = (pageEmployee - 1) * pageSize;
         int endIndexEmployee = Math.min(startIndexEmployee + pageSize, totalEmployees);
-        request.setAttribute("employees", startIndexEmployee < totalEmployees ? employees.subList(startIndexEmployee, endIndexEmployee) : new ArrayList<>());
+        request.setAttribute("employees",
+                startIndexEmployee < totalEmployees ? employees.subList(startIndexEmployee, endIndexEmployee)
+                        : new ArrayList<>());
 
         request.setAttribute("currentPageCustomer", pageCustomer);
         request.setAttribute("currentPageEmployee", pageEmployee);
@@ -1283,7 +1330,18 @@ public class UserController extends HttpServlet {
         request.getRequestDispatcher("accountIsLockedList.jsp").forward(request, response);
     }
 
-    protected void userDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void getActiveCustomers(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+    }
+
+    protected void userDetail(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User admin = (User) session.getAttribute("user");
         if (admin == null || (!admin.getRole().equals("Admin") && !admin.getRole().equals("Staff"))) {
@@ -1334,8 +1392,7 @@ public class UserController extends HttpServlet {
                 toDate,
                 minPrice,
                 maxPrice,
-                orderBy
-        );
+                orderBy);
 
         // Gửi dữ liệu sang JSP (bao gồm các giá trị đã nhập)
         request.setAttribute("orders", orders);
@@ -1349,7 +1406,7 @@ public class UserController extends HttpServlet {
         request.setAttribute("minPrice", minPriceStr); // Giữ nguyên chuỗi để hiển thị
         request.setAttribute("maxPrice", maxPriceStr); // Giữ nguyên chuỗi để hiển thị
 
-//        request.getRequestDispatcher("userOrder.jsp").forward(request, response);
+        // request.getRequestDispatcher("userOrder.jsp").forward(request, response);
         request.setAttribute("user", user);
         request.setAttribute("orders", orders);
         request.getRequestDispatcher("userDetail.jsp").forward(request, response);
@@ -1436,33 +1493,106 @@ public class UserController extends HttpServlet {
         UserDAO userDAO = new UserDAO();
 
         // Lọc người dùng theo các thông tin được nhập từ form
-//        List<User> filteredUsers = userDAO.filterUsers(username, fullName, email, phone, registrationDate);
+        // List<User> filteredUsers = userDAO.filterUsers(username, fullName, email,
+        // phone, registrationDate);
         // Tạo danh sách khách hàng và nhân viên từ kết quả lọc
-//        List<User> customers = new ArrayList<>();
-//        List<User> employees = new ArrayList<>();
-//
-//        for (User user : filteredUsers) {
-//            int deliveredCount = 0;
-//            int cancelledCount = 0;
-//
-//            for (Order order : user.getOrders()) {
-//                if ("Delivered".equals(order.getOrderStatus())) {
-//                    deliveredCount++;
-//                } else if ("Cancelled".equals(order.getOrderStatus())) {
-//                    cancelledCount++;
-//                }
-//            }
-//
-//            user.setDeliveredCount(deliveredCount);
-//            user.setCancelledCount(cancelledCount);
-//
-//            if ("Customer".equals(user.getRole())) {
-//                System.out.println(user.getUserId());
-//                customers.add(user);
-//            } else {
-//                employees.add(user);
-//            }
-//        }
+        // List<User> customers = new ArrayList<>();
+        // List<User> employees = new ArrayList<>();
+        //
+        // for (User user : filteredUsers) {
+        // int deliveredCount = 0;
+        // int cancelledCount = 0;
+        //
+        // for (Order order : user.getOrders()) {
+        // if ("Delivered".equals(order.getOrderStatus())) {
+        // deliveredCount++;
+        // } else if ("Cancelled".equals(order.getOrderStatus())) {
+        // cancelledCount++;
+        // }
+        // }
+        //
+        // user.setDeliveredCount(deliveredCount);
+        // user.setCancelledCount(cancelledCount);
+        //
+        // if ("Customer".equals(user.getRole())) {
+        // System.out.println(user.getUserId());
+        // customers.add(user);
+        // } else {
+        // employees.add(user);
+        // }
+        // }
+    }
+
+    protected void userDetail(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || (!admin.getRole().equals("Admin") && !admin.getRole().equals("Staff"))) {
+            response.sendRedirect("home"); // Nếu chưa đăng nhập hoặc không phải Admin/Staff
+            return;
+        }
+        // Lấy các tham số từ form
+        String orderCode = request.getParameter("orderCode");
+        String shippingAddress = request.getParameter("shippingAddress");
+        String paymentMethod = request.getParameter("paymentMethod");
+        String sortBy = request.getParameter("sortBy");
+        String fromDate = request.getParameter("fromDate");
+        String toDate = request.getParameter("toDate");
+        String minPriceStr = request.getParameter("minPrice");
+        String maxPriceStr = request.getParameter("maxPrice");
+
+        // Xử lý giá trị minPrice và maxPrice
+        Double minPrice = (minPriceStr != null && !minPriceStr.isEmpty()) ? Double.parseDouble(minPriceStr) : null;
+        Double maxPrice = (maxPriceStr != null && !maxPriceStr.isEmpty()) ? Double.parseDouble(maxPriceStr) : null;
+
+        // Xử lý phương thức thanh toán
+        String selectedPaymentMethod = null;
+        if ("Chuyển Khoản Ngân Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Chuyển Khoản Ngân Hàng";
+        } else if ("Thẻ Tín Dụng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Thẻ Tín Dụng";
+        } else if ("Tiền Mặt Khi Nhận Hàng".equals(paymentMethod)) {
+            selectedPaymentMethod = "Tiền Mặt Khi Nhận Hàng";
+        }
+
+        // Xử lý sắp xếp
+        String orderBy = null;
+        if ("priceDesc".equals(sortBy)) {
+            orderBy = "TotalAmount DESC";
+        } else if ("priceAsc".equals(sortBy)) {
+            orderBy = "TotalAmount ASC";
+        } else {
+            orderBy = "OrderDate DESC";
+        }
+
+        int userId = Integer.parseInt(request.getParameter("userId"));
+        User user = userDAO.getUserById(userId);
+        List<Order> orders = orderDAO.getOrdersByUserId(
+                userId,
+                orderCode, shippingAddress,
+                selectedPaymentMethod,
+                fromDate,
+                toDate,
+                minPrice,
+                maxPrice,
+                orderBy);
+
+        // Gửi dữ liệu sang JSP (bao gồm các giá trị đã nhập)
+        request.setAttribute("orders", orders);
+        request.setAttribute("orderCode", orderCode);
+        request.setAttribute("shippingAddress", shippingAddress);
+
+        request.setAttribute("paymentMethod", paymentMethod);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("fromDate", fromDate);
+        request.setAttribute("toDate", toDate);
+        request.setAttribute("minPrice", minPriceStr); // Giữ nguyên chuỗi để hiển thị
+        request.setAttribute("maxPrice", maxPriceStr); // Giữ nguyên chuỗi để hiển thị
+
+        // request.getRequestDispatcher("userOrder.jsp").forward(request, response);
+        request.setAttribute("user", user);
+        request.setAttribute("orders", orders);
+        request.getRequestDispatcher("userDetail.jsp").forward(request, response);
     }
 
 }
