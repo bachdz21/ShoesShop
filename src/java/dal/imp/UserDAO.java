@@ -306,10 +306,7 @@ public class UserDAO extends DBConnect implements IUserDAO {
                 sql.append("ProfileImageURL = ?, ");
                 params.add(u.getProfileImageURL());
             }
-            if (u.getRole() != null) {
-                sql.append("Role = ?, ");
-                params.add(u.getRole());
-            }
+            
 
             // Xóa dấu phẩy cuối cùng và thêm điều kiện WHERE
             sql.setLength(sql.length() - 2); // Xóa ", "
