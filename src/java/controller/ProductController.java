@@ -70,8 +70,6 @@ public class ProductController extends HttpServlet {
             showTrash(request, response);
         } else if (request.getServletPath().equals("/restore")) {
             restoreProduct(request, response);
-        } else if (request.getServletPath().equals("/deleteTrash")) {
-            deleteTrash(request, response);
         } else if (request.getServletPath().equals("/productDetail")) {
             productDetail(request, response);
         } else if (request.getServletPath().equals("/deleteMultipleProducts")) {
@@ -482,9 +480,7 @@ public class ProductController extends HttpServlet {
     protected void getAction(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        if ("deleteMultiple".equals(action)) {
-            deleteMultiTrash(request, response);
-        } else if ("restoreMultiple".equals(action)) {
+        if ("restoreMultiple".equals(action)) {
             restoreMultiple(request, response);
         }
     }
@@ -512,8 +508,6 @@ public class ProductController extends HttpServlet {
             showTrash(request, response);
         } else if (request.getServletPath().equals("/restore")) {
             restoreProduct(request, response);
-        } else if (request.getServletPath().equals("/deleteTrash")) {
-            deleteTrash(request, response);
         } else if (request.getServletPath().equals("/productDetail")) {
             productDetail(request, response);
         } else if (request.getServletPath().equals("/deleteMultipleProducts")) {
