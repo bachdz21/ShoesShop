@@ -10,6 +10,7 @@ import dal.IWishlistDAO;
 import dal.imp.CartDAO;
 import dal.imp.EmailService;
 import dal.imp.OrderDAO;
+import dal.imp.ReviewDAO;
 import dal.imp.UserDAO;
 import dal.imp.WishlistDAO;
 import jakarta.mail.internet.MimeUtility;
@@ -43,7 +44,7 @@ import utils.Encryption;
 @WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/checkExisting",
     "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
     "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar", "/orderDetail",
-    "/filterBanUser", "/emailReminder", "/banUser","/updateRoleUser", "/filterUser", "/restoreUser"})
+    "/filterBanUser", "/emailReminder", "/banUser", "/updateRoleUser", "/filterUser", "/restoreUser"})
 @MultipartConfig
 
 public class UserController extends HttpServlet {
@@ -365,16 +366,14 @@ public class UserController extends HttpServlet {
 
     //Hiển thị trang hồ sơ người dùng
     protected void userProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy UserID từ session hoặc request
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user"); // Giả sử bạn đã lưu userId trong session
+        User user = (User) session.getAttribute("user");
         if (user == null) {
-            // Nếu user chưa đăng nhập, chuyển hướng đến trang đăng nhập
             response.sendRedirect("login");
             return;
         }
         int userId = user.getUserId();
-        User u = userDAO.getUserById(userId); // Gọi hàm để lấy thông tin người dùng
+        User u = userDAO.getUserById(userId);
 
         // Xử lý địa chỉ
         if (u.getAddress() != null && !u.getAddress().isEmpty()) {
@@ -388,7 +387,6 @@ public class UserController extends HttpServlet {
                 request.setAttribute("address", address);
             }
         } else {
-            // Nếu không có địa chỉ, có thể khởi tạo mảng trống hoặc giá trị mặc định
             List<String> defaultAddress = new ArrayList<>();
             defaultAddress.add("");
             defaultAddress.add("");
@@ -397,16 +395,21 @@ public class UserController extends HttpServlet {
             request.setAttribute("address", defaultAddress);
         }
 
-        //Thông tin đơn hàng
+        // Lấy thông báo từ session và gán vào request attribute
+        String messageChangePassword = (String) session.getAttribute("messageChangePassword");
+        if (messageChangePassword != null) {
+            request.setAttribute("message", messageChangePassword);
+            session.removeAttribute("messageChangePassword"); // Xóa sau khi sử dụng
+        }
+
+        // Thông tin đơn hàng
         List<Order> orders = orderDAO.getOrdersByUserId(user.getUserId());
 
-        //Gửi dữ liệu
+        // Gửi dữ liệu
         request.setAttribute("user", u);
         request.setAttribute("orders", orders);
-        request.getRequestDispatcher("userProfile.jsp").forward(request, response); // Chuyển hướng đến trang JSP
+        request.getRequestDispatcher("userProfile.jsp").forward(request, response);
     }
-
-    
 
     protected void updateAvatar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -491,11 +494,12 @@ public class UserController extends HttpServlet {
         if (!user.getPassword().equals(e.getMd5(password))) {
             message = "Mật khẩu hiện tại không chính xác.";
         } else {
-        userDAO.changePassword(userId, e.getMd5(newPassword)); // Cập nhật mật khẩu mới
+            userDAO.changePassword(userId, e.getMd5(newPassword)); // Cập nhật mật khẩu mới
             message = "Đổi mật khẩu thành công.";
         }
 
 //        String message = "Thay đổi mật khẩu thành công!";
+        System.out.println(message);
         session.setAttribute("messageChangePassword", message);
         // Sử dụng sendRedirect để chuyển hướng đến trang userProfile
         response.sendRedirect("userProfile"); // Chuyển hướng tới trang userProfile
@@ -511,10 +515,12 @@ public class UserController extends HttpServlet {
         Order o = orderDAO.getOrdersByOrderId(orderId);
 
         List<OrderDetail> orderDetails = orderDAO.getOrderDetailByOderId(orderId);
-
+        ReviewDAO reviewDAO = new ReviewDAO();
+        request.setAttribute("reviewDAO", reviewDAO);
         request.setAttribute("orderContact", oC);
         request.setAttribute("order", o);// tính tổng tiền, phương thức thanh toán,trạng thái
         request.setAttribute("orderDetails", orderDetails);
+        request.setAttribute("orderId", orderId);
         request.getRequestDispatcher("viewDetailOrderHistory.jsp").forward(request, response);
     }
 
@@ -647,7 +653,7 @@ public class UserController extends HttpServlet {
         // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
         response.sendRedirect("filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName=" + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
     }
-    
+
     protected void updateRoleUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Lấy thông tin userId từ tham số request
@@ -658,13 +664,12 @@ public class UserController extends HttpServlet {
             response.sendRedirect("home");
             return;
         }
-        
+
         User u11 = userDAO.getUserById(Integer.parseInt(request.getParameter("userId")));
-        
+
         User u1 = new User(); // Gọi hàm để lấy thông tin người dùng
         u1.setUserId(Integer.parseInt(request.getParameter("userId")));
-        
-        
+
         // Nếu hiện tại là Admin thì hủy quyền về Customer
         if ("Admin".equals(u11.getRole())) {
             u1.setRole("Customer");
@@ -672,8 +677,6 @@ public class UserController extends HttpServlet {
             u1.setRole("Admin");
         }
         userDAO.updateUser(u1);
-
-
 
         // Lấy thông tin các tham số tìm kiếm và đảm bảo rằng nếu chúng là null thì sẽ mặc định là ""
         String pageStr1 = request.getParameter("pageStr1");

@@ -6,6 +6,7 @@ package dal.imp;
 
 import dal.DBConnect;
 import dal.IReviewDAO;
+import java.security.Timestamp;
 import java.sql.PreparedStatement;
 import model.Review;
 import java.sql.ResultSet;
@@ -28,7 +29,7 @@ public class ReviewDAO extends DBConnect implements IReviewDAO {
     @Override
     public int addReview(Review review) {
         String query = "INSERT INTO Reviews (ProductID, UserID, Rating, Comment, ReviewDate, IsApproved) "
-                + "VALUES (?, ?, ?, ?, GETDATE(), 0)";
+                + "VALUES (?, ?, ?, ?, GETDATE(), 1)";
 
         try {
             // Sử dụng Statement.RETURN_GENERATED_KEYS để yêu cầu trả về khóa tự động tạo ra
@@ -171,4 +172,144 @@ public class ReviewDAO extends DBConnect implements IReviewDAO {
         return reviewRepliesMap;
     }
 
+    // Phương thức xóa review
+    public void deleteReview(int reviewId) {
+        String deleteMediaQuery = "DELETE FROM ReviewMedia WHERE ReviewID = ?";
+        String deleteRepliesQuery = "DELETE FROM ReviewReplies WHERE ReviewID = ?";
+        String deleteReviewQuery = "DELETE FROM Reviews WHERE ReviewID = ?";
+
+        try {
+            c.setAutoCommit(false); // Bắt đầu giao dịch
+
+            // Xóa media liên quan
+            try (PreparedStatement psMedia = c.prepareStatement(deleteMediaQuery)) {
+                psMedia.setInt(1, reviewId);
+                psMedia.executeUpdate();
+            }
+
+            // Xóa replies liên quan
+            try (PreparedStatement psReplies = c.prepareStatement(deleteRepliesQuery)) {
+                psReplies.setInt(1, reviewId);
+                psReplies.executeUpdate();
+            }
+
+            // Xóa review
+            try (PreparedStatement psReview = c.prepareStatement(deleteReviewQuery)) {
+                psReview.setInt(1, reviewId);
+                psReview.executeUpdate();
+            }
+
+            c.commit(); // Hoàn tất giao dịch
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                c.rollback(); // Rollback nếu có lỗi
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        } finally {
+            try {
+                c.setAutoCommit(true); // Khôi phục chế độ tự động commit
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Phương thức thêm trả lời review
+    public String addReviewReply(int reviewId, int userId, String replyText) {
+        // Bỏ tham số userId vì không cần nữa, nhưng giữ nguyên để tương thích với mã hiện tại
+        String query = "INSERT INTO ReviewReplies (ReviewID, ReplyText, ReplyDate) VALUES (?, ?, GETDATE()); "
+                + "SELECT ReplyDate FROM ReviewReplies WHERE ReviewID = ? AND ReplyText = ? AND ReplyDate = (SELECT MAX(ReplyDate) FROM ReviewReplies WHERE ReviewID = ?)";
+        try (PreparedStatement ps = c.prepareStatement(query)) {
+            ps.setInt(1, reviewId);
+            ps.setString(2, replyText);
+            ps.setInt(3, reviewId);
+            ps.setString(4, replyText);
+            ps.setInt(5, reviewId);
+
+            // Sử dụng execute() thay vì executeQuery()
+            boolean isResultSet = ps.execute();
+
+            // Kiểm tra xem có ResultSet trả về không
+            if (isResultSet) {
+                try (ResultSet rs = ps.getResultSet()) {
+                    if (rs.next()) {
+                        java.sql.Timestamp replyDate = rs.getTimestamp("ReplyDate");
+                        return new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(replyDate);
+                    }
+                }
+            } else {
+                // Nếu không có ResultSet, kiểm tra số hàng bị ảnh hưởng bởi INSERT
+                int updateCount = ps.getUpdateCount();
+                if (updateCount > 0) {
+                    // INSERT thành công, nhưng không có ResultSet từ SELECT
+                    // Có thể trả về thời gian hiện tại nếu cần
+                    return new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to add reply: " + e.getMessage());
+        }
+        return new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date());
+    }
+
+    // Kiểm tra xem user đã review sản phẩm này chưa
+    public Review getReviewByUserAndProduct(int userId, int productId) {
+        String query = "SELECT * FROM Reviews WHERE UserID = ? AND ProductID = ?";
+        try (PreparedStatement ps = c.prepareStatement(query)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, productId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Review review = new Review();
+                review.setReviewId(rs.getInt("ReviewID"));
+                review.setProductId(rs.getInt("ProductID"));
+                review.setUserId(rs.getInt("UserID"));
+                review.setRating(rs.getInt("Rating"));
+                review.setComment(rs.getString("Comment"));
+                review.setReviewDate(rs.getTimestamp("ReviewDate"));
+                review.setIsApproved(rs.getBoolean("IsApproved"));
+                return review;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+// Cập nhật review
+    public void updateReview(Review review) {
+        String query = "UPDATE Reviews SET Rating = ?, Comment = ?, ReviewDate = GETDATE() WHERE ReviewID = ?";
+        try (PreparedStatement ps = c.prepareStatement(query)) {
+            ps.setInt(1, review.getRating());
+            ps.setString(2, review.getComment());
+            ps.setInt(3, review.getReviewId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+// Cập nhật media (xóa media cũ và thêm media mới)
+    public void updateReviewMedia(int reviewId, String mediaUrl, String mediaType) {
+        // Xóa media cũ
+        String deleteQuery = "DELETE FROM ReviewMedia WHERE ReviewID = ?";
+        try (PreparedStatement ps = c.prepareStatement(deleteQuery)) {
+            ps.setInt(1, reviewId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Thêm media mới
+        addReviewMedia(reviewId, mediaUrl, mediaType);
+    }
+
+    public static void main(String[] args) {
+        ReviewDAO d = new ReviewDAO();
+        Review r = d.getReviewByUserAndProduct(20, 94);
+        System.out.println(r.toString());
+    }
 }

@@ -463,7 +463,6 @@ public class ProductController extends HttpServlet {
         List<Review> reviews = reviewDAO.getReviewsByProductID(productId);
         List<Integer> ratings = productDAO.getProductRatings(productId);
         List<Integer> ratingLevels = Arrays.asList(5, 4, 3, 2, 1);
-        int totalRating = reviews.stream().mapToInt(Review::getRating).sum();
         Collections.reverse(ratings);
 
         // Lấy số trang hiện tại từ request, mặc định là trang 1

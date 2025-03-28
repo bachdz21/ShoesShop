@@ -104,6 +104,45 @@
             .reviews-pagination li.active a {
                 color: #fff;
             }
+
+            .reviews-pagination {
+                margin-top: 20px;
+                text-align: center;
+            }
+            .reviews-pagination button {
+                margin: 0 5px;
+                cursor: pointer;
+                display: inline-block;
+                width: 35px;
+                height: 35px;
+                line-height: 35px;
+                text-align: center;
+                background-color: #FFF;
+                border: 1px solid #E4E7ED;
+                -webkit-transition: 0.2s all;
+                transition: 0.2s all;
+            }
+
+            .reviews-pagination button:hover {
+                background-color: #E4E7ED;
+                color: #D10024;
+            }
+
+            .reviews-pagination button.active {
+                background-color: #D10024;
+                border-color: #D10024;
+                color: #FFF;
+                cursor: default;
+            }
+            .reviews-pagination button:disabled {
+                cursor: not-allowed;
+                opacity: 0.5;
+            }
+            .reviews-pagination span {
+                margin: 0 5px;
+                color: #333;
+                font-weight: bold;
+            }
         </style>
     </head>
     <body>
@@ -370,97 +409,85 @@
                                     <!-- /Rating -->
 
                                     <!-- Reviews -->
+                                    <!-- Reviews -->
                                     <div class="col-md-9">
                                         <div id="reviews">
-
-                                            <ul class="reviews">
-                                                <!-- Duyệt qua các đánh giá -->
+                                            <ul class="reviews" id="reviewsBody">
                                                 <c:forEach var="review" items="${reviews}">
-                                                    <li>
-                                                        <div class="review-heading">
-                                                            <h5 class="name">${review.userName}</h5>
-                                                            <p class="date">
-                                                                <fmt:formatDate value="${review.reviewDate}" pattern="dd/MM/yyyy HH:mm" />
-                                                            </p>
-                                                            <div class="review-rating">
-                                                                <c:forEach var="i" begin="1" end="${review.rating}">
-                                                                    <i class="fa fa-star"></i>
-                                                                </c:forEach>
-                                                                <c:forEach var="i" begin="${review.rating + 1}" end="5">
-                                                                    <i class="fa fa-star-o empty"></i>
+                                                    <c:if test="${not empty review.comment || not empty review.reviewMedia}">
+                                                        <li>
+                                                            <div class="review-heading">
+                                                                <h5 class="name">${review.userName}</h5>
+                                                                <p class="date">
+                                                                    <fmt:formatDate value="${review.reviewDate}" pattern="dd/MM/yyyy HH:mm" />
+                                                                </p>
+                                                                <div class="review-rating">
+                                                                    <c:forEach var="i" begin="1" end="${review.rating}">
+                                                                        <i class="fa fa-star"></i>
+                                                                    </c:forEach>
+                                                                    <c:forEach var="i" begin="${review.rating + 1}" end="5">
+                                                                        <i class="fa fa-star-o empty"></i>
+                                                                    </c:forEach>
+                                                                </div>
+                                                            </div>
+                                                            <div class="review-body">
+                                                                <p>${review.comment}</p>
+                                                            </div>
+                                                            <div class="review-media">
+                                                                <c:forEach var="media" items="${review.reviewMedia}">
+                                                                    <c:choose>
+                                                                        <c:when test="${media.mediaType == 'image'}">
+                                                                            <a href="${media.mediaUrl}" data-lightbox="review-image" data-title="${review.userName}">
+                                                                                <img src="${media.mediaUrl}" alt="Review Image" class="review-image" style="max-width: 200px; height: auto;" />
+                                                                            </a>
+                                                                        </c:when>
+                                                                        <c:when test="${media.mediaType == 'video'}">
+                                                                            <video controls class="review-video" style="max-width: 200px; height: auto;">
+                                                                                <source src="${media.mediaUrl}" type="video/mp4">
+                                                                                Your browser does not support the video tag.
+                                                                            </video>
+                                                                        </c:when>
+                                                                    </c:choose>
                                                                 </c:forEach>
                                                             </div>
-                                                        </div>
-                                                        <div class="review-body" style="min-height: unset">
-                                                            <p>${review.comment}</p>
-                                                        </div>
-
-                                                        <!-- Hiển thị ảnh/video -->
-                                                        <div class="review-media">
-                                                            <!-- Ví dụ ảnh -->
-                                                            <c:forEach var="media" items="${review.reviewMedia}">
-                                                                <c:choose>
-                                                                    <c:when test="${media.mediaType == 'image'}">
-                                                                        <!-- Lightbox -->
-                                                                        <a href="${media.mediaUrl}" data-lightbox="review-image" data-title="${review.userName}">
-                                                                            <img src="${media.mediaUrl}" alt="Review Image" class="review-image" style="max-width: 200px; height: auto;" />
-                                                                        </a>
-                                                                    </c:when>
-                                                                    <c:when test="${media.mediaType == 'video'}">
-                                                                        <video controls class="review-video" style="max-width: 200px; height: auto;">
-                                                                            <source src="${media.mediaUrl}" type="video/mp4">
-                                                                            Your browser does not support the video tag.
-                                                                        </video>
-                                                                    </c:when>
-                                                                </c:choose>
-                                                            </c:forEach>
-                                                        </div>
-
-                                                        <!-- Hiển thị Shop Reply -->
-                                                        <div class="shop-reply">
-                                                            <c:forEach var="reply" items="${review.reviewReply}">
-                                                                <h6 class="shop-reply-title">Shop Reply</h6>
-                                                                <p class="shop-reply-text">${reply.replyText}</p>
-                                                                <p class="shop-reply-date">
-                                                                    <fmt:formatDate value="${reply.replyDate}" pattern="dd/MM/yyyy HH:mm" />
-                                                                </p>
-                                                            </c:forEach>
-                                                        </div>
-                                                    </li>
-                                                    <hr>
+                                                            <div class="shop-reply">
+                                                                <c:forEach var="reply" items="${review.reviewReply}">
+                                                                    <h6 class="shop-reply-title">Shop Reply</h6>
+                                                                    <p class="shop-reply-text">${reply.replyText}</p>
+                                                                    <p class="shop-reply-date">
+                                                                        <fmt:formatDate value="${reply.replyDate}" pattern="dd/MM/yyyy HH:mm" />
+                                                                    </p>
+                                                                </c:forEach>
+                                                            </div>
+                                                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+                                                                <div class="review-actions">
+                                                                    <form action="deleteReview" method="POST" style="position: absolute; top: 5px; right: 5px;">
+                                                                        <input type="hidden" name="reviewId" value="${review.reviewId}">
+                                                                        <input type="hidden" name="productId" value="${product.productID}">
+                                                                        <button type="submit" class="btn btn-link p-0" style="color: red;" onclick="return confirm('Bạn có chắc muốn xóa review này?');">
+                                                                            <i class="fa fa-times"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                    <button class="btn btn-primary btn-sm" style="margin-top: 10px;" onclick="showReplyForm(${review.reviewId})">Trả lời</button>
+                                                                    <div id="reply-form-${review.reviewId}" style="display: none; margin-top: 10px;">
+                                                                        <form action="replyReview" method="POST">
+                                                                            <input type="hidden" name="reviewId" value="${review.reviewId}">
+                                                                            <input type="hidden" name="productId" value="${product.productID}">
+                                                                            <textarea name="replyText" class="form-control" rows="3" placeholder="Nhập phản hồi của bạn..." required></textarea>
+                                                                            <button type="submit" class="btn btn-success btn-sm" style="margin-top: 5px;">Gửi</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </c:if>
+                                                            <hr>
+                                                        </li>
+                                                    </c:if>
                                                 </c:forEach>
                                             </ul>
-
-                                            <!-- Pagination -->
-                                            <ul class="reviews-pagination">
-                                                <c:if test="${currentPage > 1}">
-                                                    <li>
-                                                        <a href="productDetail?id=${product.productID}&page=${currentPage - 1}">
-                                                            <i class="fa fa-angle-left"></i>
-                                                        </a>
-                                                    </li>
-                                                </c:if>
-
-                                                <c:forEach var="i" begin="1" end="${totalPages}">
-                                                    <li class="${i == currentPage ? 'active' : ''}">
-                                                        <a href="productDetail?id=${product.productID}&page=${i}">${i}</a>
-                                                    </li>
-                                                </c:forEach>
-
-                                                <c:if test="${currentPage < totalPages}">
-                                                    <li>
-                                                        <a href="productDetail?id=${product.productID}&page=${currentPage + 1}">
-                                                            <i class="fa fa-angle-right"></i>
-                                                        </a>
-                                                    </li>
-                                                </c:if>
-                                            </ul>
-
-                                            <!-- /Reviews -->
-
-
+                                            <ul class="reviews-pagination" id="reviewsPagination"></ul>
                                         </div>
                                     </div>
+                                    <!-- /Reviews -->
                                     <!-- /tab3  -->
                                 </div>
                                 <!-- /product tab content  -->
@@ -613,6 +640,200 @@
         <script src="js/nouislider.min.js"></script>
         <script src="js/jquery.zoom.min.js"></script>
         <script src="js/main.js"></script>
+        <!-- Script AJAX -->
+        <!-- jQuery -->
+        <script src='https://code.jquery.com/jquery-3.3.1.slim.min.js'></script>
+        <!-- Popper JS -->
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'></script>
+        <!-- Bootstrap JS -->
+        <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+                                                                        function deleteReview(reviewId, productId) {
+                                                                            if (confirm('Bạn có chắc muốn xóa review này?')) {
+                                                                                $.ajax({
+                                                                                    url: 'deleteReview',
+                                                                                    type: 'POST',
+                                                                                    data: {
+                                                                                        reviewId: reviewId,
+                                                                                        productId: productId
+                                                                                    },
+                                                                                    success: function (response) {
+                                                                                        if (response === 'Success') {
+                                                                                            $('#review-' + reviewId).remove();
+                                                                                            alert('Review đã được xóa thành công!');
+                                                                                        } else {
+                                                                                            alert('Đã xảy ra lỗi: ' + response);
+                                                                                        }
+                                                                                    },
+                                                                                    error: function (xhr, status, error) {
+                                                                                        alert('Đã xảy ra lỗi khi xóa review: ' + error);
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        }
 
+                                                                        function showReplyForm(reviewId) {
+                                                                            var form = document.getElementById('reply-form-' + reviewId);
+                                                                            if (form.style.display === 'none' || form.style.display === '') {
+                                                                                form.style.display = 'block';
+                                                                            } else {
+                                                                                form.style.display = 'none';
+                                                                            }
+                                                                        }
+
+                                                                        function submitReply(event, reviewId, productId) {
+                                                                            event.preventDefault(); // Ngăn form submit mặc định
+                                                                            var form = $('#reply-form-submit-' + reviewId);
+                                                                            var replyText = form.find('textarea[name="replyText"]').val();
+
+                                                                            $.ajax({
+                                                                                url: 'replyReview',
+                                                                                type: 'POST',
+                                                                                data: {
+                                                                                    reviewId: reviewId,
+                                                                                    productId: productId,
+                                                                                    replyText: replyText
+                                                                                },
+                                                                                success: function (response) {
+                                                                                    if (response.startsWith('Success')) {
+                                                                                        var replyDate = response.split('|')[1] || new Date().toLocaleString();
+                                                                                        var replyHtml = '<h6 class="shop-reply-title">Shop Reply</h6>' +
+                                                                                                '<p class="shop-reply-text">' + replyText + '</p>' +
+                                                                                                '<p class="shop-reply-date">' + replyDate + '</p>';
+
+                                                                                        // Nối thêm reply mới vào danh sách thay vì ghi đè
+                                                                                        $('#shop-reply-' + reviewId).append(replyHtml);
+
+                                                                                        // Ẩn form và xóa nội dung textarea
+                                                                                        $('#reply-form-' + reviewId).hide();
+                                                                                        form.find('textarea[name="replyText"]').val('');
+                                                                                    } else {
+                                                                                        alert('Đã xảy ra lỗi: ' + response);
+                                                                                    }
+                                                                                },
+                                                                                error: function (xhr, status, error) {
+                                                                                    alert('Đã xảy ra lỗi khi gửi phản hồi: ' + error);
+                                                                                }
+                                                                            });
+                                                                        }
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const itemsPerPage = 4; // Số review mỗi trang
+                const tableBody = document.getElementById('reviewsBody');
+                const rows = Array.from(tableBody.getElementsByTagName('li'));
+                const totalItems = rows.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                let currentPage = 1;
+
+                function showPage(page) {
+                    rows.forEach(row => row.style.display = 'none');
+                    const startIndex = (page - 1) * itemsPerPage;
+                    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+                    for (let i = startIndex; i < endIndex; i++) {
+                        rows[i].style.display = 'list-item';
+                    }
+                    currentPage = page;
+                    updatePagination();
+                }
+
+                function updatePagination() {
+                    const pagination = document.getElementById('reviewsPagination');
+                    pagination.innerHTML = '';
+
+                    // Nút Previous
+                    const prevBtn = document.createElement('button');
+                    prevBtn.textContent = '<';
+                    prevBtn.disabled = currentPage === 1;
+                    prevBtn.addEventListener('click', () => showPage(currentPage - 1));
+                    pagination.appendChild(prevBtn);
+
+                    // Nếu tổng số trang <= 5, hiển thị tất cả
+                    if (totalPages <= 5) {
+                        for (let i = 1; i <= totalPages; i++) {
+                            const pageBtn = document.createElement('button');
+                            pageBtn.textContent = i;
+                            pageBtn.className = currentPage === i ? 'active' : '';
+                            pageBtn.addEventListener('click', () => showPage(i));
+                            pagination.appendChild(pageBtn);
+                        }
+                    } else {
+                        // Hiển thị trang đầu
+                        const firstPageBtn = document.createElement('button');
+                        firstPageBtn.textContent = '1';
+                        firstPageBtn.className = currentPage === 1 ? 'active' : '';
+                        firstPageBtn.addEventListener('click', () => showPage(1));
+                        pagination.appendChild(firstPageBtn);
+
+                        // Thêm dấu "..." nếu trang hiện tại cách trang đầu > 2
+                        if (currentPage > 3) {
+                            const dots1 = document.createElement('span');
+                            dots1.textContent = '...';
+                            pagination.appendChild(dots1);
+                        }
+
+                        // Hiển thị các trang gần trang hiện tại
+                        const startPage = Math.max(2, currentPage - 1);
+                        const endPage = Math.min(totalPages - 1, currentPage + 1);
+                        for (let i = startPage; i <= endPage; i++) {
+                            const pageBtn = document.createElement('button');
+                            pageBtn.textContent = i;
+                            pageBtn.className = currentPage === i ? 'active' : '';
+                            pageBtn.addEventListener('click', () => showPage(i));
+                            pagination.appendChild(pageBtn);
+                        }
+
+                        // Thêm dấu "..." nếu trang hiện tại cách trang cuối > 2
+                        if (currentPage < totalPages - 2) {
+                            const dots2 = document.createElement('span');
+                            dots2.textContent = '...';
+                            pagination.appendChild(dots2);
+                        }
+
+                        // Hiển thị trang cuối
+                        const lastPageBtn = document.createElement('button');
+                        lastPageBtn.textContent = totalPages;
+                        lastPageBtn.className = currentPage === totalPages ? 'active' : '';
+                        lastPageBtn.addEventListener('click', () => showPage(totalPages));
+                        pagination.appendChild(lastPageBtn);
+                    }
+
+                    // Nút Next
+                    const nextBtn = document.createElement('button');
+                    nextBtn.textContent = '>';
+                    nextBtn.disabled = currentPage === totalPages;
+                    nextBtn.addEventListener('click', () => showPage(currentPage + 1));
+                    pagination.appendChild(nextBtn);
+                }
+
+                if (totalItems > 0) {
+                    showPage(1);
+                }
+            });
+
+            function showReplyForm(reviewId) {
+                var form = document.getElementById('reply-form-' + reviewId);
+                if (form.style.display === 'none' || form.style.display === '') {
+                    form.style.display = 'block';
+                } else {
+                    form.style.display = 'none';
+                }
+            }
+
+            function handlePlus() {
+                let amount = document.getElementById("amount");
+                let value = parseInt(amount.value);
+                amount.value = value + 1;
+            }
+
+            function handleMinus() {
+                let amount = document.getElementById("amount");
+                let value = parseInt(amount.value);
+                if (value > 1) {
+                    amount.value = value - 1;
+                }
+            }
+        </script>
     </body>
 </html>

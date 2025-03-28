@@ -238,13 +238,18 @@
                                 <td>${orderDetail.quantity}</td>
                                 <td>${orderDetail.price} $</td>
                                 <td>
+                                    <!-- Gán biến existingReview và kiểm tra -->
+                                    <c:set var="existingReview" value="${reviewDAO.getReviewByUserAndProduct(sessionScope.user.userId, orderDetail.product.productID)}" />
+                                    <!-- Nút Đánh Giá/Sửa Đánh Giá -->
                                     <button type="button" class="btn btn-info btn-round" data-toggle="modal" data-target="#reviewModal" 
                                             data-orderid="${order.orderId}" 
                                             data-productid="${orderDetail.product.productID}" 
                                             data-productname="<c:out value='${orderDetail.product.productName}'/>" 
                                             data-imageurl="${orderDetail.product.imageURL}"
+                                            data-rating="${existingReview != null ? existingReview.rating : ''}"
+                                            data-comment="${existingReview != null ? existingReview.comment : ''}"
                                             ${order.orderStatus != 'Delivered' ? 'disabled' : ''}>
-                                        Đánh Giá
+                                        ${existingReview != null ? 'Sửa Đánh Giá' : 'Đánh Giá'}
                                     </button>
                                 </td>
                             </tr>
@@ -299,7 +304,7 @@
                                             <input type="file" name="media" class="file-input" accept="image/*,video/*" multiple>
                                             <input type="hidden" name="mediaType" id="mediaType">
                                         </div>
-
+                                        <input type="hidden" name="orderId" value="${orderId}">
                                         <button type="submit" class="submit-btn">Leave Your Review</button>
                                     </form>
                                 </div>
@@ -325,24 +330,43 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                const buttons = document.querySelectorAll(".btn-info"); // Nút "Đánh Giá"
+                const buttons = document.querySelectorAll(".btn-info");
 
                 buttons.forEach(function (button) {
                     button.addEventListener("click", function () {
-                        // Lấy thông tin từ data attributes của nút
                         const productID = button.getAttribute('data-productid');
                         const productName = button.getAttribute('data-productname');
                         const imageURL = button.getAttribute('data-imageurl');
+                        const rating = button.getAttribute('data-rating');
+                        const comment = button.getAttribute('data-comment');
 
                         // Gán thông tin sản phẩm vào modal
-                        document.getElementById("productID").value = productID; // Gán productID vào input ẩn
-                        document.getElementById("selectedProductImage").src = imageURL; // Gán ảnh sản phẩm
-                        document.getElementById("selectedProductName").textContent = productName; // Gán tên sản phẩm
-                        document.getElementById("selectedProductInfo").style.display = "block"; // Hiển thị thông tin sản phẩm
+                        document.getElementById("productID").value = productID;
+                        document.getElementById("selectedProductImage").src = imageURL;
+                        document.getElementById("selectedProductName").textContent = productName;
+                        document.getElementById("selectedProductInfo").style.display = "block";
+
+                        // Load rating hiện tại (nếu có)
+                        if (rating) {
+                            document.getElementById("ratingValue").value = rating;
+                            const stars = document.querySelectorAll('.star');
+                            stars.forEach(star => {
+                                if (star.getAttribute('data-value') <= rating) {
+                                    star.classList.add('active');
+                                } else {
+                                    star.classList.remove('active');
+                                }
+                            });
+                        }
+
+                        // Load comment hiện tại (nếu có)
+                        if (comment) {
+                            document.getElementById("review").value = comment;
+                        }
                     });
                 });
 
-                // Reset lại thông tin modal khi đóng
+                // Reset modal khi đóng
                 function resetModal() {
                     document.getElementById("selectedProductImage").src = "";
                     document.getElementById("selectedProductName").textContent = "";
@@ -353,13 +377,11 @@
                     document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
                 }
 
-                // Đóng modal khi bấm vào nút X
                 document.querySelector(".close").addEventListener("click", function () {
                     $('#reviewModal').modal('hide');
                     resetModal();
                 });
 
-                // Đóng modal khi bấm ra ngoài
                 window.onclick = function (event) {
                     var modal = document.getElementById("reviewModal");
                     if (event.target === modal) {
@@ -368,7 +390,6 @@
                     }
                 };
 
-                // Reset padding-right khi đóng modal
                 $('#reviewModal').on('hidden.bs.modal', function () {
                     $('body').css('padding-right', '');
                 });
