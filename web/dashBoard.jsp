@@ -484,7 +484,7 @@
             <script src="js/main_1.js"></script>
 
         </body>
-    <% if (user != null && "Staff".equals(user.getRole())) { %>
+    <% if (user != null && ("Employee".equals(user.getRole())||"Staff".equals(user.getRole()))) { %>
     <jsp:include page="staff_chat.jsp"/>
     <% } else if (user != null && "Customer".equals(user.getRole())) { %>
     <jsp:include page="customer_chat.jsp"/>

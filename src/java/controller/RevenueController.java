@@ -37,7 +37,7 @@ public class RevenueController extends HttpServlet {
 
         HttpSession session = request.getSession();
         User admin = (User) session.getAttribute("user");
-        if (admin == null || (!admin.getRole().equals("Admin")&& !admin.getRole().equals("Staff"))) {
+        if (admin == null || (!admin.getRole().equals("Admin")&& !admin.getRole().equals("Staff") && !admin.getRole().equals("Employee"))) {
             response.sendRedirect("home");
             return;
         }

@@ -81,7 +81,7 @@ public class ChatController extends HttpServlet {
     protected void uploadFile(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int userId = Integer.parseInt(request.getParameter("userId"));
-        int staffId = Integer.parseInt(request.getParameter("staffId"));
+        int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         String messageContent = request.getParameter("messageContent");
         List<Part> fileParts = request.getParts().stream()
                 .filter(part -> "files".equals(part.getName()) && part.getSize() > 0)
@@ -107,12 +107,12 @@ public class ChatController extends HttpServlet {
 
         try {
             int sessionId = chatDAO.getOrCreateChatSession(
-                    "Customer".equals(chatDAO.getUserRole(userId)) ? userId : staffId,
-                    "Staff".equals(chatDAO.getUserRole(userId)) ? userId : staffId
+                    "Customer".equals(chatDAO.getUserRole(userId)) ? userId : employeeId,
+                    "Employee".equals(chatDAO.getUserRole(userId)) ? userId : employeeId
             );
 
             // Lưu tin nhắn một lần duy nhất
-            chatDAO.saveMessage(userId, staffId, messageContent != null ? messageContent : "", sessionId);
+            chatDAO.saveMessage(userId, employeeId, messageContent != null ? messageContent : "", sessionId);
             int messageId = chatDAO.getLatestMessageId(sessionId, userId, messageContent != null ? messageContent : "");
 
             List<Integer> fileIds = new ArrayList<>();

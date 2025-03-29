@@ -57,56 +57,73 @@ public class ReviewController extends HttpServlet {
             int productId = Integer.parseInt(request.getParameter("productID"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("review");
-            int orderId = Integer.parseInt(request.getParameter("orderId"));
+            String orderId = request.getParameter("orderId");
 
-            // Tạo đối tượng Review
-            Review review = new Review(productId, userId, rating, comment);
+            // Kiểm tra xem user đã review sản phẩm này chưa
+            Review existingReview = reviewDAO.getReviewByUserAndProduct(userId, productId);
+            if (existingReview != null) {
+                // Nếu đã có review, cập nhật review thay vì thêm mới
+                existingReview.setRating(rating);
+                existingReview.setComment(comment);
+                reviewDAO.updateReview(existingReview);
 
-            // Gọi phương thức addReview để thêm vào database
-            int reviewId = reviewDAO.addReview(review);
-
-            if (reviewId > 0) {
-                // Lấy mảng loại file từ request (giải mã JSON)
+                // Xử lý cập nhật media nếu có
                 String mediaTypeString = request.getParameter("mediaType");
                 List<String> mediaTypes = new ArrayList<>();
-
                 if (mediaTypeString != null && !mediaTypeString.isEmpty()) {
                     mediaTypes = new Gson().fromJson(mediaTypeString, List.class);
                 }
 
-                // Xử lý các phần media (hình ảnh hoặc video)
                 Collection<Part> fileParts = request.getParts();
-                List<String> mediaUrls = new ArrayList<>();
-
                 int mediaIndex = 0;
                 for (Part filePart : fileParts) {
                     if (filePart.getName().equals("media") && filePart.getSize() > 0) {
-                        // Tạo tên file duy nhất
                         String fileName = UUID.randomUUID().toString() + getFileExtension(filePart);
                         File mediaFile = new File(IMAGE_UPLOAD_DIR, fileName);
                         filePart.write(mediaFile.getAbsolutePath());
-
-                        // Lấy URL của media đã lưu
                         String mediaUrl = "img/" + fileName;
-                        mediaUrls.add(mediaUrl);
-
-                        // Lưu loại media
                         String mediaType = mediaTypes.size() > mediaIndex ? mediaTypes.get(mediaIndex) : "other";
-                        reviewDAO.addReviewMedia(reviewId, mediaUrl, mediaType);
+                        reviewDAO.updateReviewMedia(existingReview.getReviewId(), mediaUrl, mediaType); // Cập nhật media
                         mediaIndex++;
                     }
                 }
 
-                // Thành công thì chuyển hướng về userProfile
-                response.sendRedirect("orderDetail?orderId="+orderId);
+                response.sendRedirect("orderDetail?orderId=" + orderId + "&message=Review+updated+successfully");
+            } else {
+                // Nếu chưa có review, thêm mới như cũ
+                Review review = new Review(productId, userId, rating, comment);
+                int reviewId = reviewDAO.addReview(review);
+
+                if (reviewId > 0) {
+                    String mediaTypeString = request.getParameter("mediaType");
+                    List<String> mediaTypes = new ArrayList<>();
+                    if (mediaTypeString != null && !mediaTypeString.isEmpty()) {
+                        mediaTypes = new Gson().fromJson(mediaTypeString, List.class);
+                    }
+
+                    Collection<Part> fileParts = request.getParts();
+                    int mediaIndex = 0;
+                    for (Part filePart : fileParts) {
+                        if (filePart.getName().equals("media") && filePart.getSize() > 0) {
+                            String fileName = UUID.randomUUID().toString() + getFileExtension(filePart);
+                            File mediaFile = new File(IMAGE_UPLOAD_DIR, fileName);
+                            filePart.write(mediaFile.getAbsolutePath());
+                            String mediaUrl = "img/" + fileName;
+                            String mediaType = mediaTypes.size() > mediaIndex ? mediaTypes.get(mediaIndex) : "other";
+                            reviewDAO.addReviewMedia(reviewId, mediaUrl, mediaType);
+                            mediaIndex++;
+                        }
+                    }
+
+                    response.sendRedirect("orderDetail?orderId=" + orderId + "&message=Review+added+successfully");
+                }
             }
         } catch (Exception e) {
-            // Xử lý các lỗi bất ngờ
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
             out.println("<script type=\"text/javascript\">");
             out.println("alert('Đã xảy ra lỗi: " + e.getMessage() + "');");
-            out.println("window.location='reviewForm.jsp';"); // Quay lại form review
+            out.println("window.location='orderDetail?orderId=" + request.getParameter("orderId") + "';");
             out.println("</script>");
         }
     }

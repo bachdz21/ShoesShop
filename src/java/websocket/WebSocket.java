@@ -33,11 +33,11 @@ public class WebSocket {
 
         try {
             String role = chatDAO.getUserRole(userIdInt);
-            if ("Staff".equals(role)) {
+            if ("Employee".equals(role)) {
                 updateSessionList(userIdInt);
             } else if ("Customer".equals(role)) {
-                int staffId = 19;
-                int sessionId = chatDAO.getOrCreateChatSession(userIdInt, staffId);
+                int employeeId = 19;
+                int sessionId = chatDAO.getOrCreateChatSession(userIdInt, employeeId);
 
                 List<Message> messages = chatDAO.getMessageHistory(sessionId);
                 StringBuilder jsonResponse = new StringBuilder("{\"type\":\"history\",\"data\":[");
@@ -105,8 +105,8 @@ public class WebSocket {
             }
 
             int customerId = "Customer".equals(senderRole) ? senderId : receiverId;
-            int staffId = "Staff".equals(senderRole) ? senderId : receiverId;
-            int sessionId = chatDAO.getOrCreateChatSession(customerId, staffId);
+            int employeeId = "Employee".equals(senderRole) ? senderId : receiverId;
+            int sessionId = chatDAO.getOrCreateChatSession(customerId, employeeId);
 
             // Chỉ lưu tin nhắn nếu không có file (trường hợp gửi text không qua uploadFile)
             if (fileIds.isEmpty()) {
@@ -141,11 +141,11 @@ public class WebSocket {
     }
 
     private boolean isValidChat(String senderRole, String receiverRole) {
-        return ("Customer".equals(senderRole) && "Staff".equals(receiverRole))
-                || ("Staff".equals(senderRole) && "Customer".equals(receiverRole));
+        return ("Customer".equals(senderRole) && "Employee".equals(receiverRole))
+                || ("Employee".equals(senderRole) && "Customer".equals(receiverRole));
     }
 
-    private void updateSessionList(int staffId) throws SQLException {
+    private void updateSessionList(int employeeId) throws SQLException {
         List<String> sessions = chatDAO.getChatSessions();
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("type", "SessionList");
@@ -153,7 +153,7 @@ public class WebSocket {
         String json = gson.toJson(responseMap);
 
         for (Map.Entry<Integer, Session> entry : userSessions.entrySet()) {
-            if ("Staff".equals(chatDAO.getUserRole(entry.getKey())) && entry.getValue().isOpen()) {
+            if ("Employee".equals(chatDAO.getUserRole(entry.getKey())) && entry.getValue().isOpen()) {
                 entry.getValue().getAsyncRemote().sendText(json);
             }
         }

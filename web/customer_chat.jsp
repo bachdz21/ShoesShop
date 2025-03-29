@@ -48,7 +48,7 @@
         <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
         <script>
                             const userId = <%= userId %>;
-                            const staffId = 19;
+                            const employeeId = 19;
                             const ws = new WebSocket("ws://" + window.location.host + "/ShoesStoreWed/chat?userId=" + userId);
                             let messageQueue = [];
                             let isProcessingQueue = false;
@@ -159,7 +159,7 @@
                                 if (selectedFiles.length > 0) {
                                     const formData = new FormData();
                                     formData.append("userId", userId);
-                                    formData.append("staffId", staffId);
+                                    formData.append("employeeId", employeeId);
                                     formData.append("messageContent", msg || "");
                                     selectedFiles.forEach(file => formData.append("files", file));
 
@@ -168,7 +168,7 @@
                                             .then(data => {
                                                 if (data.fileIds && Array.isArray(data.fileIds)) {
                                                     queueMessage(msg, data.fileIds, "chat_msg_item_user");
-                                                    ws.send(staffId + ":" + JSON.stringify({message: msg || "", fileIds: data.fileIds}));
+                                                    ws.send(employeeId + ":" + JSON.stringify({message: msg || "", fileIds: data.fileIds}));
                                                 } else {
                                                     queueMessage("Lỗi: Không nhận được fileIds hợp lệ!", [], "chat_msg_item_admin");
                                                 }
@@ -182,7 +182,7 @@
                                             .catch(error => queueMessage("Lỗi khi tải file: " + error.message, [], "chat_msg_item_admin"));
                                 } else {
                                     queueMessage(msg, [], "chat_msg_item_user");
-                                    ws.send(staffId + ":" + JSON.stringify({message: msg, fileIds: []}));
+                                    ws.send(employeeId + ":" + JSON.stringify({message: msg, fileIds: []}));
                                     textarea.value = "";
                                     adjustTextareaHeight(); // Reset chiều cao textarea sau khi gửi
                                 }

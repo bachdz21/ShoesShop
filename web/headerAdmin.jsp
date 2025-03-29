@@ -120,14 +120,14 @@
             </a>
             <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                 <a href="userProfile" class="dropdown-item">Hồ Sơ</a>
-                <a href="login.jsp" class="dropdown-item">Đăng Xuất</a>
+                <a href="logout" class="dropdown-item">Đăng Xuất</a>
             </div>
         </div>
     </div>
 </nav>
 <!-- Navbar End -->
 
-<% if (user != null && "Staff".equals(user.getRole())) { %>
+<% if (user != null && ("Employee".equals(user.getRole())||"Staff".equals(user.getRole()))) { %>
 <jsp:include page="staff_chat.jsp"/>
 <% } else if (user != null && "Customer".equals(user.getRole())) { %>
 <jsp:include page="customer_chat.jsp"/>
