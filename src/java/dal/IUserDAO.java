@@ -48,4 +48,7 @@ public interface IUserDAO {
     List<ReviewStat> getReviewStats(String searchTerm, double minAvgRating, int minReviewCount, double minSatisfactionRate, int page, int pageSize);
     List<User> getNewCustomers(int limit);
     List<User> getActiveCustomers(String search, String startDate, String endDate, String sortBy);
+    int getTotalCartStats(String searchTerm);
+    int getTotalWishlistStats(String searchTerm);
+    int getTotalReviewStats(String searchTerm, double minAvgRating, int minReviewCount, double minSatisfactionRate);
 }

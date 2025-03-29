@@ -371,7 +371,8 @@
                 align-items: flex-start; /* Căn đầu trên */
             }
             .customer-layout .footer {
-                width: 1860px;
+                width: 350px;
+                height: 350px;
                 margin-left: -15px;
             }
             .customer-layout .user-profile {
@@ -420,10 +421,10 @@
             <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
                 <!-- Bố cục cho Customer -->
                 <div class="container-fluid customer-layout">
-                    <div style="width: 1860px; margin-left: -15px" class="header">
+                    <div style="width: 1520px; margin-left: -15px" class="header">
                         <jsp:include page="header.jsp"/>  
                     </div>
-                    <div class="content content-customer">
+                    <div style="margin-left: 0px" class="content content-customer">
                         <div class="container-fluid pt-4 px-4">
                             <div class="container user-profile">
                                 <div class="main-body">
@@ -457,7 +458,6 @@
                                                             <select style="background-color: white" class="form-control ml-2" id="paymentMethod" name="paymentMethod">
                                                                 <option value="null" ${paymentMethod == null || paymentMethod == 'null' ? 'selected' : ''}>Tất cả</option>
                                                                 <option value="Chuyển Khoản Ngân Hàng" ${paymentMethod == 'Chuyển Khoản Ngân Hàng' ? 'selected' : ''}>Chuyển Khoản Ngân Hàng</option>
-                                                                <option value="Thẻ Tín Dụng" ${paymentMethod == 'Thẻ Tín Dụng' ? 'selected' : ''}>Thẻ Tín Dụng</option>
                                                                 <option value="Tiền Mặt Khi Nhận Hàng" ${paymentMethod == 'Tiền Mặt Khi Nhận Hàng' ? 'selected' : ''}>Tiền Mặt Khi Nhận Hàng</option>
                                                             </select>
                                                         </div>
@@ -766,9 +766,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="footer">
-                        <jsp:include page="footer.jsp"/>  
-                    </div>
+                        <jsp:include page="footer.jsp"/> 
                 </div>
             </c:when>
             <c:otherwise>
@@ -873,7 +871,6 @@
                                                             <select style="background-color: white" class="form-control ml-2" id="paymentMethod" name="paymentMethod">
                                                                 <option value="null" ${paymentMethod == null || paymentMethod == 'null' ? 'selected' : ''}>Tất cả</option>
                                                                 <option value="Chuyển Khoản Ngân Hàng" ${paymentMethod == 'Chuyển Khoản Ngân Hàng' ? 'selected' : ''}>Chuyển Khoản Ngân Hàng</option>
-                                                                <option value="Thẻ Tín Dụng" ${paymentMethod == 'Thẻ Tín Dụng' ? 'selected' : ''}>Thẻ Tín Dụng</option>
                                                                 <option value="Tiền Mặt Khi Nhận Hàng" ${paymentMethod == 'Tiền Mặt Khi Nhận Hàng' ? 'selected' : ''}>Tiền Mặt Khi Nhận Hàng</option>
                                                             </select>
                                                         </div>

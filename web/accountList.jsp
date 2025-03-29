@@ -240,7 +240,7 @@
                 <div class="container-fluid py-4">
                     <div class="row">
                         <div class="col-12">
-                            <h1 class="text-center mb-4">Danh sách người dùng</h1>
+                            <h1 style="color: black"  class="text-center mb-4">Danh sách người dùng</h1>
 
                             <!-- Search Form -->
                             <div class="search-container">

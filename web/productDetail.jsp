@@ -293,7 +293,7 @@
                                                                         </div>-->
                                     <div class="add-to-cart">
                                         <div class="qty-label">
-                                            Qty
+                                            Số lượng
                                             <div class="input-number">
                                                 <input type="number" name="quantity" id="amount" value="1">
                                                 <span class="qty-up" onclick="handlePlus()">+</span>
@@ -349,7 +349,7 @@
                                 <form style="display: flex; align-items: center;" action="addCart" method="POST"> <!-- Đổi sang POST -->
                                     <div class="add-to-cart">
                                         <div class="qty-label">
-                                            Qty
+                                            Số lượng
                                             <div class="input-number">
                                                 <input type="number" name="quantity" id="amount" value="1" min="1">
                                                 <span class="qty-up" onclick="handlePlus()">+</span>
@@ -889,6 +889,8 @@
                 let amount = document.getElementById("amount");
                 let value = parseInt(amount.value);
                 amount.value = value + 1;
+                console.log("handlePlus called, current value:", value);
+                
             }
 
             function handleMinus() {
@@ -897,15 +899,17 @@
                 if (value > 1) {
                     amount.value = value - 1;
                 }
+                console.log("handleMinus called, current value:", value);
+                
             }
-            
+
             function updateHiddenFields() {
                 var size = document.getElementById("sizeSelect").value;
                 var color = document.getElementById("colorSelect").value;
                 document.getElementById("selectedSize").value = size;
                 document.getElementById("selectedColor").value = color;
             }
-            
+
             // Hàm thêm vào Wishlist
             function addToWishlist(productId, button) {
                 fetch('/ShoesStoreWed/addWishlist', {
@@ -945,7 +949,7 @@
                             alert('Có lỗi xảy ra khi thêm vào wishlist: ' + error.message);
                         });
             }
-            
+
             // Hàm cập nhật số lượng Wishlist trên header
             function updateWishlistCount(change) {
                 const wishlistQty = document.querySelector('.header-ctn .dropdown .qty');

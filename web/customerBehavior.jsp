@@ -180,7 +180,6 @@
                 width: 1600px;
                 background: #fff;
                 border-radius: 10px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             }
 
             .sidebar .navbar .navbar-nav .nav-link {
@@ -237,7 +236,7 @@
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
     %>  
 <body>
-    <div style="margin-left: -24px;margin-top: -30px; width: 1838px" class="container-fluid position-relative d-flex p-0">   
+    <div style="margin-left: -24px;margin-top: -30px; width: 100%" class="container-fluid position-relative d-flex p-0">   
             <!-- Sidebar Start -->
             <div class="sidebar pe-4 pb-3">
                 <nav class="navbar bg-secondary navbar-dark">
@@ -285,8 +284,11 @@
            <!-- Sidebar End --> 
            
     <div style="margin-left: 270px" class="content"> 
-        <jsp:include page="headerAdmin.jsp"/>  
-        <div class="container-fluid pt-4 px-4">
+        <div style="width: 104.5%">
+            <jsp:include page="headerAdmin.jsp"/>  
+        </div>
+        
+        <div class="container-fluid pt-4 px-4" style="width: 104.5%">
             <h1>Sản Phẩm Ưa Chuộng</h1>
             <div class="filter-container">
                 <form action="customerBehavior" method="get">

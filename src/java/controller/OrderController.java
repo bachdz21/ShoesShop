@@ -65,6 +65,8 @@ public class OrderController extends HttpServlet {
         String district = request.getParameter("district");
         String ward = request.getParameter("ward");
         String addressDetail = request.getParameter("addressDetail");
+        String totalAmount_raw = request.getParameter("totalAmount");
+        Double totalAmount = Double.parseDouble(totalAmount_raw);
         // Kết hợp các trường địa chỉ lại thành một chuỗi
         String shippingAddress = addressDetail + ", " + ward + ", " + district + ", " + city;
         String phoneNumber = request.getParameter("tel");

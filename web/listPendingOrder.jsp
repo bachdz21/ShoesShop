@@ -29,14 +29,14 @@
 
         <!-- Template Stylesheet -->
         <link href="css/style_1.css" rel="stylesheet">
-        
+
         <!-- Bootstrap -->
         <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
 
-        
+
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
-        
+
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
 
@@ -128,7 +128,7 @@
                 text-align: left;
                 font-weight: 600;
             }
-            
+
             .responsive-table th {
                 background-color: red;
                 color: white;
@@ -267,7 +267,7 @@
                 color: #FF0000;
                 font-weight: 600;
             }
-            
+
             .sidebar .navbar .navbar-nav .nav-link {
                 padding: 10px 20px;
                 color: var(--light);
@@ -276,11 +276,11 @@
                 border-radius: 0 30px 30px 0;
                 outline: none;
             }
-            
+
             .sidebar .navbar-nav {
                 background-color: #191c24;
             }
-            
+
 
             .sidebar .navbar .dropdown-item {
                 padding: 10px 35px;
@@ -323,7 +323,7 @@
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
     %> 
     <body>
-    <div class="container-fluid position-relative d-flex p-0">   
+        <div class="container-fluid position-relative d-flex p-0">   
             <!-- Sidebar Start -->
             <div class="sidebar pe-4 pb-3">
                 <nav class="navbar bg-secondary navbar-dark">
@@ -337,279 +337,296 @@
                         </div>
                         <div class="ms-3">
                             <h6 style="color: red" class="mb-0"><%= user.getUsername() %></h6>
-                            <span style="color: red">Admin</span>
+                            <span style="color: red"><%= user.getRole() %></span>
                         </div>
                     </div>
                     <div class="navbar-nav w-100">
-                        <a href="./revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Danh Sách</a>
-                            <div class="dropdown-menu bg-transparent border-0">
-                                <a href="getAllOrders" class="dropdown-item">Danh Sách Đơn Hàng</a>
-                                <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
-                                <a href="#" class="dropdown-item">Khác</a>
-                            </div>
-                        </div>
-                        <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Biểu Đồ</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Hoạt Động</a>
-                            <div class="dropdown-menu bg-transparent border-0">
-                                <a href="activeCustomers" class="dropdown-item">Hoạt Động Khách Hàng</a>
-                                <a href="customerBehavior" class="dropdown-item">Sản Phẩm Ưa Chuộng</a>
-                            </div>
-                        </div>
-                        
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Quản Lý Đơn Hàng</a>
-                            <div class="dropdown-menu bg-transparent border-0">
-                                <a href="allUserOrder" class="dropdown-item active">Đơn Hàng Chờ Xác Nhân</a>
-                                <a href="userOrder" class="dropdown-item">Đơn Hàng Đã Duyệt</a>
-                            </div>
-                        </div>
+                        <c:choose>
+                            <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Shipper'}">
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Đơn Hàng</a>
+                                    <div class="dropdown-menu bg-transparent border-0">
+                                        <a href="allUserOrder" class="dropdown-item">Đơn Hàng Có Thể Nhận</a>
+                                        <a href="userOrder" class="dropdown-item">Đơn Hàng Đã Nhận</a>
+                                    </div>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="./revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Sản Phẩm</a>
+                                    <div class="dropdown-menu bg-transparent border-0">
+                                        <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
+                                        <a href="#" class="dropdown-item">Khác</a>
+                                    </div>
+                                </div>
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Tài Khoản</a>
+                                    <div class="dropdown-menu bg-transparent border-0">
+                                        <a href="filterUser" class="dropdown-item">Danh Sách Người Dùng</a>
+                                        <a href="filterBanUser" class="dropdown-item">Tài Khoản Bị Khóa</a>
+                                    </div>
+                                </div>
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Hoạt Động</a>
+                                    <div class="dropdown-menu bg-transparent border-0">
+                                        <a href="activeCustomers" class="dropdown-item">Hoạt Động Khách Hàng</a>
+                                        <a href="customerBehavior" class="dropdown-item">Sản Phẩm Ưa Chuộng</a>
+                                    </div>
+                                </div>
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Đơn Hàng</a>
+                                    <div class="dropdown-menu bg-transparent border-0">
+                                        <a href="allUserOrder" class="dropdown-item">Đơn Hàng Chờ Xác Nhận</a>
+                                        <a href="userOrder" class="dropdown-item">Đơn Hàng Đã Duyệt</a>
+                                    </div>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </nav>
             </div>
-           <!-- Sidebar End --> 
-           
-        <div style="background-color: white" class="content"> 
-            <jsp:include page="headerAdmin.jsp"/>  
-            <div class="container-fluid pt-4 px-4">
-                <div class="container user-profile">
-                    <div class="main-body">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h3 style="color: white" class="mb-0">
-                                            <c:choose>
-                                                <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                                                    <i class="fas fa-clipboard-list mr-2"></i> Quản Lý Đơn Hàng
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i class="fas fa-shipping-fast mr-2"></i> Đơn Hàng Có Thể Nhận
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <!-- Form tìm kiếm -->
-                                        <div class="search-section">
-                                            <h5><i class="fas fa-search mr-2"></i> Tìm Kiếm Đơn Hàng</h5>
-                                            <form action="allUserOrder" method="GET">
-                                                <div class="search-row">
-                                                    <div class="search-col">
-                                                        <label for="orderCode">Mã Đơn Hàng:</label>
-                                                        <input style="background-color: white" type="text" class="form-control" id="orderCode" name="orderCode" 
-                                                               placeholder="Nhập mã đơn" value="${orderCode}">
-                                                    </div>
+            <!-- Sidebar End -->
 
-                                                    <div class="search-col">
-                                                        <label for="shippingAddress">Địa Chỉ Giao Hàng:</label>
-                                                        <input style="background-color: white" type="text" class="form-control" id="shippingAddress" name="shippingAddress" 
-                                                               placeholder="Nhập địa chỉ giao hàng" value="${shippingAddress}">
-                                                    </div>
-                                                </div>
-
-                                                <div class="search-row">
-                                                    <div class="search-col">
-                                                        <label for="paymentMethod">Phương Thức Thanh Toán:</label>
-                                                        <select style="background-color: white" class="form-control" id="paymentMethod" name="paymentMethod">
-                                                            <option value="null" ${paymentMethod == null || paymentMethod == 'null' ? 'selected' : ''}>Tất cả</option>
-                                                            <option value="Chuyển Khoản Ngân Hàng" ${paymentMethod == 'Chuyển Khoản Ngân Hàng' ? 'selected' : ''}>Chuyển Khoản Ngân Hàng</option>
-                                                            <option value="Thẻ Tín Dụng" ${paymentMethod == 'Thẻ Tín Dụng' ? 'selected' : ''}>Thẻ Tín Dụng</option>
-                                                            <option value="Tiền Mặt Khi Nhận Hàng" ${paymentMethod == 'Tiền Mặt Khi Nhận Hàng' ? 'selected' : ''}>Tiền Mặt Khi Nhận Hàng</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="search-col">
-                                                        <label for="sortBy">Sắp Xếp:</label>
-                                                        <select style="background-color: white" class="form-control" id="sortBy" name="sortBy">
-                                                            <option value="default" ${sortBy == null || sortBy == 'default' ? 'selected' : ''}>Mặc định</option>
-                                                            <option value="priceDesc" ${sortBy == 'priceDesc' ? 'selected' : ''}>Tổng Số Tiền giảm dần</option>
-                                                            <option value="priceAsc" ${sortBy == 'priceAsc' ? 'selected' : ''}>Tổng Số Tiền tăng dần</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="search-row">
-                                                    <div class="search-col">
-                                                        <label>Ngày Đặt Hàng:</label>
-                                                        <div class="d-flex">
-                                                            <input style="background-color: white" type="date" class="form-control" id="fromDate" name="fromDate" value="${fromDate}">
-                                                            <span class="mx-2 align-self-center">đến</span>
-                                                            <input style="background-color: white" type="date" class="form-control" id="toDate" name="toDate" value="${toDate}">
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="search-col">
-                                                        <label>Tổng Số Tiền:</label>
-                                                        <div class="d-flex">
-                                                            <input style="background-color: white" type="number" class="form-control" id="minPrice" name="minPrice" 
-                                                                   placeholder="Giá tối thiểu" value="${minPrice}">
-                                                            <span class="mx-2 align-self-center">đến</span>
-                                                            <input style="background-color: white" type="number" class="form-control" id="maxPrice" name="maxPrice" 
-                                                                   placeholder="Giá tối đa" value="${maxPrice}">
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="search-actions">
-                                                    <button type="submit" class="btn btn-primary">
-                                                        <i class="fas fa-search mr-2"></i> Tìm Kiếm
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-
-                                        <div class="list-product">
-                                            <!-- Tiêu đề danh sách đơn hàng -->
-                                            <h4 class="product-title">
+            <div style="background-color: white" class="content"> 
+                <jsp:include page="headerAdmin.jsp"/>  
+                <div class="container-fluid pt-4 px-4">
+                    <div class="container user-profile">
+                        <div class="main-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 style="color: white" class="mb-0">
                                                 <c:choose>
                                                     <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                                                        <i class="fas fa-clipboard-check mr-2"></i> Danh Sách Đơn Hàng Chờ Xác Nhận
+                                                        <i class="fas fa-clipboard-list mr-2"></i> Quản Lý Đơn Hàng
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <i class="fas fa-truck mr-2"></i> Danh Sách Đơn Hàng Có Thể Nhận
+                                                        <i class="fas fa-shipping-fast mr-2"></i> Đơn Hàng Có Thể Nhận
                                                     </c:otherwise>
                                                 </c:choose>
-                                            </h4>
-                                            <%-- Hiển thị thông báo từ session nếu có --%>
-                                            <c:if test="${not empty sessionScope.message}">
-                                                <div class="alert alert-success" role="alert">
-                                                    ${sessionScope.message}
-                                                    <%-- Xóa thông báo sau khi hiển thị để tránh hiển thị lại khi tải lại trang --%>
-                                                    <% session.removeAttribute("message"); %>
-                                                </div>
-                                            </c:if>
+                                            </h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Form tìm kiếm -->
+                                            <div class="search-section">
+                                                <h5><i class="fas fa-search mr-2"></i> Tìm Kiếm Đơn Hàng</h5>
+                                                <form action="allUserOrder" method="GET">
+                                                    <div class="search-row">
+                                                        <div class="search-col">
+                                                            <label for="orderCode">Mã Đơn Hàng:</label>
+                                                            <input style="background-color: white" type="text" class="form-control" id="orderCode" name="orderCode" 
+                                                                   placeholder="Nhập mã đơn" value="${orderCode}">
+                                                        </div>
 
-                                            <!-- Tabs điều hướng -->
-                                            <ul class="nav nav-tabs">
-                                                <li class="nav-item">
-                                                    <a class="nav-link active" data-toggle="tab" href="#pending">
-                                                        <c:choose>
-                                                            <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                                                                <i class="fas fa-hourglass-half mr-1"></i> Chờ xác nhận
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <i class="fas fa-hand-holding-box mr-1"></i> Chờ nhận đơn
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item ml-auto">
-                                                    <a href="./userOrder" class="back-btn">
-                                                        <c:choose>
-                                                            <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                                                                <i class="fas fa-list mr-1"></i> Danh sách đơn đã duyệt
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <i class="fas fa-list mr-1"></i> Danh sách đơn đã nhận
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                        <i class="fas fa-arrow-right ml-1"></i>
-                                                    </a>
-                                                </li>
-                                            </ul>
+                                                        <div class="search-col">
+                                                            <label for="shippingAddress">Địa Chỉ Giao Hàng:</label>
+                                                            <input style="background-color: white" type="text" class="form-control" id="shippingAddress" name="shippingAddress" 
+                                                                   placeholder="Nhập địa chỉ giao hàng" value="${shippingAddress}">
+                                                        </div>
+                                                    </div>
 
-                                            <div class="tab-content">
-                                                <!-- Chờ xác nhận -->
-                                                <div id="pending" class="tab-pane active">
-                                                    <!-- Nút Xác nhận tất cả -->
-                                                    <div class="text-right mb-3">
-                                                        <a href="confirmOrder?pageStr=${currentPage}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}" 
-                                                           onclick="return confirm('Bạn có chắc chắn muốn xác nhận tất cả đơn hàng đang chờ không?')" 
-                                                           class="btn btn-primary confirm-all-btn">
+                                                    <div class="search-row">
+                                                        <div class="search-col">
+                                                            <label for="paymentMethod">Phương Thức Thanh Toán:</label>
+                                                            <select style="background-color: white" class="form-control" id="paymentMethod" name="paymentMethod">
+                                                                <option value="null" ${paymentMethod == null || paymentMethod == 'null' ? 'selected' : ''}>Tất cả</option>
+                                                                <option value="Chuyển Khoản Ngân Hàng" ${paymentMethod == 'Chuyển Khoản Ngân Hàng' ? 'selected' : ''}>Chuyển Khoản Ngân Hàng</option>
+                                                                <option value="Tiền Mặt Khi Nhận Hàng" ${paymentMethod == 'Tiền Mặt Khi Nhận Hàng' ? 'selected' : ''}>Tiền Mặt Khi Nhận Hàng</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="search-col">
+                                                            <label for="sortBy">Sắp Xếp:</label>
+                                                            <select style="background-color: white" class="form-control" id="sortBy" name="sortBy">
+                                                                <option value="default" ${sortBy == null || sortBy == 'default' ? 'selected' : ''}>Mặc định</option>
+                                                                <option value="priceDesc" ${sortBy == 'priceDesc' ? 'selected' : ''}>Tổng Số Tiền giảm dần</option>
+                                                                <option value="priceAsc" ${sortBy == 'priceAsc' ? 'selected' : ''}>Tổng Số Tiền tăng dần</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="search-row">
+                                                        <div class="search-col">
+                                                            <label>Ngày Đặt Hàng:</label>
+                                                            <div class="d-flex">
+                                                                <input style="background-color: white" type="date" class="form-control" id="fromDate" name="fromDate" value="${fromDate}">
+                                                                <span class="mx-2 align-self-center">đến</span>
+                                                                <input style="background-color: white" type="date" class="form-control" id="toDate" name="toDate" value="${toDate}">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="search-col">
+                                                            <label>Tổng Số Tiền:</label>
+                                                            <div class="d-flex">
+                                                                <input style="background-color: white" type="number" class="form-control" id="minPrice" name="minPrice" 
+                                                                       placeholder="Giá tối thiểu" value="${minPrice}">
+                                                                <span class="mx-2 align-self-center">đến</span>
+                                                                <input style="background-color: white" type="number" class="form-control" id="maxPrice" name="maxPrice" 
+                                                                       placeholder="Giá tối đa" value="${maxPrice}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="search-actions">
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <i class="fas fa-search mr-2"></i> Tìm Kiếm
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+
+                                            <div class="list-product">
+                                                <!-- Tiêu đề danh sách đơn hàng -->
+                                                <h4 class="product-title">
+                                                    <c:choose>
+                                                        <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                            <i class="fas fa-clipboard-check mr-2"></i> Danh Sách Đơn Hàng Chờ Xác Nhận
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <i class="fas fa-truck mr-2"></i> Danh Sách Đơn Hàng Có Thể Nhận
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </h4>
+                                                <%-- Hiển thị thông báo từ session nếu có --%>
+                                                <c:if test="${not empty sessionScope.message}">
+                                                    <div class="alert alert-success" role="alert">
+                                                        ${sessionScope.message}
+                                                        <%-- Xóa thông báo sau khi hiển thị để tránh hiển thị lại khi tải lại trang --%>
+                                                        <% session.removeAttribute("message"); %>
+                                                    </div>
+                                                </c:if>
+
+                                                <!-- Tabs điều hướng -->
+                                                <ul class="nav nav-tabs">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link active" data-toggle="tab" href="#pending">
                                                             <c:choose>
                                                                 <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                                                                    <i class="fas fa-check-double mr-1"></i> Xác nhận tất cả
+                                                                    <i class="fas fa-hourglass-half mr-1"></i> Chờ xác nhận
                                                                 </c:when>
                                                                 <c:otherwise>
-                                                                    <i class="fas fa-check-double mr-1"></i> Nhận tất cả đơn
+                                                                    <i class="fas fa-hand-holding-box mr-1"></i> Chờ nhận đơn
                                                                 </c:otherwise>
                                                             </c:choose>
                                                         </a>
-                                                    </div>
+                                                    </li>
+                                                    <li class="nav-item ml-auto">
+                                                        <a href="./userOrder" class="back-btn">
+                                                            <c:choose>
+                                                                <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                                    <i class="fas fa-list mr-1"></i> Danh sách đơn đã duyệt
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <i class="fas fa-list mr-1"></i> Danh sách đơn đã nhận
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                            <i class="fas fa-arrow-right ml-1"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
 
-                                                    <div class="responsive-table">
-                                                        <table id="pendingOrdersTable" class="table table-striped">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th><i class="fas fa-hashtag mr-1"></i> Mã Đơn Hàng</th>
-                                                                    <th><i class="fas fa-calendar-alt mr-1"></i> Ngày Đặt Hàng</th>
-                                                                    <th><i class="fas fa-money-bill-wave mr-1"></i> Tổng Số Tiền</th>
-                                                                    <th><i class="fas fa-credit-card mr-1"></i> Phương Thức Thanh Toán</th>
-                                                                    <th><i class="fas fa-map-marker-alt mr-1"></i> Địa Chỉ Giao Hàng</th>
-                                                                    <th><i class="fas fa-info-circle mr-1"></i> Chi Tiết</th>
-                                                                    <th><i class="fas fa-check-circle mr-1"></i> Xác nhận</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="pendingOrdersBody">
-                                                                <c:forEach var="order" items="${orders}">
+                                                <div class="tab-content">
+                                                    <!-- Chờ xác nhận -->
+                                                    <div id="pending" class="tab-pane active">
+                                                        <!-- Nút Xác nhận tất cả -->
+                                                        <div class="text-right mb-3">
+                                                            <a href="confirmOrder?pageStr=${currentPage}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}" 
+                                                               onclick="return confirm('Bạn có chắc chắn muốn xác nhận tất cả đơn hàng đang chờ không?')" 
+                                                               class="btn btn-primary confirm-all-btn">
+                                                                <c:choose>
+                                                                    <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                                        <i class="fas fa-check-double mr-1"></i> Xác nhận tất cả
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <i class="fas fa-check-double mr-1"></i> Nhận tất cả đơn
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </a>
+                                                        </div>
+
+                                                        <div class="responsive-table">
+                                                            <table id="pendingOrdersTable" class="table table-striped">
+                                                                <thead>
                                                                     <tr>
-                                                                        <td>${order.orderCode}</td>
-                                                                        <td>${order.orderDate}</td>
-                                                                        <td><strong>${order.totalAmount}</strong></td>
-                                                                        <td>${order.paymentMethod}</td>
-                                                                        <td>${order.shippingAddress}</td>
-                                                                        <td>
-                                                                            <a href="orderDetail?orderId=${order.orderId}" class="action-link">
-                                                                                <i class="fas fa-eye mr-1"></i> Chi Tiết
-                                                                            </a>
-                                                                        </td>
-                                                                        <td>
-                                                                            <a href="confirmOrder?orderId=${order.orderId}&pageStr=${currentPage}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}" 
-                                                                               class="action-link">
-                                                                                <c:choose>
-                                                                                    <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                                                                                        <i class="fas fa-check mr-1"></i> Xác nhận
-                                                                                    </c:when>
-                                                                                    <c:otherwise>
-                                                                                        <i class="fas fa-truck-loading mr-1"></i> Nhận đơn
-                                                                                    </c:otherwise>
-                                                                                </c:choose>
-                                                                            </a>
-                                                                        </td>
+                                                                        <th><i class="fas fa-hashtag mr-1"></i> Mã Đơn Hàng</th>
+                                                                        <th><i class="fas fa-calendar-alt mr-1"></i> Ngày Đặt Hàng</th>
+                                                                        <th><i class="fas fa-money-bill-wave mr-1"></i> Tổng Số Tiền</th>
+                                                                        <th><i class="fas fa-credit-card mr-1"></i> Phương Thức Thanh Toán</th>
+                                                                        <th><i class="fas fa-map-marker-alt mr-1"></i> Địa Chỉ Giao Hàng</th>
+                                                                        <th><i class="fas fa-info-circle mr-1"></i> Chi Tiết</th>
+                                                                        <th><i class="fas fa-check-circle mr-1"></i> Xác nhận</th>
                                                                     </tr>
-                                                                </c:forEach>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                                                </thead>
+                                                                <tbody id="pendingOrdersBody">
+                                                                    <c:forEach var="order" items="${orders}">
+                                                                        <tr>
+                                                                            <td>${order.orderCode}</td>
+                                                                            <td>${order.orderDate}</td>
+                                                                            <td><strong>${order.totalAmount}</strong></td>
+                                                                            <td>${order.paymentMethod}</td>
+                                                                            <td>${order.shippingAddress}</td>
+                                                                            <td>
+                                                                                <a href="orderDetail?orderId=${order.orderId}" class="action-link">
+                                                                                    <i class="fas fa-eye mr-1"></i> Chi Tiết
+                                                                                </a>
+                                                                            </td>
+                                                                            <td>
+                                                                                <a href="confirmOrder?orderId=${order.orderId}&pageStr=${currentPage}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}" 
+                                                                                   class="action-link">
+                                                                                    <c:choose>
+                                                                                        <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                                                            <i class="fas fa-check mr-1"></i> Xác nhận
+                                                                                        </c:when>
+                                                                                        <c:otherwise>
+                                                                                            <i class="fas fa-truck-loading mr-1"></i> Nhận đơn
+                                                                                        </c:otherwise>
+                                                                                    </c:choose>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </c:forEach>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
 
-                                                    <!-- Phân trang cho đơn hàng -->
-                                                    <div class="pagination">
-                                                        <c:if test="${currentPage > 1}">
-                                                            <a href="allUserOrder?pageStr=1&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}">« Đầu</a>
-                                                        </c:if>
-
-                                                        <c:if test="${currentPage > 3}">
-                                                            <span>...</span>
-                                                        </c:if>
-
-                                                        <c:if test="${currentPage > 1}">
-                                                            <a href="allUserOrder?pageStr=${currentPage - 1}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}">« Trước</a>
-                                                        </c:if>
-
-                                                        <c:forEach var="i" begin="${currentPage - 1}" end="${currentPage + 1}" varStatus="status">
-                                                            <c:if test="${i > 0 && i <= totalPages}">
-                                                                <a href="allUserOrder?pageStr=${i}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}" class="${i == currentPage ? 'active' : ''}">
-                                                                    ${i}
-                                                                </a>
+                                                        <!-- Phân trang cho đơn hàng -->
+                                                        <div class="pagination">
+                                                            <c:if test="${currentPage > 1}">
+                                                                <a href="allUserOrder?pageStr=1&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}">« Đầu</a>
                                                             </c:if>
-                                                        </c:forEach>
 
-                                                        <c:if test="${currentPage < totalPages - 2}">
-                                                            <span>...</span>
-                                                        </c:if>
+                                                            <c:if test="${currentPage > 3}">
+                                                                <span>...</span>
+                                                            </c:if>
 
-                                                        <c:if test="${currentPage < totalPages}">
-                                                            <a href="allUserOrder?pageStr=${currentPage + 1}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}">Sau »</a>
-                                                        </c:if>
+                                                            <c:if test="${currentPage > 1}">
+                                                                <a href="allUserOrder?pageStr=${currentPage - 1}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}">« Trước</a>
+                                                            </c:if>
 
-                                                        <c:if test="${currentPage < totalPages}">
-                                                            <a href="allUserOrder?pageStr=${totalPages}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}">Cuối »</a>
-                                                        </c:if>
-                                                    </div>
-                                                </div> 
+                                                            <c:forEach var="i" begin="${currentPage - 1}" end="${currentPage + 1}" varStatus="status">
+                                                                <c:if test="${i > 0 && i <= totalPages}">
+                                                                    <a href="allUserOrder?pageStr=${i}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}" class="${i == currentPage ? 'active' : ''}">
+                                                                        ${i}
+                                                                    </a>
+                                                                </c:if>
+                                                            </c:forEach>
+
+                                                            <c:if test="${currentPage < totalPages - 2}">
+                                                                <span>...</span>
+                                                            </c:if>
+
+                                                            <c:if test="${currentPage < totalPages}">
+                                                                <a href="allUserOrder?pageStr=${currentPage + 1}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}">Sau »</a>
+                                                            </c:if>
+
+                                                            <c:if test="${currentPage < totalPages}">
+                                                                <a href="allUserOrder?pageStr=${totalPages}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}">Cuối »</a>
+                                                            </c:if>
+                                                        </div>
+                                                    </div> 
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -618,32 +635,31 @@
                         </div>
                     </div>
                 </div>
-            </div>
             </div> 
         </div>    
-    <!-- FOOTER -->
-    <jsp:include page="footerAdmin.jsp"/>
-    <!-- /FOOTER -->
+        <!-- FOOTER -->
+        <jsp:include page="footerAdmin.jsp"/>
+        <!-- /FOOTER -->
 
-    <!-- jQuery Plugins -->
-    <script src='https://code.jquery.com/jquery-3.3.1.slim.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'></script>
-    <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
+        <!-- jQuery Plugins -->
+        <script src='https://code.jquery.com/jquery-3.3.1.slim.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'></script>
+        <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/slick.min.js"></script>
-    <script src="js/nouislider.min.js"></script>
-    <script src="js/jquery.zoom.min.js"></script>
-    <script src="js/main.js"></script>
-    
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/slick.min.js"></script>
-    <script src="js/nouislider.min.js"></script>
-    <script src="js/jquery.zoom.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/slick.min.js"></script>
+        <script src="js/nouislider.min.js"></script>
+        <script src="js/jquery.zoom.min.js"></script>
+        <script src="js/main.js"></script>
 
-</body>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/slick.min.js"></script>
+        <script src="js/nouislider.min.js"></script>
+        <script src="js/jquery.zoom.min.js"></script>
+        <script src="js/main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    </body>
 </html>

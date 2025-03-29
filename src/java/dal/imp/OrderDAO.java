@@ -61,7 +61,7 @@ public class OrderDAO extends DBConnect implements IOrderDAO {
                     stmt.setInt(1, orderId);
                     stmt.setInt(2, item.getProduct().getProductID());
                     stmt.setInt(3, item.getQuantity());
-                    stmt.setDouble(4, item.getProduct().getPrice());
+                    stmt.setDouble(4, item.getProduct().getSalePrice());
                     stmt.addBatch(); // Thêm vào batch để thực thi đồng thời
                 }
                 stmt.executeBatch();

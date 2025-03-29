@@ -83,6 +83,7 @@ public class CartDAO extends DBConnect implements ICartDAO {
                 Product product = new Product(rs.getInt("ProductID"), rs.getString("ProductName"), rs.getString("Description"),
                         rs.getDouble("Price"), rs.getInt("Stock"), rs.getString("CategoryName"),
                         rs.getString("imageURL"), rs.getInt("Sale"), rs.getString("brand"));
+                product.setSalePrice(product.getPrice());
                 if (product.getSale() > 0) {
                     product.setSalePrice((double) product.getPrice() * ((100 - product.getSale()) / 100.0));
                     DecimalFormat df = new DecimalFormat("0.##");

@@ -803,6 +803,7 @@ public List<User> filterBanUsers(String username, String fullName, String email,
         return reviewStats;
     }
 
+    @Override
     public int getTotalCartStats(String searchTerm) {
         String sql = "SELECT COUNT(DISTINCT p.ProductID) " +
                      "FROM Products p LEFT JOIN CartItems ci ON p.ProductID = ci.ProductID " +
@@ -817,6 +818,7 @@ public List<User> filterBanUsers(String username, String fullName, String email,
         return 0;
     }
 
+    @Override
     public int getTotalWishlistStats(String searchTerm) {
         String sql = "SELECT COUNT(DISTINCT p.ProductID) " +
                      "FROM Products p LEFT JOIN WishlistItems wi ON p.ProductID = wi.ProductID " +
@@ -831,6 +833,7 @@ public List<User> filterBanUsers(String username, String fullName, String email,
         return 0;
     }
 
+    @Override
     public int getTotalReviewStats(String searchTerm, double minAvgRating, int minReviewCount, double minSatisfactionRate) {
         String sql = "SELECT COUNT(DISTINCT p.ProductID) " +
                      "FROM Products p LEFT JOIN Reviews r ON p.ProductID = r.ProductID " +

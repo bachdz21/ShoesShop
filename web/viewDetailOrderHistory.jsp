@@ -512,8 +512,6 @@
             <!-- Tổng kết đơn hàng -->
             <div class="summary-section">
                 <div class="summary-item">
-                    <span class="summary-label">Phí vận chuyển</span>
-                    <span class="summary-value">0 đ</span>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Tổng tiền hàng</span>

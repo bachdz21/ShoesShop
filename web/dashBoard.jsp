@@ -78,7 +78,7 @@
             min-height: 100vh;
             background: #ffffff;
             transition: 0.5s;
-            width: 1590px;
+            width: 91.5%;
         }
         
 
@@ -236,7 +236,7 @@
                     </a>
 
                     <div class="navbar-nav align-items-center ms-auto">
-                        <div style="margin-left: 1100px" class="nav-item dropdown">
+                        <div style="margin-left: 750px" class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                                 <i class="fa fa-envelope me-lg-2"></i>
                                 <span class="d-none d-lg-inline-flex">Message</span>
