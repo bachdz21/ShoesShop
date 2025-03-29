@@ -270,14 +270,14 @@
                                             </select>
                                         </div>
                                         <div class="col-md-3 d-flex align-items-end">
-                                            <button style="background-color: #dc3545" type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                                            <button style="background-color: #007bff" type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
                                         </div>
                                     </form>
                                 </div>
 
                                 <!-- Back to Account List Button -->
                                 <div style="text-align: center; margin-bottom: 20px;">
-                                    <a style="background-color: #dc3545" href="filterUser" class="btn btn-primary">Quay lại Danh sách tài khoản</a>
+                                    <a style="background-color: #007bff" href="filterUser" class="btn btn-primary">Quay lại Danh sách tài khoản</a>
                                 </div>
 
                                 <!-- Success Message -->
@@ -303,7 +303,7 @@
                                 <!-- Customer Tab -->
                                 <div id="Customer" class="tab-pane fade show active">
                                     <div class="card shadow-lg mt-4 mx-auto" style="max-width: 95%;">
-                                        <div style="background-color: #dc3545" class="card-header text-white">
+                                        <div style="background-color: #007bff" class="card-header text-white">
                                             <h4 style="color: white" class="mb-0">Danh sách Tài khoản khách hàng bị khóa</h4>
                                         </div>
                                         <div class="card-body">

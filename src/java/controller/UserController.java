@@ -1492,22 +1492,79 @@ public class UserController extends HttpServlet {
             return;
         }
 
-        String startDate = request.getParameter("startDate");
-        String endDate = request.getParameter("endDate");
+        String action = request.getParameter("action");
+        if ("fetchData".equals(action)) {
+            // Xử lý yêu cầu AJAX để lấy dữ liệu
+            String searchTerm = request.getParameter("searchTerm");
+            int page = Integer.parseInt(request.getParameter("page") != null ? request.getParameter("page") : "1");
+            int pageSize = Integer.parseInt(request.getParameter("pageSize") != null ? request.getParameter("pageSize") : "10");
+            double minAvgRating = Double.parseDouble(request.getParameter("minAvgRating") != null ? request.getParameter("minAvgRating") : "0");
+            int minReviewCount = Integer.parseInt(request.getParameter("minReviewCount") != null ? request.getParameter("minReviewCount") : "0");
+            double minSatisfactionRate = Double.parseDouble(request.getParameter("minSatisfactionRate") != null ? request.getParameter("minSatisfactionRate") : "0");
 
-        List<CartStat> cartStats = userDAO.getCartStats(startDate, endDate);
-        List<WishlistStat> wishlistStats = userDAO.getWishlistStats(startDate, endDate);
-        List<ReviewStat> reviewStats = userDAO.getReviewStats(startDate, endDate);
+            List<CartStat> cartStats = userDAO.getCartStats(searchTerm, page, pageSize);
+            List<WishlistStat> wishlistStats = userDAO.getWishlistStats(searchTerm, page, pageSize);
+            List<ReviewStat> reviewStats = userDAO.getReviewStats(searchTerm, minAvgRating, minReviewCount, minSatisfactionRate, page, pageSize);
 
-        request.setAttribute("cartStats", cartStats);
-        request.setAttribute("wishlistStats", wishlistStats);
-        request.setAttribute("reviewStats", reviewStats);
-        
-    // Gắn giá trị startDate và endDate để giữ lại trong form lọc
-        request.setAttribute("startDate", startDate);
-        request.setAttribute("endDate", endDate);
+            int totalCartStats = userDAO.getTotalCartStats(searchTerm);
+            int totalWishlistStats = userDAO.getTotalWishlistStats(searchTerm);
+            int totalReviewStats = userDAO.getTotalReviewStats(searchTerm, minAvgRating, minReviewCount, minSatisfactionRate);
 
-        request.getRequestDispatcher("customerBehavior.jsp").forward(request, response);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter out = response.getWriter();
+            StringBuilder json = new StringBuilder("{");
+            json.append("\"cartStats\":[");
+            for (int i = 0; i < cartStats.size(); i++) {
+                CartStat stat = cartStats.get(i);
+                json.append("{")
+                    .append("\"productName\":\"").append(escapeJson(stat.getProductName())).append("\",")
+                    .append("\"brand\":\"").append(escapeJson(stat.getBrand())).append("\",")
+                    .append("\"addToCartCount\":").append(stat.getAddToCartCount()).append(",")
+                    .append("\"totalQuantity\":").append(stat.getTotalQuantity())
+                    .append("}");
+                if (i < cartStats.size() - 1) json.append(",");
+            }
+            json.append("],");
+            json.append("\"wishlistStats\":[");
+            for (int i = 0; i < wishlistStats.size(); i++) {
+                WishlistStat stat = wishlistStats.get(i);
+                json.append("{")
+                    .append("\"productName\":\"").append(escapeJson(stat.getProductName())).append("\",")
+                    .append("\"categoryName\":\"").append(escapeJson(stat.getCategoryName())).append("\",")
+                    .append("\"wishlistCount\":").append(stat.getWishlistCount())
+                    .append("}");
+                if (i < wishlistStats.size() - 1) json.append(",");
+            }
+            json.append("],");
+            json.append("\"reviewStats\":[");
+            for (int i = 0; i < reviewStats.size(); i++) {
+                ReviewStat stat = reviewStats.get(i);
+                json.append("{")
+                    .append("\"productName\":\"").append(escapeJson(stat.getProductName())).append("\",")
+                    .append("\"avgRating\":").append(stat.getAvgRating()).append(",")
+                    .append("\"reviewCount\":").append(stat.getReviewCount()).append(",")
+                    .append("\"satisfactionRate\":").append(stat.getSatisfactionRate())
+                    .append("}");
+                if (i < reviewStats.size() - 1) json.append(",");
+            }
+            json.append("],");
+            json.append("\"totalCartStats\":").append(totalCartStats).append(",");
+            json.append("\"totalWishlistStats\":").append(totalWishlistStats).append(",");
+            json.append("\"totalReviewStats\":").append(totalReviewStats);
+            json.append("}");
+            out.print(json.toString());
+            out.flush();
+        } else {
+            // Hiển thị trang JSP ban đầu
+            request.getRequestDispatcher("customerBehavior.jsp").forward(request, response);
+        }
+    }
+
+    // Hàm hỗ trợ thoát chuỗi JSON
+    private String escapeJson(String str) {
+        if (str == null) return "";
+        return str.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
     }
 
     public static void main(String[] args) {

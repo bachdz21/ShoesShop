@@ -1,4 +1,3 @@
-
 package controller;
 
 import dal.ICategoryDAO;
@@ -95,7 +94,7 @@ public class ProductController extends HttpServlet {
         // Lấy danh sách danh mục được chọn hiển thị
         List<Category> displayedCategories = categoryDAO.getDisplayedCategories();
 
-        // Lấy tất cả danh mục để hiển thị trong modal (dành cho Employee)
+        // Lấy tất cả danh mục để hiển thị trong modal (dành cho Staff)
         List<Category> allCategories = categoryDAO.getAllCategories();
 
         // Tạo một Map để lưu danh sách sản phẩm bán chạy nhất theo từng danh mục
@@ -117,7 +116,7 @@ public class ProductController extends HttpServlet {
     protected void showUpdateDisplayedCategoriesForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (request.getSession().getAttribute("user") != null && 
-            "Employee".equals(((User) request.getSession().getAttribute("user")).getRole())) {
+            "Staff".equals(((User) request.getSession().getAttribute("user")).getRole())) {
             List<Category> allCategories = categoryDAO.getAllCategories();
             List<Category> displayedCategories = categoryDAO.getDisplayedCategories();
             request.setAttribute("allCategories", allCategories);
@@ -131,7 +130,7 @@ public class ProductController extends HttpServlet {
     protected void updateDisplayedCategories(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (request.getSession().getAttribute("user") != null && 
-            "Employee".equals(((User) request.getSession().getAttribute("user")).getRole())) {
+            "Staff".equals(((User) request.getSession().getAttribute("user")).getRole())) {
             String[] selectedCategories = request.getParameterValues("selectedCategories");
             List<Integer> selectedCategoryIds = new ArrayList<>();
             if (selectedCategories != null) {
@@ -170,9 +169,10 @@ public class ProductController extends HttpServlet {
         List<Product> products = productDAO.getProductsByPage(offset, productsPerPage, orderBy, selectedCategories, selectedBrands, minPrice, maxPrice);
         int totalProducts = productDAO.getTotalProducts(selectedCategories, selectedBrands, minPrice, maxPrice);
         int totalPages = (int) Math.ceil(totalProducts / (double) productsPerPage);
-
+        List<Category> listCategories = categoryDAO.getAllCategories();
         // Set attributes và forward đến JSP
         request.setAttribute("listProducts", products);
+        request.setAttribute("listCategories", listCategories);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", page);
         request.setAttribute("selectedOption", sortOption);
@@ -583,7 +583,7 @@ public class ProductController extends HttpServlet {
         String[] categories = category != null ? new String[]{category} : new String[0];
         String[] brands = brand != null ? new String[]{brand} : new String[0];
 
-        List<Product> deletedProducts = productDAO2.searchProductsByTable("DeletedProducts", offset, pageSize, categories, brands, search);
+        List<Product> deletedProducts = productDAO2.getDeletedProducts();
 
         request.setAttribute("listDeletedProducts", deletedProducts);
         request.setAttribute("currentPage", page);
@@ -655,6 +655,7 @@ public class ProductController extends HttpServlet {
             restoreMultiple(request, response);
         }
     }
+    
     
     protected void filterProductList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");

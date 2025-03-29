@@ -63,6 +63,7 @@
                 font-family: 'Montserrat', sans-serif;
                 background-color: #f8f9fa;
                 color: #333;
+                overflow-x: hidden;
             }
 
             /* Container */
@@ -346,6 +347,38 @@
                 border-radius: 0 30px 30px 0;
                 color: var(--light);
             }
+            
+            .content {
+                margin-left: 250px;
+                min-height: 80vh;
+                background: #ffffff;
+                transition: 0.5s;
+                width: 1650px;
+            }
+/* Khi là Customer */
+            .customer-layout {
+                flex-direction: column; /* Chuyển sang dọc */
+            }
+            .customer-layout .header {
+                width: 100%;
+                background-color: #fff;
+            }
+            .customer-layout .content {
+                flex: 1;
+                width: 100%;
+                display: flex;
+                justify-content: center; /* Căn giữa ngang */
+                align-items: flex-start; /* Căn đầu trên */
+            }
+            .customer-layout .footer {
+                width: 1860px;
+                margin-left: -15px;
+            }
+            .customer-layout .user-profile {
+                max-width: 1200px; /* Giới hạn chiều rộng tối đa */
+                width: 100%;
+                padding: 20px;
+            }
         </style>
 
     </head>
@@ -383,87 +416,18 @@
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
     %> 
     <body>
-        
-    <div class="container-fluid position-relative d-flex p-0">   
-            <!-- Sidebar Start -->
-            <div class="sidebar pe-4 pb-3">
-                <nav class="navbar bg-secondary navbar-dark">
-                    <a href="home" class="navbar-brand mx-5 mb-3">
-                        <h3 class="text-primary"><i class=""></i>ShoeShop</h3>
-                    </a>
-                    <div class="d-flex align-items-center ms-4 mb-4">
-                        <div class="position-relative">
-                            <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
-                        </div>
-                        <div class="ms-3">
-                            <h6 style="color: red" class="mb-0"><%= user.getUsername() %></h6>
-                            <span style="color: red"><%= user.getRole() %></span>
-                        </div>
+        <c:choose>
+            <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
+                <!-- Bố cục cho Customer -->
+                <div class="container-fluid customer-layout">
+                    <div style="width: 1860px; margin-left: -15px" class="header">
+                        <jsp:include page="header.jsp"/>  
                     </div>
-                    <div class="navbar-nav w-100">
-                        <c:choose>
-                            <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Shipper'}">
-                                <!-- Chỉ hiển thị mục Đơn Hàng cho Shipper -->
-                                <div class="nav-item dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Đơn Hàng</a>
-                                    <div class="dropdown-menu bg-transparent border-0">
-                                        <a href="allUserOrder" class="dropdown-item">Đơn Hàng Có Thể Nhận</a>
-                                        <a href="userOrder" class="dropdown-item">Đơn Hàng Đã Nhận</a>
-                                    </div>
-                                </div>
-                            </c:when>
-                            <c:otherwise>
-                                <!-- Hiển thị đầy đủ các mục cho các vai trò khác -->
-                                <a href="./revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
-                                <div class="nav-item dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Sản Phẩm</a>
-                                    <div class="dropdown-menu bg-transparent border-0">
-                                        <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
-                                        <a href="#" class="dropdown-item">Khác</a>
-                                    </div>
-                                </div>
-                                <div class="nav-item dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Tài Khoản</a>
-                                    <div class="dropdown-menu bg-transparent border-0">
-                                        <a href="filterUser" class="dropdown-item">Danh Sách Người Dùng</a>
-                                        <a href="filterBanUser" class="dropdown-item">Tài Khoản Bị Khóa</a>
-                                    </div>
-                                </div>
-                                <div class="nav-item dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Hoạt Động</a>
-                                    <div class="dropdown-menu bg-transparent border-0">
-                                        <a href="activeCustomers" class="dropdown-item">Hoạt Động Khách Hàng</a>
-                                        <a href="customerBehavior" class="dropdown-item">Sản Phẩm Ưa Chuộng</a>
-                                    </div>
-                                </div>
-                                <div class="nav-item dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Đơn Hàng</a>
-                                    <div class="dropdown-menu bg-transparent border-0">
-                                        <c:choose>
-                                            <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Shipper'}">
-                                                <a href="allUserOrder" class="dropdown-item">Đơn Hàng Có Thể Nhận</a>
-                                                <a href="userOrder" class="dropdown-item">Đơn Hàng Đã Nhận</a>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <a href="allUserOrder" class="dropdown-item">Đơn Hàng Chờ Xác Nhận</a>
-                                                <a href="userOrder" class="dropdown-item">Đơn Hàng Đã Duyệt</a>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </nav>
-            </div>
-           <!-- Sidebar End --> 
-           
-        <div style="background-color: white" class="content"> 
-            <jsp:include page="headerAdmin.jsp"/>  
-            <div class="container-fluid pt-4 px-4">
-                <div class="container user-profile">
-                    <div class="main-body">
+                    <div class="content content-customer">
+                        <div class="container-fluid pt-4 px-4">
+                            <div class="container user-profile">
+                                <div class="main-body">
+                                    
                         <div class="row" style="margin-top: 30px; margin-bottom: 30px">
 
 
@@ -798,17 +762,430 @@
 
                         </div>
 
+                            </div>
+                            </div>
+                        </div>
                     </div>
-                                                            
+                    <div class="footer">
+                        <jsp:include page="footer.jsp"/>  
+                    </div>
                 </div>
-                                                             
-            </div>
-                                                             
-        </div>
-                                                         
-    </div>
-<jsp:include page="footerAdmin.jsp"/> 
+            </c:when>
+            <c:otherwise>
+<!-- Bố cục gốc cho Admin/Staff/Shipper -->
+                <div class="container-fluid position-relative d-flex p-0">   
+                    <!-- Sidebar Start -->
+                    <div class="sidebar pe-4 pb-3">
+                        <nav class="navbar bg-secondary navbar-dark">
+                            <a href="home" class="navbar-brand mx-5 mb-3">
+                                <h3 class="text-primary"><i class=""></i>ShoeShop</h3>
+                            </a>
+                            <div class="d-flex align-items-center ms-4 mb-4">
+                                <div class="position-relative">
+                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                                    <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 style="color: red" class="mb-0"><%= user.getUsername() %></h6>
+                                    <span style="color: red"><%= user.getRole() %></span>
+                                </div>
+                            </div>
+                            <div class="navbar-nav w-100">
+                                <c:choose>
+                                    <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Shipper'}">
+                                        <div class="nav-item dropdown">
+                                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Đơn Hàng</a>
+                                            <div class="dropdown-menu bg-transparent border-0">
+                                                <a href="allUserOrder" class="dropdown-item">Đơn Hàng Có Thể Nhận</a>
+                                                <a href="userOrder" class="dropdown-item">Đơn Hàng Đã Nhận</a>
+                                            </div>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="./revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
+                                        <div class="nav-item dropdown">
+                                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Sản Phẩm</a>
+                                            <div class="dropdown-menu bg-transparent border-0">
+                                                <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
+                                                <a href="#" class="dropdown-item">Khác</a>
+                                            </div>
+                                        </div>
+                                        <div class="nav-item dropdown">
+                                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Tài Khoản</a>
+                                            <div class="dropdown-menu bg-transparent border-0">
+                                                <a href="filterUser" class="dropdown-item">Danh Sách Người Dùng</a>
+                                                <a href="filterBanUser" class="dropdown-item">Tài Khoản Bị Khóa</a>
+                                            </div>
+                                        </div>
+                                        <div class="nav-item dropdown">
+                                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Hoạt Động</a>
+                                            <div class="dropdown-menu bg-transparent border-0">
+                                                <a href="activeCustomers" class="dropdown-item">Hoạt Động Khách Hàng</a>
+                                                <a href="customerBehavior" class="dropdown-item">Sản Phẩm Ưa Chuộng</a>
+                                            </div>
+                                        </div>
+                                        <div class="nav-item dropdown">
+                                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Đơn Hàng</a>
+                                            <div class="dropdown-menu bg-transparent border-0">
+                                                <a href="allUserOrder" class="dropdown-item">Đơn Hàng Chờ Xác Nhận</a>
+                                                <a href="userOrder" class="dropdown-item">Đơn Hàng Đã Duyệt</a>
+                                            </div>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </nav>
+                    </div>
+                    <!-- Sidebar End -->
 
+                    <div style="background-color: white" class="content"> 
+                        <jsp:include page="headerAdmin.jsp"/>  
+                        <div class="container-fluid pt-4 px-4">
+                            <div class="container user-profile">
+                                <div class="main-body">
+                                    
+                        <div class="row" style="margin-top: 30px; margin-bottom: 30px">
+
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row justify-content-center">
+                                                <div class="col-lg-12 search-container">
+                                                    <form action="userOrder" method="GET" class="row g-3">
+                                                        <input type="hidden" id="userId" name="userId" value="${user.userId}">
+
+                                                        <div class="col-md-6" style="margin-top: 5px;">
+                                                            <label for="orderCode" class="form-label">Mã Đơn Hàng:</label>
+                                                            <input style="background-color: white" type="text" class="form-control" id="orderCode" name="orderCode" 
+                                                                   placeholder="Nhập mã đơn" value="${orderCode}">
+                                                        </div>
+
+                                                        <div class="col-md-6" style="margin-top: 5px;">
+                                                            <label for="shippingAddress" class="form-label">Địa Chỉ Giao Hàng:</label>
+                                                            <input style="background-color: white" type="text" class="form-control" id="shippingAddress" name="shippingAddress" 
+                                                                   placeholder="Nhập Địa Chỉ Giao Hàng" value="${shippingAddress}">
+                                                        </div>
+
+                                                        <div class="col-md-6" style="margin-top: 5px;">
+                                                            <label for="paymentMethod">Chọn phương thức thanh toán:</label>
+                                                            <select style="background-color: white" class="form-control ml-2" id="paymentMethod" name="paymentMethod">
+                                                                <option value="null" ${paymentMethod == null || paymentMethod == 'null' ? 'selected' : ''}>Tất cả</option>
+                                                                <option value="Chuyển Khoản Ngân Hàng" ${paymentMethod == 'Chuyển Khoản Ngân Hàng' ? 'selected' : ''}>Chuyển Khoản Ngân Hàng</option>
+                                                                <option value="Thẻ Tín Dụng" ${paymentMethod == 'Thẻ Tín Dụng' ? 'selected' : ''}>Thẻ Tín Dụng</option>
+                                                                <option value="Tiền Mặt Khi Nhận Hàng" ${paymentMethod == 'Tiền Mặt Khi Nhận Hàng' ? 'selected' : ''}>Tiền Mặt Khi Nhận Hàng</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-md-6" style="margin-top: 5px;">
+                                                            <label for="sortBy">Sắp xếp :</label>
+                                                            <select style="background-color: white" class="form-control ml-2" id="sortBy" name="sortBy" >
+                                                                <option value="default" ${sortBy == null || sortBy == 'default' ? 'selected' : ''}>Mặc định</option>
+                                                                <option value="priceDesc" ${sortBy == 'priceDesc' ? 'selected' : ''}>Tổng Số Tiền giảm dần</option>
+                                                                <option value="priceAsc" ${sortBy == 'priceAsc' ? 'selected' : ''}>Tổng Số Tiền tăng dần</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-md-6" style="margin-top: 5px;">
+                                                            <label class="form-label">Ngày Đặt Hàng:</label>
+                                                            <div class="date-group">
+                                                                <input style="background-color: white" type="date" class="form-control" id="fromDate" name="fromDate" value="${fromDate}">
+                                                                <span>-</span>
+                                                                <input style="background-color: white" type="date" class="form-control" id="toDate" name="toDate" value="${toDate}">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6" style="margin-top: 5px;">
+                                                            <label class="form-label">Tổng Số Tiền:</label>
+                                                            <div class="price-group">
+                                                                <input style="background-color: white" type="number" class="form-control" id="minPrice" name="minPrice" 
+                                                                       placeholder="Giá tối thiểu" value="${minPrice}">
+                                                                <span>-</span>
+                                                                <input style="background-color: white" type="number" class="form-control" id="maxPrice" name="maxPrice" 
+                                                                       placeholder="Giá tối đa" value="${maxPrice}">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-12 text-center mt-4" >
+                                                            <button type="submit" class="btn btn-primary search-btn px-4" style="margin-top: 30px; margin-bottom: 30px">Tìm kiếm</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="list-product">
+                                                <c:choose>
+                                                    <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
+                                                        <h2 class="product-title">Danh Sách Đơn Hàng</h2>
+                                                    </c:when>
+                                                    <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Shipper'}">
+                                                        <h2 class="product-title">Danh Sách Đơn Hàng Đã Nhận<a href="./allUserOrder" class="back-btn">Danh sách đơn có thể nhận<i class="fa "></i> </a></h2>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <h2 class="product-title">Danh Sách Đơn Hàng Đã Duyệt<a href="./allUserOrder" class="back-btn">Danh sách đơn chưa duyệt<i class="fa "></i> </a></h2>
+
+
+                                                    </c:otherwise>
+                                                </c:choose>
+
+
+                                                <!-- Tabs điều hướng -->
+                                                <ul class="nav nav-tabs">
+                                                    <c:choose>
+                                                        <c:when test="${sessionScope.user != null 
+                                                                        and (sessionScope.user.role == 'Customer' 
+                                                                        or sessionScope.user.role == 'Admin' 
+                                                                        or sessionScope.user.role == 'Staff')}">
+                                                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
+                                                                <li class="nav-item">
+                                                                    <a class="nav-link" data-toggle="tab" href="#pending">Chờ xác nhận</a>
+                                                                </li>
+                                                            </c:if>
+
+                                                            <li class="nav-item">
+                                                                <a class="nav-link active" data-toggle="tab" href="#confirmed">Đã xác nhận</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link" data-toggle="tab" href="#shipped">Đang vận chuyển</a>
+                                                            </li>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link active" data-toggle="tab" href="#shipped">Đang vận chuyển</a>
+                                                            </li>
+                                                        </c:otherwise>
+                                                    </c:choose>
+
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" data-toggle="tab" href="#delivered">Đã giao</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" data-toggle="tab" href="#cancelled">Đã hủy</a>
+                                                    </li>
+                                                </ul>
+
+                                                <div class="tab-content">
+                                                    <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
+
+                                                        <!-- Chờ xác nhận -->
+                                                        <div id="pending" class="tab-pane fade table-responsive">
+                                                            <table id="pendingOrdersTable">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Mã Đơn Hàng</th>
+                                                                        <th>Ngày Đặt Hàng</th>
+                                                                        <th>Tổng Số Tiền</th>
+                                                                        <th>Phương Thức Thanh Toán</th>
+                                                                        <th>Địa Chỉ Giao Hàng</th>
+                                                                        <th>Chi Tiết</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="pendingOrdersBody">
+                                                                    <c:forEach var="order" items="${orders}">
+                                                                        <c:if test="${order.orderStatus eq 'Pending'}">
+                                                                            <tr>
+                                                                                <td>${order.orderCode}</td>
+                                                                                <td>${order.orderDate}</td>
+                                                                                <td>${order.totalAmount}</td>
+                                                                                <td>${order.paymentMethod}</td>
+                                                                                <td>${order.shippingAddress}</td>
+                                                                                <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                                            </tr>
+                                                                        </c:if>
+                                                                    </c:forEach>
+                                                                </tbody>
+                                                            </table>
+                                                            <div id="pendingPagination" style="margin-top: 20px; text-align: center;"></div>
+                                                        </div>
+                                                    </c:if>
+
+                                                    <c:choose>
+                                                        <c:when test="${sessionScope.user != null 
+                                                                        && (sessionScope.user.role == 'Customer' 
+                                                                        || sessionScope.user.role == 'Admin' 
+                                                                        || sessionScope.user.role == 'Staff')}">
+                                                                <!-- Đã xác nhận -->
+                                                                <div id="confirmed" class="tab-pane active table-responsive">
+                                                                    <table id="confirmedOrdersTable">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Mã Đơn Hàng</th>
+                                                                                <th>Ngày Đặt Hàng</th>
+                                                                                <th>Tổng Số Tiền</th>
+                                                                                <th>Phương Thức Thanh Toán</th>
+                                                                                <th>Địa Chỉ Giao Hàng</th>
+                                                                                <th>Chi Tiết</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="confirmedOrdersBody">
+                                                                            <c:forEach var="order" items="${orders}">
+                                                                                <c:if test="${order.orderStatus eq 'Confirmed'}">
+                                                                                    <tr>
+                                                                                        <td>${order.orderCode}</td>
+                                                                                        <td>${order.orderDate}</td>
+                                                                                        <td>${order.totalAmount}</td>
+                                                                                        <td>${order.paymentMethod}</td>
+                                                                                        <td>${order.shippingAddress}</td>
+                                                                                        <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                                                    </tr>
+                                                                                </c:if>
+                                                                            </c:forEach>
+                                                                        </tbody>
+                                                                    </table>
+                                                                    <div id="confirmedPagination" style="margin-top: 20px; text-align: center;"></div>
+                                                                </div>
+
+                                                                <!-- Đang vận chuyển -->
+                                                                <div id="shipped" class="tab-pane fade table-responsive">
+                                                                    <table id="shippedOrdersTable">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Mã Đơn Hàng</th>
+                                                                                <th>Ngày Đặt Hàng</th>
+                                                                                <th>Tổng Số Tiền</th>
+                                                                                <th>Phương Thức Thanh Toán</th>
+                                                                                <th>Địa Chỉ Giao Hàng</th>
+                                                                                <th>Chi Tiết</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="shippedOrdersBody">
+                                                                            <c:forEach var="order" items="${orders}">
+                                                                                <c:if test="${order.orderStatus eq 'Shipped'}">
+                                                                                    <tr>
+                                                                                        <td>${order.orderCode}</td>
+                                                                                        <td>${order.orderDate}</td>
+                                                                                        <td>${order.totalAmount}</td>
+                                                                                        <td>${order.paymentMethod}</td>
+                                                                                        <td>${order.shippingAddress}</td>
+                                                                                        <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                                                    </tr>
+                                                                                </c:if>
+                                                                            </c:forEach>
+                                                                        </tbody>
+                                                                    </table>
+                                                                    <div id="shippedPagination" style="margin-top: 20px; text-align: center;"></div>
+                                                                </div>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <!-- Đang vận chuyển -->
+                                                            <div id="shipped" class="tab-pane active table-responsive">
+                                                                <table id="shippedOrdersTable">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Mã Đơn Hàng</th>
+                                                                            <th>Ngày Đặt Hàng</th>
+                                                                            <th>Tổng Số Tiền</th>
+                                                                            <th>Phương Thức Thanh Toán</th>
+                                                                            <th>Địa Chỉ Giao Hàng</th>
+                                                                            <th>Chi Tiết</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="shippedOrdersBody">
+                                                                        <c:forEach var="order" items="${orders}">
+                                                                            <c:if test="${order.orderStatus eq 'Shipped'}">
+                                                                                <tr>
+                                                                                    <td>${order.orderCode}</td>
+                                                                                    <td>${order.orderDate}</td>
+                                                                                    <td>${order.totalAmount}</td>
+                                                                                    <td>${order.paymentMethod}</td>
+                                                                                    <td>${order.shippingAddress}</td>
+                                                                                    <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                                                </tr>
+                                                                            </c:if>
+                                                                        </c:forEach>
+                                                                    </tbody>
+                                                                </table>
+                                                                <div id="shippedPagination" style="margin-top: 20px; text-align: center;"></div>
+                                                            </div>
+                                                        </c:otherwise>
+                                                    </c:choose>
+
+
+
+
+                                                    <!-- Đã giao -->
+                                                    <div id="delivered" class="tab-pane fade table-responsive">
+                                                        <table id="deliveredOrdersTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Mã Đơn Hàng</th>
+                                                                    <th>Ngày Đặt Hàng</th>
+                                                                    <th>Tổng Số Tiền</th>   
+                                                                    <th>Phương Thức Thanh Toán</th>
+                                                                    <th>Địa Chỉ Giao Hàng</th>
+                                                                    <th>Chi Tiết</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="deliveredOrdersBody">
+                                                                <c:forEach var="order" items="${orders}">
+                                                                    <c:if test="${order.orderStatus eq 'Delivered'}">
+                                                                        <tr>
+                                                                            <td>${order.orderCode}</td>
+                                                                            <td>${order.orderDate}</td>
+                                                                            <td>${order.totalAmount}</td>
+                                                                            <td>${order.paymentMethod}</td>
+                                                                            <td>${order.shippingAddress}</td>
+                                                                            <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                                        </tr>
+                                                                    </c:if>
+                                                                </c:forEach>
+                                                            </tbody>
+                                                        </table>
+                                                        <div id="deliveredPagination" style="margin-top: 20px; text-align: center;"></div>
+                                                    </div>
+
+                                                    <!-- Đã hủy -->
+                                                    <div id="cancelled" class="tab-pane fade table-responsive">
+                                                        <table id="cancelledOrdersTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Mã Đơn Hàng</th>
+                                                                    <th>Ngày Đặt Hàng</th>
+                                                                    <th>Tổng Số Tiền</th>
+                                                                    <th>Phương Thức Thanh Toán</th>
+                                                                    <th>Địa Chỉ Giao Hàng</th>
+                                                                    <th>Chi Tiết</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="cancelledOrdersBody">
+                                                                <c:forEach var="order" items="${orders}">
+                                                                    <c:if test="${order.orderStatus eq 'Cancelled'}">
+                                                                        <tr>
+                                                                            <td>${order.orderCode}</td>
+                                                                            <td>${order.orderDate}</td>
+                                                                            <td>${order.totalAmount}</td>
+                                                                            <td>${order.paymentMethod}</td>
+                                                                            <td>${order.shippingAddress}</td>
+                                                                            <td><a href="orderDetail?orderId=${order.orderId}">Chi Tiết</a></td>
+                                                                        </tr>
+                                                                    </c:if>
+                                                                </c:forEach>
+                                                            </tbody>
+                                                        </table>
+                                                        <div id="cancelledPagination" style="margin-top: 20px; text-align: center;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <jsp:include page="footerAdmin.jsp"/> 
+            </c:otherwise>
+        </c:choose>
         <!-- FOOTER -->
         
         <!-- /FOOTER -->

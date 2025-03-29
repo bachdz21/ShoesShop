@@ -18,6 +18,7 @@ import model.User;
 import java.util.HashMap;
 import java.util.Map;
 import model.ProductVariant;
+
 /**
  *
  * @author nguye
@@ -28,7 +29,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public List<Product> getSaleProducts() {
         List<Product> products = new ArrayList<>();
         try {
-            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale\n"
+            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.AverageRating\n"
                     + "FROM Products p\n"
                     + "INNER JOIN Categories c ON p.CategoryID = c.CategoryID\n"
                     + "WHERE p.Sale != 0 AND p.isDeleted = 0";
@@ -46,6 +47,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setCategoryName(rs.getString("CategoryName"));
                 product.setBrand(rs.getString("brand"));
                 product.setSale(rs.getInt("Sale"));
+                product.setAverageRating(rs.getDouble("AverageRating"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
                     product.setSalePrice(Math.round(salePrice * 100.0) / 100.0);
@@ -62,7 +64,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
         try {
-            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.CreatedDate\n"
+            String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.CreatedDate, p.AverageRating\n"
                     + "FROM Products p\n"
                     + "JOIN Categories c ON p.CategoryID = c.CategoryID\n"
                     + "WHERE p.isDeleted = 0";
@@ -81,6 +83,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setBrand(rs.getString("brand"));
                 product.setSale(rs.getInt("Sale"));
                 product.setCreatedDate(rs.getDate("CreatedDate"));
+                product.setAverageRating(rs.getDouble("AverageRating"));
                 product.setSalePrice(rs.getDouble("Price"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
@@ -98,7 +101,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public List<Product> getProductsByPage(int offset, int limit, String orderBy, String[] categories, String[] brands, double priceMin, double priceMax) {
         List<Product> products = new ArrayList<>();
         try {
-            StringBuilder sql = new StringBuilder("SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, \n"
+            StringBuilder sql = new StringBuilder("SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, p.AverageRating, \n"
                     + "                    c.CategoryName, p.Brand, p.Sale, p.Price * (1 - p.Sale / 100.0) AS SalePrice\n"
                     + "                    FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID\n"
                     + "                    WHERE p.Price BETWEEN ? AND ? AND p.isDeleted = 0");
@@ -157,6 +160,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setCategoryName(rs.getString("CategoryName"));
                 product.setBrand(rs.getString("Brand"));
                 product.setSale(rs.getInt("Sale"));
+                product.setAverageRating(rs.getDouble("AverageRating"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
                     product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Làm tròn đến 2 chữ số thập phân
@@ -413,8 +417,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         String query = "SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, c.CategoryName, p.ImageURL, p.CreatedDate, p.Sale, p.Brand \n"
                 + "FROM Products p\n"
                 + "JOIN Categories c ON p.CategoryID = c.CategoryID \n"
-                + "WHERE p.isDeleted = 1 \n"
-                + "ORDER by d.CreatedDate DESC";
+                + "WHERE p.isDeleted = 1";
 
         try {
             PreparedStatement stmt = c.prepareStatement(query);
@@ -568,7 +571,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public List<Product> getRelativeProducts(String category) {
         List<Product> products = new ArrayList<>();
         try {
-            String query = "SELECT TOP(4) p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale\n"
+            String query = "SELECT TOP(4) p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, c.CategoryName, p.brand, p.Sale, p.AverageRating\n"
                     + "FROM Products p\n"
                     + "INNER JOIN Categories c ON p.CategoryID = c.CategoryID\n"
                     + "WHERE c.CategoryName = ? AND p.isDeleted = 0";
@@ -587,6 +590,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                 product.setCategoryName(rs.getString("CategoryName")); // Kiểm tra cột này
                 product.setBrand(rs.getString("brand"));
                 product.setSale(rs.getInt("Sale"));
+                product.setAverageRating(rs.getDouble("AverageRating"));
                 if (product.getSale() > 0) {
                     double salePrice = product.getPrice() * ((100 - product.getSale()) / 100.0);
                     product.setSalePrice(Math.round(salePrice * 100.0) / 100.0); // Làm tròn đến 2 chữ số thập phân
@@ -642,7 +646,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         }
         return products;
     }
-    
+
     public List<Product> getProductsForPage(int offset, int limit, String[] categories, String[] brands) {
         List<Product> products = new ArrayList<>();
         try {
@@ -651,12 +655,12 @@ public class ProductDAO extends DBConnect implements IProductDAO {
                     + "FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID"
                     + "ORDER by p.CreatedDate DESC"
             );
-            
+
             List<Object> params = new ArrayList<>();
 
             // Add category filter
             if (categories != null && categories.length > 0) {
-                    sql.append(" AND c.CategoryName IN (");
+                sql.append(" AND c.CategoryName IN (");
                 for (int i = 0; i < categories.length; i++) {
                     sql.append(i > 0 ? ", ?" : "?");
                     params.add(categories[i]);
@@ -719,7 +723,7 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         try {
             StringBuilder sql = new StringBuilder("SELECT p.ProductID, p.ProductName, p.Description, p.Price, p.Stock, p.ImageURL, "
                     + "c.CategoryName, p.Brand, p.Sale, p.CreatedDate, p.Price * (1 - p.Sale / 100.0) AS SalePrice "
-                    + "FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
+                    + "FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE p.isDeleted = 0 AND 1=1");
 
             List<Object> params = new ArrayList<>();
 
@@ -783,12 +787,12 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         }
         return products;
     }
-    
+
     // Count total products for pagination
     public int countProductsByTable(String tableName, String category, String brand, String search) {
         int count = 0;
         try {
-            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHERE 1=1");
+            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM " + tableName + " p JOIN Categories c ON p.CategoryID = c.CategoryID WHEREp.isDeleted = 0 AND 1=1");
             List<Object> params = new ArrayList<>();
 
             if (search != null && !search.isEmpty()) {
@@ -821,12 +825,12 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         }
         return count;
     }
-    
+
     // Get all categories for filter dropdown
     public List<String> getAllCategories() {
         List<String> categories = new ArrayList<>();
         String sql = "SELECT DISTINCT CategoryName FROM Categories ORDER BY CategoryName";
-        
+
         try {
             PreparedStatement ps = c.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -836,15 +840,15 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         } catch (SQLException e) {
             System.out.println("Error retrieving categories: " + e.getMessage());
         }
-        
+
         return categories;
     }
-    
+
     // Get all brands for filter dropdown
     public List<String> getAllBrands() {
         List<String> brands = new ArrayList<>();
         String sql = "SELECT DISTINCT brand FROM Products ORDER BY brand";
-        
+
         try {
             PreparedStatement ps = c.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -854,27 +858,27 @@ public class ProductDAO extends DBConnect implements IProductDAO {
         } catch (SQLException e) {
             System.out.println("Error retrieving brands: " + e.getMessage());
         }
-        
+
         return brands;
     }
-    
+
     public List<ProductVariant> getProductVariantsByProductId(int productId) {
         List<ProductVariant> variants = new ArrayList<>();
-        String sql = "SELECT pv.VariantID, pv.ProductID, c.ColorName, s.SizeName, pv.Stock " +
-                     "FROM ProductVariants pv " +
-                     "JOIN Colors c ON pv.ColorID = c.ColorID " +
-                     "JOIN Sizes s ON pv.SizeID = s.SizeID " +
-                     "WHERE pv.ProductID = ?";
+        String sql = "SELECT pv.VariantID, pv.ProductID, c.ColorName, s.SizeName, pv.Stock "
+                + "FROM ProductVariants pv "
+                + "JOIN Colors c ON pv.ColorID = c.ColorID "
+                + "JOIN Sizes s ON pv.SizeID = s.SizeID "
+                + "WHERE pv.ProductID = ?";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, productId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 ProductVariant variant = new ProductVariant(
-                    rs.getInt("VariantID"),
-                    rs.getInt("ProductID"),
-                    rs.getString("ColorName"),
-                    rs.getString("SizeName"),
-                    rs.getInt("Stock")
+                        rs.getInt("VariantID"),
+                        rs.getInt("ProductID"),
+                        rs.getString("ColorName"),
+                        rs.getString("SizeName"),
+                        rs.getInt("Stock")
                 );
                 variants.add(variant);
             }
@@ -885,10 +889,18 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     }
 
     public static void main(String[] args) {
-        ProductDAO p = new ProductDAO();
-        List<Product> list = p.getMostSoldProducts("Sneaker");
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println(list.get(i));
+        ProductDAO productDAO = new ProductDAO();
+        int offset = 0;                    // Bắt đầu từ bản ghi đầu tiên
+        int limit = 100;                   // Lấy tối đa 100 sản phẩm
+        String orderBy = "ProductName ASC"; // Sắp xếp theo tên sản phẩm A-Z
+        String[] categories = null;        // Không lọc danh mục
+        String[] brands = null;            // Không lọc thương hiệu
+        double priceMin = 50000;           // Giá tối thiểu 50,000 VNĐ
+        double priceMax = 50000000;          // Giá tối đa 500,000 VNĐ
+
+        List<Product> products = productDAO.getProductsByPage(offset, limit, orderBy, categories, brands, priceMin, priceMax);
+        for (Product p : products) {
+            System.out.println(p.getProductName() + " - " + p.getPrice());
         }
     }
 
