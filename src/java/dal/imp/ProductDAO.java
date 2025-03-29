@@ -384,7 +384,9 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     public int getTotalProductSold(int productID) {
         int totalSold = 0;
         try {
-            String query = "SELECT COALESCE(SUM(Quantity), 0) AS TotalSold FROM OrderDetails WHERE ProductID = ? AND p.isDeleted = 0";
+            String query = "  SELECT COALESCE(SUM(od.Quantity), 0) AS TotalSold FROM OrderDetails od \n"
+                    + "  JOIN Orders o ON od.OrderID = o.OrderID\n"
+                    + "  WHERE ProductID = ? AND o.OrderStatus = 'Delivered'";
             PreparedStatement ps = c.prepareStatement(query);
             ps.setInt(1, productID);
             ResultSet rs = ps.executeQuery();

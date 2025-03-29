@@ -292,8 +292,8 @@ public class CartController extends HttpServlet {
             throws ServletException, IOException {
         int productId = Integer.parseInt(request.getParameter("productID"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
-        String selectedSize = request.getParameter("selectedSize");
-        String selectedColor = request.getParameter("selectedColor");
+//        String selectedSize = request.getParameter("selectedSize");
+//        String selectedColor = request.getParameter("selectedColor");
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -301,7 +301,8 @@ public class CartController extends HttpServlet {
             return;
         }
         int userId = user.getUserId();
-        cartDAO.addCartItemWithVariant(userId, productId, quantity, selectedSize, selectedColor);
+//        cartDAO.addCartItemWithVariant(userId, productId, quantity, selectedSize, selectedColor);
+        cartDAO.addCartItem(userId, productId, quantity);
         List<CartItem> updatedCart = cartDAO.getCartItems(userId);
         updateCartInSession(request, updatedCart);
         request.getRequestDispatcher("cartItem").forward(request, response);

@@ -255,14 +255,19 @@
                             <div>
                                 <!-- Kiểm tra nếu salePrice > 0 -->
                                 <c:choose>
-                                    <c:when test="${product.salePrice > 0}">
-                                        <h3 class="product-price">
-                                            ${product.salePrice} 
-                                            <del class="product-old-price">${product.price}</del>
-                                        </h3>
+                                    <c:when test="${product.sale > 0}">
+                                        <h4 class="product-price">
+                                            <fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                            <br>
+                                            <del class="product-old-price">
+                                                <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                            </del>
+                                        </h4>
                                     </c:when>
                                     <c:otherwise>
-                                        <h3 class="product-price">${product.price}</h3>
+                                        <h4 class="product-price">
+                                            <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                        </h4>
                                     </c:otherwise>
                                 </c:choose>
 
@@ -272,20 +277,20 @@
                                     </div>
                                     <p>${product.description}</p>
 
-                                    <div class="product-options">
-                                        <label>
-                                            Size
-                                            <select class="input-select">
-                                                <option value="0">X</option>
-                                            </select>
-                                        </label>
-                                        <label>
-                                            Color
-                                            <select class="input-select">
-                                                <option value="0">Red</option>
-                                            </select>
-                                        </label>
-                                    </div>
+                                    <!--                                    <div class="product-options">
+                                                                            <label>
+                                                                                Size
+                                                                                <select class="input-select">
+                                                                                    <option value="0">X</option>
+                                                                                </select>
+                                                                            </label>
+                                                                            <label>
+                                                                                Color
+                                                                                <select class="input-select">
+                                                                                    <option value="0">Red</option>
+                                                                                </select>
+                                                                            </label>
+                                                                        </div>-->
                                     <div class="add-to-cart">
                                         <div class="qty-label">
                                             Qty
@@ -322,24 +327,24 @@
                                 </div>
                                 <p>${product.description}</p>
 
-                                <div class="product-options">
-                                    <label>
-                                        Size
-                                        <select class="input-select" name="size" id="sizeSelect">
-                                            <c:forEach var="variant" items="${productVariants}">
-                                                <option value="${variant.sizeName}">${variant.sizeName}</option>
-                                            </c:forEach>
-                                        </select>
-                                    </label>
-                                    <label>
-                                        Color
-                                        <select class="input-select" name="color" id="colorSelect">
-                                            <c:forEach var="variant" items="${productVariants}">
-                                                <option value="${variant.colorName}">${variant.colorName}</option>
-                                            </c:forEach>
-                                        </select>
-                                    </label>
-                                </div>
+                                <!--                                <div class="product-options">
+                                                                    <label>
+                                                                        Size
+                                                                        <select class="input-select" name="size" id="sizeSelect">
+                                <c:forEach var="variant" items="${productVariants}">
+                                    <option value="${variant.sizeName}">${variant.sizeName}</option>
+                                </c:forEach>
+                            </select>
+                        </label>
+                        <label>
+                            Color
+                            <select class="input-select" name="color" id="colorSelect">
+                                <c:forEach var="variant" items="${productVariants}">
+                                    <option value="${variant.colorName}">${variant.colorName}</option>
+                                </c:forEach>
+                            </select>
+                        </label>
+                    </div>-->
 
                                 <form style="display: flex; align-items: center;" action="addCart" method="POST"> <!-- Đổi sang POST -->
                                     <div class="add-to-cart">
@@ -362,13 +367,25 @@
                                     </div>
                                 </form>
 
-                                <ul style="padding-top: 20px" class="product-btns">
-                                    <li><a href="#"><i class="fa fa-heart-o"></i> add to wishlist</a></li>
-                                </ul>
+                                <!-- Kiểm tra nếu sản phẩm đã có trong wishlist -->
+                                <c:set var="isInWishlist" value="false" />
+                                <c:forEach var="item" items="${sessionScope.wishlist}">
+                                    <c:if test="${item.product.productID == product.productID}">
+                                        <c:set var="isInWishlist" value="true" />
+                                    </c:if>
+                                </c:forEach>
+
+                                <!-- Thay thế form action="addWishlist" -->
+                                <div style="padding-top: 20px" class="product-btns">
+                                    <button style="background: none; border: none" class="add-to-wishlist" onclick="addToWishlist(${product.productID}, this)">
+                                        <i class="${isInWishlist ? 'fa fa-heart text-danger' : 'far fa-heart'}"></i>
+                                        <span class="tooltipp">${isInWishlist ? 'Đã có trong wishlist' : 'Thêm vào wishlist'}</span>
+                                    </button>
+                                </div>
 
                                 <ul class="product-links">
                                     <li>LOẠI SẢN PHẨM:</li>
-                                    <li><a href="">${product.categoryName}</a></li>
+                                    <li><a href="search?category=Sneaker&query=">${product.categoryName}</a></li>
                                 </ul>
 
 
@@ -674,41 +691,6 @@
         </div>
         <!-- /Section -->
 
-        <!-- NEWSLETTER -->
-        <div id="newsletter" class="section">
-            <!-- container -->
-            <div class="container">
-                <!-- row -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="newsletter">
-                            <p>Sign Up for the <strong>NEWSLETTER</strong></p>
-                            <form>
-                                <input class="input" type="email" placeholder="Enter Your Email">
-                                <button class="newsletter-btn"><i class="fa fa-envelope"></i> Subscribe</button>
-                            </form>
-                            <ul class="newsletter-follow">
-                                <li>
-                                    <a href="#"><i class="fa fa-facebook"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#"><i class="fa fa-twitter"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#"><i class="fa fa-instagram"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#"><i class="fa fa-pinterest"></i></a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- /row -->
-            </div>
-            <!-- /container -->
-        </div>
-        <!-- /NEWSLETTER -->
 
         <!-- FOOTER -->
         <jsp:include page="footer.jsp" />
@@ -910,19 +892,66 @@
             }
 
             function handleMinus() {
-            let amount = document.getElementById("amount");
-                    let value = parseInt(amount.value);
-                    if (value > 1) {
-            amount.value = value - 1;
+                let amount = document.getElementById("amount");
+                let value = parseInt(amount.value);
+                if (value > 1) {
+                    amount.value = value - 1;
+                }
             }
-
-            <script>
+            
             function updateHiddenFields() {
-                    var size = document.getElementById("sizeSelect").value;
-                    var color = document.getElementById("colorSelect").value;
-                    document.getElementById("selectedSize").value = size;
-                    document.getElementById("selectedColor").value = color;
-                                    }
-                                            </script>
+                var size = document.getElementById("sizeSelect").value;
+                var color = document.getElementById("colorSelect").value;
+                document.getElementById("selectedSize").value = size;
+                document.getElementById("selectedColor").value = color;
+            }
+            
+            // Hàm thêm vào Wishlist
+            function addToWishlist(productId, button) {
+                fetch('/ShoesStoreWed/addWishlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'productID=' + productId
+                })
+                        .then(response => {
+                            if (!response.ok) {
+                                if (response.status === 401) {
+                                    window.location.href = 'login.jsp'; // Chuyển hướng nếu chưa đăng nhập
+                                }
+                                return response.text().then(text => {
+                                    throw new Error(text);
+                                });
+                            }
+                            return response.text();
+                        })
+                        .then(text => {
+                            if (text === "Added to wishlist successfully") {
+                                const heartIcon = button.querySelector('i');
+                                const tooltip = button.querySelector('.tooltipp');
+                                if (heartIcon.classList.contains('far')) {
+                                    heartIcon.classList.remove('far', 'fa-heart');
+                                    heartIcon.classList.add('fa', 'fa-heart', 'text-danger');
+                                    tooltip.textContent = 'Đã có trong wishlist';
+                                    updateWishlistCount(1); // Tăng số lượng wishlist
+                                }
+                            } else {
+                                throw new Error(text); // Nếu server trả về lỗi
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Có lỗi xảy ra khi thêm vào wishlist: ' + error.message);
+                        });
+            }
+            
+            // Hàm cập nhật số lượng Wishlist trên header
+            function updateWishlistCount(change) {
+                const wishlistQty = document.querySelector('.header-ctn .dropdown .qty');
+                let currentCount = parseInt(wishlistQty.textContent);
+                wishlistQty.textContent = currentCount + change;
+            }
+        </script>
     </body>
 </html>
