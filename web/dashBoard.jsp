@@ -30,14 +30,14 @@
 
         <!-- Template Stylesheet -->
         <link href="css/style_1.css" rel="stylesheet">
-        
+
         <!-- Bootstrap -->
         <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
 
-        
+
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
-        
+
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
 
@@ -61,50 +61,50 @@
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
         <style>
-        .sidebar {
-            position: fix;
- 
-            height: 100vh;
-            overflow-y: auto;
-            background: var(--secondary);
-            transition: 0.5s;
-            z-index: 999;
-        }
+            .sidebar {
+                position: fix;
 
-        .content {
-            margin-left: 125px;
-            margin-right: 20px;
-            margin-top: 0px;
-            min-height: 100vh;
-            background: #ffffff;
-            transition: 0.5s;
-            width: 91.5%;
-        }
-        
+                height: 100vh;
+                overflow-y: auto;
+                background: var(--secondary);
+                transition: 0.5s;
+                z-index: 999;
+            }
 
-        #top-header {
-            width: 1850px;
-        }
+            .content {
+                margin-left: 125px;
+                margin-right: 20px;
+                margin-top: 0px;
+                min-height: 100vh;
+                background: #ffffff;
+                transition: 0.5s;
+                width: 91.5%;
+            }
 
-        h1, h2, h3, h4, h5, h6 {
-          color: #eb1616;
-          font-weight: 700;
-          margin: 0 0 10px;
-        }
 
-        a {
-          color: #eb1616;
-          font-weight: 500;
-          -webkit-transition: 0.2s color;
-          transition: 0.2s color;
-        }
-        body{
-            overflow-x: hidden;
-        }
+            #top-header {
+                width: 1850px;
+            }
 
-        .bg-secondary {
-            display: block !important;
-        }
+            h1, h2, h3, h4, h5, h6 {
+                color: #eb1616;
+                font-weight: 700;
+                margin: 0 0 10px;
+            }
+
+            a {
+                color: #eb1616;
+                font-weight: 500;
+                -webkit-transition: 0.2s color;
+                transition: 0.2s color;
+            }
+            body{
+                overflow-x: hidden;
+            }
+
+            .bg-secondary {
+                display: block !important;
+            }
 
             .sidebar .navbar .navbar-nav .nav-link {
                 padding: 10px 20px;
@@ -119,8 +119,8 @@
                 padding: 10px 35px;
                 border-radius: 0 30px 30px 0;
                 color: var(--light);
-            }   
-            
+            }
+
         </style>
     </head>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -132,7 +132,7 @@
     <%@ page import="java.util.Calendar" %>
     <%@page import="jakarta.servlet.http.HttpSession"%>
     <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-    
+
     <%
         // Sử dụng biến session từ request mà không cần khai báo lại
             User user = (User) request.getSession().getAttribute("user"); // Lấy thông tin người dùng từ session
@@ -159,7 +159,7 @@
         int currentYear = calendar.get(Calendar.YEAR);
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
     %>
-    
+
 
     <body>
         <div class="container-fluid position-relative d-flex p-0">
@@ -212,7 +212,7 @@
                                 <a href="customerBehavior" class="dropdown-item">Sản Phẩm Ưa Chuộng</a>
                             </div>
                         </div>
-                        
+
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Đơn Hàng</a>
                             <div class="dropdown-menu bg-transparent border-0">
@@ -223,130 +223,130 @@
                     </div>
                 </nav>
             </div>
-           <!-- Sidebar End --> 
-            
+            <!-- Sidebar End --> 
+
 
             <!-- Content Start -->
             <div class="content">
-        <div style="background-color: white" class="content"> 
-            <div>
-                <nav style="border-radius: 0 0 0 0" class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
-                    <a href="home" class="navbar-brand d-flex d-lg-none me-4">
-                        <h2 class="text-primary mb-0">ShoeShop</h2>
-                    </a>
+                <div style="background-color: white" class="content"> 
+                    <div>
+                        <nav style="border-radius: 0 0 0 0" class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
+                            <a href="home" class="navbar-brand d-flex d-lg-none me-4">
+                                <h2 class="text-primary mb-0">ShoeShop</h2>
+                            </a>
 
-                    <div class="navbar-nav align-items-center ms-auto">
-                        <div style="margin-left: 750px" class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fa fa-envelope me-lg-2"></i>
-                                <span class="d-none d-lg-inline-flex">Message</span>
-                            </a>
-                            <div class="dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fa fa-bell me-lg-2"></i>
-                                <span class="d-none d-lg-inline-flex">Notification</span>
-                            </a>
-                            <div class="dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <img class="rounded-circle me-lg-2" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                <span class="d-none d-lg-inline-flex"><%= user.getUsername() %></span>
-                            </a>
-                            <div class=" dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+                            <div class="navbar-nav align-items-center ms-auto">
+                                <div style="margin-left: 750px" class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i class="fa fa-envelope me-lg-2"></i>
+                                        <span class="d-none d-lg-inline-flex">Message</span>
+                                    </a>
+                                    <div class="dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+                                    </div>
+                                </div>
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i class="fa fa-bell me-lg-2"></i>
+                                        <span class="d-none d-lg-inline-flex">Notification</span>
+                                    </a>
+                                    <div class="dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+                                    </div>
+                                </div>
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                        <img class="rounded-circle me-lg-2" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                                        <span class="d-none d-lg-inline-flex"><%= user.getUsername() %></span>
+                                    </a>
+                                    <div class=" dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
 
+                                    </div>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                    <!-- Sale & Revenue Start -->
+                    <div class="container-fluid pt-4 px-4">
+                        <div class="row g-4">
+                            <div class="col-sm-3 col-xl-2">
+                                <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
+                                    <i class="fa fa-chart-line fa-3x text-primary"></i>
+                                    <div class="ms-3">
+                                        <p class="mb-2">Đã bán hôm nay</p>
+                                        <h6 class="mb-0"><fmt:formatNumber value="${requestScope.todaySale}" type="number" maxFractionDigits="0" /></h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xl-2">
+                                <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
+                                    <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                                    <div class="ms-3">
+                                        <p class="mb-2">Tổng số đã bán</p>
+                                        <h6 class="mb-0"><fmt:formatNumber value="${requestScope.totalSale}" type="number" maxFractionDigits="0" /></h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xl-2">
+                                <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
+                                    <i class="fa fa-chart-area fa-3x text-primary"></i>
+                                    <div class="ms-3">
+                                        <p class="mb-2">Doanh thu hôm nay</p>
+                                        <h6 class="mb-0"><fmt:formatNumber value="${requestScope.todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xl-2">
+                                <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
+                                    <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                                    <div class="ms-3">
+                                        <p class="mb-2">Tổng doanh thu</p>
+                                        <h6 class="mb-0"><fmt:formatNumber value="${requestScope.totalRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ</h6>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </nav>
-            </div>
-                <!-- Sale & Revenue Start -->
-                <div class="container-fluid pt-4 px-4">
-                    <div class="row g-4">
-                        <div class="col-sm-3 col-xl-2">
-                            <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
-                                <i class="fa fa-chart-line fa-3x text-primary"></i>
-                                <div class="ms-3">
-                                    <p class="mb-2">Đã bán hôm nay</p>
-                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.todaySale}" type="number" maxFractionDigits="0" /></h6>
+                    <!-- Sale & Revenue End -->
+
+
+                    <!-- Sales Chart Start -->
+                    <div class="container-fluid pt-4 px-4">
+                        <div class="row g-4">
+                            <div class="col-sm-6 col-xl-3">
+                                <div style="border-style: solid; border-width: 2px" class="bg-gradient text-center rounded p-4">
+                                    <div class="d-flex align-items-center justify-content-between mb-4">
+                                        <h6 class="mb-0">Doanh thu hàng tháng</h6>
+                                        <a href="getRevenueLastNDays?numberOfDays=7">Xem tất cả</a> <!-- Link để hiển thị tất cả -->
+                                    </div>
+
+                                    <c:choose>
+                                        <c:when test="${isMonthlyRevenue == 'true'}">
+                                            <!-- Nếu isMonthlyRevenue là đúng, hiển thị biểu đồ doanh thu hàng tháng -->
+                                            <canvas id="monthlyRevenueChart"></canvas>
+                                            </c:when>
+                                            <c:otherwise>
+                                            <!-- Nếu isMonthlyRevenue là sai, hiển thị biểu đồ doanh thu hàng năm -->
+                                            <canvas id="yearlyRevenueChart"></canvas>
+                                            </c:otherwise>
+                                        </c:choose>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <div style="border-style: solid; border-width: 2px;" class="bg-gradient text-center rounded p-4">
+                                    <div class="d-flex align-items-center justify-content-between mb-4">
+                                        <h6 class="mb-0">Doanh thu các mặt hàng</h6>
+                                        <!--                                    <a href="getRevenueLastNDays?numberOfDays=7">Xem tất cả</a>-->
+                                    </div>
+                                    <canvas style="margin-bottom: 7px" id="worldwide-sales"></canvas>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-3 col-xl-2">
-                            <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
-                                <i class="fa fa-chart-bar fa-3x text-primary"></i>
-                                <div class="ms-3">
-                                    <p class="mb-2">Tổng số đã bán</p>
-                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.totalSale}" type="number" maxFractionDigits="0" /></h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-3 col-xl-2">
-                            <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
-                                <i class="fa fa-chart-area fa-3x text-primary"></i>
-                                <div class="ms-3">
-                                    <p class="mb-2">Doanh thu hôm nay</p>
-                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.todayRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ</h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-3 col-xl-2">
-                            <div style="border-style: solid; border-width: 2px" class="bg-white rounded d-flex align-items-center justify-content-between p-4">
-                                <i class="fa fa-chart-pie fa-3x text-primary"></i>
-                                <div class="ms-3">
-                                    <p class="mb-2">Tổng doanh thu</p>
-                                    <h6 class="mb-0"><fmt:formatNumber value="${requestScope.totalRevenue}" type="number" groupingUsed="true" maxFractionDigits="0" />đ</h6>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
+                    <!-- Sales Chart End -->
+
                 </div>
-                <!-- Sale & Revenue End -->
-
-
-                <!-- Sales Chart Start -->
-                <div class="container-fluid pt-4 px-4">
-                    <div class="row g-4">
-                        <div class="col-sm-6 col-xl-3">
-                            <div style="border-style: solid; border-width: 2px" class="bg-gradient text-center rounded p-4">
-                                <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <h6 class="mb-0">Doanh thu hàng tháng</h6>
-                                    <a href="getRevenueLastNDays?numberOfDays=7">Xem tất cả</a> <!-- Link để hiển thị tất cả -->
-                                </div>
-
-                                <c:choose>
-                                    <c:when test="${isMonthlyRevenue == 'true'}">
-                                        <!-- Nếu isMonthlyRevenue là đúng, hiển thị biểu đồ doanh thu hàng tháng -->
-                                        <canvas id="monthlyRevenueChart"></canvas>
-                                        </c:when>
-                                        <c:otherwise>
-                                        <!-- Nếu isMonthlyRevenue là sai, hiển thị biểu đồ doanh thu hàng năm -->
-                                        <canvas id="yearlyRevenueChart"></canvas>
-                                        </c:otherwise>
-                                    </c:choose>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <div style="border-style: solid; border-width: 2px;" class="bg-gradient text-center rounded p-4">
-                                <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <h6 class="mb-0">Doanh thu các mặt hàng</h6>
-<!--                                    <a href="getRevenueLastNDays?numberOfDays=7">Xem tất cả</a>-->
-                                </div>
-                                <canvas style="margin-bottom: 7px" id="worldwide-sales"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-                <!-- Sales Chart End -->
-      
-            </div>
-            <!-- Content End -->
-        </div>                  
+                <!-- Content End -->
+            </div>                  
         </div>
         <jsp:include page="footerAdmin.jsp"/>
 
@@ -359,9 +359,9 @@
         <script src="lib/owlcarousel/owl.carousel.min.js"></script>
         <script src="lib/tempusdominus/js/moment.min.js"></script>
         <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <!-- <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>-->
+        <!-- <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>-->
         <script src="js/bootstrap.min.js"></script>
-        
+
         <script>
             // Hàm JavaScript để tự động submit form
             function submitStatusForm(orderId) {
@@ -479,11 +479,14 @@
                         }
                         }
                 });
-                
-        </script>
-        <!-- Template Javascript -->
-        <script src="js/main_1.js"></script>
-        
-    </body>
+            </script>
+            <!-- Template Javascript -->
+            <script src="js/main_1.js"></script>
 
+        </body>
+    <% if (user != null && "Staff".equals(user.getRole())) { %>
+    <jsp:include page="staff_chat.jsp"/>
+    <% } else if (user != null && "Customer".equals(user.getRole())) { %>
+    <jsp:include page="customer_chat.jsp"/>
+    <% } %>
 </html>

@@ -129,4 +129,6 @@
 
 <% if (user != null && "Staff".equals(user.getRole())) { %>
 <jsp:include page="staff_chat.jsp"/>
+<% } else if (user != null && "Customer".equals(user.getRole())) { %>
+<jsp:include page="customer_chat.jsp"/>
 <% } %>
