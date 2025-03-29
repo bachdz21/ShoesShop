@@ -170,9 +170,10 @@ public class ProductController extends HttpServlet {
         List<Product> products = productDAO.getProductsByPage(offset, productsPerPage, orderBy, selectedCategories, selectedBrands, minPrice, maxPrice);
         int totalProducts = productDAO.getTotalProducts(selectedCategories, selectedBrands, minPrice, maxPrice);
         int totalPages = (int) Math.ceil(totalProducts / (double) productsPerPage);
-
+        List<Category> listCategories = categoryDAO.getAllCategories();
         // Set attributes và forward đến JSP
         request.setAttribute("listProducts", products);
+        request.setAttribute("listCategories", listCategories);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", page);
         request.setAttribute("selectedOption", sortOption);

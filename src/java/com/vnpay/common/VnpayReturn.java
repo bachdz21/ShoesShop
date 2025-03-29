@@ -74,7 +74,9 @@ public class VnpayReturn extends HttpServlet {
                     System.out.println("PAYMENT: " + order.getPaymentStatus());
                     System.out.println(order.toString());
                     orderDao.updateOrderPaymentStatus(order);
+                    String orderCode = orderDao.getOrderCodeByOrderID(order.getOrderId());
                     transSuccess = true;
+                    request.setAttribute("orderCode", orderCode);
                 } else {
                     boolean deleted = orderDao.deleteOrder(order.getOrderId());
                     if (deleted) {

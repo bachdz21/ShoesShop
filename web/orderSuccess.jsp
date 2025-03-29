@@ -26,13 +26,10 @@
 
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
-
-        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-          <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
+        <title>Kết quả giao dịch</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+              integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" 
+              crossorigin="anonymous" referrerpolicy="no-referrer" />
     </head>
     <%@page import="model.User"%>
     <%@page import="model.CartItem"%>
@@ -59,137 +56,41 @@
         <!-- HEADER -->
         <jsp:include page="header.jsp" />
         <!-- /HEADER -->
-
         <!-- NAVIGATION -->
         <nav id="navigation">
-            <!-- container -->
             <div class="container">
-                <!-- responsive-nav -->
                 <div id="responsive-nav">
-                    <!-- NAV -->
                     <ul class="main-nav nav navbar-nav">
-                        <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
-                        <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
-                        <li><a href="getOrderByUserID" class="admin-link">Danh Sách Đơn Hàng</a></li>
-                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                            </c:if>
+                        <li><a href="./home">Trang Chủ</a></li>
+                        <li><a href="./product">Danh Mục</a></li>
                     </ul>
-                    <!-- /NAV -->
                 </div>
-                <!-- /responsive-nav -->
             </div>
-            <!-- /container -->
         </nav>
         <!-- /NAVIGATION -->
+        <section style="margin-top: 50px; margin-bottom: 50px; text-align: center;">
+            <div>
+                <img src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:90/plain/https://cellphones.com.vn/media/wysiwyg/Review-empty.png" 
+                     alt="Transaction Status" 
+                     style="width: 120px; height: 120px; margin-bottom: 20px;">
+            </div>
 
-        <!-- THÔNG BÁO ĐẶT HÀNG THÀNH CÔNG -->
-        <div class="container" style="margin-top: 50px; margin-bottom: 50px; text-align: center;">
-            <h1>Đặt hàng thành công!</h1>
-            <p>Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất có thể.</p>
-            <p>Mã đơn hàng của bạn là: <strong>${requestScope.orderCode}</strong></p>
-            <a href="./home" style="background-color: #D10024; border-color: #D10024" class="btn btn-success">Quay Lại Trang Chủ</a>
-            <a href="#" style="background-color: #D10024; border-color: #D10024" class="btn btn-success">Xem Danh Sách Đơn Hàng</a>
-        </div>
-        <!-- /THÔNG BÁO ĐẶT HÀNG THÀNH CÔNG -->
+            <div>
+                <h3 style="font-weight: bold; color: #28a745;">
+                    Bạn đã đặt hàng thành công! 
+                    <i class="fas fa-check-circle"></i>
+                </h3>
+                <p style="font-size: 18px; margin-top: 15px;">Mã đơn hàng của bạn là: <strong>${requestScope.orderCode}</strong></p>
+                <p style="font-size: 18px; margin-top: 15px;">Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất có thể.</p>
+                <p style="font-size: 18px; margin-top: 15px;">Vui lòng để ý số điện thoại của nhân viên tư vấn:</p>
+                <strong style="color: red; font-size: 24px;">0383459560</strong><br><hr>
+                <a href="./home" style="background-color: #D10024; border-color: #D10024" class="btn btn-success">Quay Lại Trang Chủ</a>
+                <a href="./userOrder" style="background-color: #D10024; border-color: #D10024" class="btn btn-success">Xem Danh Sách Đơn Hàng</a>
+            </div>
 
+        </section>
         <!-- FOOTER -->
-        <footer id="footer">
-            <!-- top footer -->
-            <div class="section">
-                <!-- container -->
-                <div class="container">
-                    <!-- row -->
-                    <div class="row">
-                        <div class="col-md-3 col-xs-6">
-                            <div class="footer">
-                                <h3 class="footer-title">About Us</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
-                                <ul class="footer-links">
-                                    <li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
-                                    <li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
-                                    <li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-xs-6">
-                            <div class="footer">
-                                <h3 class="footer-title">Categories</h3>
-                                <ul class="footer-links">
-                                    <li><a href="#">Hot deals</a></li>
-                                    <li><a href="#">Laptops</a></li>
-                                    <li><a href="#">Smartphones</a></li>
-                                    <li><a href="#">Cameras</a></li>
-                                    <li><a href="#">Accessories</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="clearfix visible-xs"></div>
-
-                        <div class="col-md-3 col-xs-6">
-                            <div class="footer">
-                                <h3 class="footer-title">Information</h3>
-                                <ul class="footer-links">
-                                    <li><a href="#">About Us</a></li>
-                                    <li><a href="#">Contact Us</a></li>
-                                    <li><a href="#">Privacy Policy</a></li>
-                                    <li><a href="#">Orders and Returns</a></li>
-                                    <li><a href="#">Terms & Conditions</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-xs-6">
-                            <div class="footer">
-                                <h3 class="footer-title">Service</h3>
-                                <ul class="footer-links">
-                                    <li><a href="#">My Account</a></li>
-                                    <li><a href="#">View Cart</a></li>
-                                    <li><a href="#">Wishlist</a></li>
-                                    <li><a href="#">Track My Order</a></li>
-                                    <li><a href="#">Help</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /row -->
-                </div>
-                <!-- /container -->
-            </div>
-            <!-- /top footer -->
-
-            <!-- bottom footer -->
-            <div id="bottom-footer" class="section">
-                <div class="container">
-                    <!-- row -->
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            <ul class="footer-payments">
-                                <li><a href="#"><i class="fa fa-cc-visa"></i></a></li>
-                                <li><a href="#"><i class="fa fa-credit-card"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-paypal"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-mastercard"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-discover"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-amex"></i></a></li>
-                            </ul>
-                            <span class="copyright">
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            </span>
-
-
-                        </div>
-                    </div>
-                    <!-- /row -->
-                </div>
-                <!-- /container -->
-            </div>
-            <!-- /bottom footer -->
-        </footer>
+        <jsp:include page="footer.jsp" />
         <!-- /FOOTER -->
 
         <!-- jQuery Plugins -->
@@ -199,6 +100,5 @@
         <script src="js/nouislider.min.js"></script>
         <script src="js/jquery.zoom.min.js"></script>
         <script src="js/main.js"></script>
-
     </body>
 </html>

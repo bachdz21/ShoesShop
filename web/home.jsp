@@ -182,7 +182,7 @@
                 display: inline-block; /* Ensure the button is centered */
                 background-color: #D10024; /* Match the theme color */
             }
-            
+
             .rating-stars {
                 display: inline-flex;
                 position: relative;
@@ -330,7 +330,7 @@
                                                         <span class="new">Mới</span>
                                                     </div>
                                                 </a>
-                                                        
+
                                                 <div class="product-body">
                                                     <p class="product-category">${product.categoryName}</p>
                                                     <h3 class="product-name"><a href="productDetail?id=${product.productID}">${product.productName}</a></h3>
@@ -359,7 +359,7 @@
                                                                     </div>
                                                                 </div>
                                                             </c:if>
-                                                            
+
                                                             <!-- Hiển thị sao rỗng cho phần còn lại -->
                                                             <c:forEach var="i" begin="${fullStars + (fraction > 0 ? 1 : 0) + 1}" end="5">
                                                                 <i class="fa fa-star-o"></i>
@@ -375,28 +375,21 @@
                                                         </c:if>
                                                     </c:forEach>
 
-                                                    <form action="addWishlist" method="GET" style="display: inline-block">
-                                                        <input type="hidden" name="productID" value="${product.productID}">
-                                                        <div class="product-btns">
-                                                            <!-- Hiển thị icon trái tim đỏ nếu đã có trong wishlist, nếu không thì hiển thị trái tim trắng -->
-                                                            <button class="add-to-wishlist">
-                                                                <i class="${isInWishlist ? 'fa fa-heart text-danger' : 'far fa-heart'}"></i>
-                                                                <span class="tooltipp">${isInWishlist ? 'Đã có trong wishlist' : 'Thêm vào wishlist'}</span>
-                                                            </button>
-                                                        </div>
-                                                    </form>
-
-                                                    <div class="product-btns" style="display: inline-block">
-                                                        <button class="quick-view"><i class="fa-regular fa-eye"></i><span class="tooltipp">quick view</span></button>
+                                                    <!-- Thay thế form action="addWishlist" -->
+                                                    <div class="product-btns">
+                                                        <button class="add-to-wishlist" onclick="addToWishlist(${product.productID}, this)">
+                                                            <i class="${isInWishlist ? 'fa fa-heart text-danger' : 'far fa-heart'}"></i>
+                                                            <span class="tooltipp">${isInWishlist ? 'Đã có trong wishlist' : 'Thêm vào wishlist'}</span>
+                                                        </button>
                                                     </div>
                                                 </div>
 
-                                                <form action="addCartQuick" method="GET">
-                                                    <div class="add-to-cart">
-                                                        <input type="hidden" name="productID" value="${product.productID}">
-                                                        <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng</button>
-                                                    </div>
-                                                </form>
+                                                <!-- Thay thế form action="addCartQuick" -->
+                                                <div class="add-to-cart">
+                                                    <button class="add-to-cart-btn" onclick="addToCartQuick(${product.productID})">
+                                                        <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
+                                                    </button>
+                                                </div>
 
                                             </div>
                                         </c:forEach>
@@ -601,42 +594,6 @@
         </div>
         <!-- /SECTION -->
 
-        <!-- NEWSLETTER -->
-        <div id="newsletter" class="section">
-            <!-- container -->
-            <div class="container">
-                <!-- row -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="newsletter">
-                            <p>Sign Up for the <strong>NEWSLETTER</strong></p>
-                            <form>
-                                <input class="input" type="email" placeholder="Enter Your Email">
-                                <button class="newsletter-btn"><i class="fa fa-envelope"></i> Subscribe</button>
-                            </form>
-                            <ul class="newsletter-follow">
-                                <li>
-                                    <a href="#"><i class="fa fa-facebook"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#"><i class="fa fa-twitter"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#"><i class="fa fa-instagram"></i></a>
-                                </li>
-                                <li>
-                                    <a href="#"><i class="fa fa-pinterest"></i></a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- /row -->
-            </div>
-            <!-- /container -->
-        </div>
-        <!-- /NEWSLETTER -->
-
         <!-- FOOTER -->
         <jsp:include page="footer.jsp" />
         <!-- /FOOTER -->
@@ -832,6 +789,88 @@
                         })
                         .catch(error => console.error('Error saving settings:', error));
             }
+
+            // Hàm thêm vào Wishlist
+            function addToWishlist(productId, button) {
+                fetch('/ShoesStoreWed/addWishlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'productID=' + productId
+                })
+                        .then(response => {
+                            if (!response.ok) {
+                                if (response.status === 401) {
+                                    window.location.href = 'login.jsp'; // Chuyển hướng nếu chưa đăng nhập
+                                }
+                                return response.text().then(text => {
+                                    throw new Error(text);
+                                });
+                            }
+                            return response.text();
+                        })
+                        .then(text => {
+                            if (text === "Added to wishlist successfully") {
+                                const heartIcon = button.querySelector('i');
+                                const tooltip = button.querySelector('.tooltipp');
+                                if (heartIcon.classList.contains('far')) {
+                                    heartIcon.classList.remove('far', 'fa-heart');
+                                    heartIcon.classList.add('fa', 'fa-heart', 'text-danger');
+                                    tooltip.textContent = 'Đã có trong wishlist';
+                                    updateWishlistCount(1); // Tăng số lượng wishlist
+                                }
+                            } else {
+                                throw new Error(text); // Nếu server trả về lỗi
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Có lỗi xảy ra khi thêm vào wishlist: ' + error.message);
+                        });
+            }
+
+            // Hàm thêm vào giỏ hàng nhanh
+            function addToCartQuick(productId) {
+                fetch('/ShoesStoreWed/addCartQuick', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'productID=' + productId
+                })
+                        .then(response => {
+                            if (response.ok) {
+                                return response.text();
+                            } else if (response.status === 401) {
+                                window.location.href = 'login.jsp'; // Chuyển hướng nếu chưa đăng nhập
+                                throw new Error('Unauthorized');
+                            } else {
+                                throw new Error('Error adding to cart');
+                            }
+                        })
+                        .then(() => {
+                            // Cập nhật số lượng trong giỏ hàng mà không reload
+                            updateCartCount(1); // Tăng số lượng giỏ hàng
+                            alert('Đã thêm vào giỏ hàng thành công!');
+                        })
+                        .catch(error => console.error('Error:', error));
+            }
+
+            // Hàm cập nhật số lượng Wishlist trên header
+            function updateWishlistCount(change) {
+                const wishlistQty = document.querySelector('.header-ctn .dropdown .qty');
+                let currentCount = parseInt(wishlistQty.textContent);
+                wishlistQty.textContent = currentCount + change;
+            }
+
+            // Hàm cập nhật số lượng Cart trên header
+            function updateCartCount(change) {
+                const cartQty = document.querySelector('.header-ctn .dropdown:nth-child(2) .qty');
+                let currentCount = parseInt(cartQty.textContent);
+                cartQty.textContent = currentCount + change;
+            }
         </script>
+
     </body>
 </html>

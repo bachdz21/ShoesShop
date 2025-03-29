@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="css/searchbar.css" />
 <link rel="stylesheet" href="css/chat.css" />
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> <!-- Thêm thẻ fmt -->
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@page import="model.User" %>
 <%@page import="model.CartItem" %>
@@ -82,7 +83,6 @@
                                 <option value="Oxford">Oxford</option>
                                 <option value="Boot">Boot</option>
                                 <option value="Sandal">Sandal</option>
-                                <!-- Thêm các loại sản phẩm khác nếu cần -->
                             </select>
                             <input class="input" name="query" placeholder="Search here">
                             <button type="submit" class="search-btn">Search</button>
@@ -111,7 +111,16 @@
                                         </div>
                                         <div class="product-body">
                                             <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                            <h4 class="product-price">$<%= item.getProduct().getSalePrice() %></h4>
+                                            <h4 class="product-price">
+                                                <% if (item.getProduct().getSale() > 0) { %>
+                                                <fmt:formatNumber value="<%= item.getProduct().getSalePrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                <del class="product-old-price">
+                                                    <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                </del>
+                                                <% } else { %>
+                                                <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                <% } %>
+                                            </h4>
                                         </div>
                                         <form action="deleteWishlistItem" method="POST">
                                             <input type="hidden" name="productId" value="<%= item.getProduct().getProductID() %>">
@@ -147,7 +156,17 @@
                                         </div>
                                         <div class="product-body">
                                             <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                            <h4 class="product-price"><span class="qty"><%= item.getQuantity() %>x</span>$<%= item.getProduct().getSalePrice() %></h4>
+                                            <h4 class="product-price">
+                                                <span class="qty"><%= item.getQuantity() %>x</span>
+                                                <% if (item.getProduct().getSale() > 0) { %>
+                                                <fmt:formatNumber value="<%= item.getProduct().getSalePrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                <del class="product-old-price">
+                                                    <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                </del>
+                                                <% } else { %>
+                                                <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                <% } %>
+                                            </h4>
                                         </div>
                                         <form action="deleteCartItem" method="POST">
                                             <input type="hidden" name="productId" value="<%= item.getProduct().getProductID() %>">
@@ -161,7 +180,7 @@
                                 </div>
                                 <div class="cart-summary">
                                     <small><%= totalQuantity %> sản phẩm</small>
-                                    <h5>Tổng: $<%= subtotal %></h5>
+                                    <h5>Tổng: <fmt:formatNumber value="<%= subtotal %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</h5>
                                 </div>
                                 <div class="cart-btns">
                                     <a href="cartItem">Xem Giỏ Hàng</a>

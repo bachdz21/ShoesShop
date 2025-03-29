@@ -2,6 +2,7 @@
 <html lang="vi">
     <head>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -40,6 +41,7 @@
 
             .order-details {
                 margin-top: 10px;
+                margin-bottom: 40px;
             }
 
             /* Tùy chỉnh thêm cho bảng */
@@ -154,6 +156,7 @@
                 cursor: not-allowed; /* Đổi con trỏ chuột để chỉ ra rằng nút không thể nhấn */
                 background-color: #cccccc; /* Đổi màu nền để trông khác biệt */
             }
+
         </style>
     </head>
     <%@page import="model.User"%>
@@ -187,8 +190,8 @@
             <div class="container">
                 <div id="responsive-nav">
                     <ul class="main-nav nav navbar-nav">
-                        <li><a href="/ProjectPRJ301/home">Trang Chủ</a></li>
-                        <li><a href="/ProjectPRJ301/product">Danh Mục</a></li>
+                        <li><a href="./home">Trang Chủ</a></li>
+                        <li><a href="./product">Danh Mục</a></li>
                     </ul>
                 </div>
             </div>
@@ -200,11 +203,11 @@
             <div class="container">
                 <div class="row">
                     <form action="checkout" method="POST" id="checkoutForm">
-                        <div class="col-md-7">
+                        <div class="col-md-7" style="padding-bottom: 60px">
                             <!-- Billing Details -->
                             <div class="billing-details">
                                 <div class="section-title">
-                                    <h3 class="title">Billing Address</h3>
+                                    <h3 class="title">Thông Tin Giao Hàng</h3>
                                 </div>
 
                                 <div class="form-group">
@@ -212,7 +215,7 @@
                                     <input class="input" type="text" id="full-name" name="full-name" 
                                            value="${requestScope.user != null ? requestScope.user.fullName : ''}" 
                                            placeholder="Full Name" required>
-                                    <div class="error-message" id="full-name-error">Please enter your full name.</div>
+                                    <div class="error-message" id="full-name-error">Nhập tên người nhận</div>
                                 </div>
 
                                 <div class="form-group">
@@ -220,7 +223,7 @@
                                     <input class="input" type="email" id="email" name="email" 
                                            value="${requestScope.user != null ? requestScope.user.email : ''}" 
                                            placeholder="Email" required>
-                                    <div class="error-message" id="email-error">Please enter a valid email address.</div>
+                                    <div class="error-message" id="email-error">Nhập địa chỉ email</div>
                                 </div>
 
                                 <div class="form-group">
@@ -228,7 +231,7 @@
                                     <input class="input" type="tel" id="tel" name="tel" 
                                            value="${requestScope.user != null ? requestScope.user.phoneNumber : ''}" 
                                            placeholder="Telephone" required>
-                                    <div class="error-message" id="tel-error">Please enter a valid phone number.</div>
+                                    <div class="error-message" id="tel-error">Nhập số điện thoại liên lạc</div>
                                 </div>
 
                                 <!-- Đặt 3 trường địa chỉ ngang hàng -->
@@ -301,258 +304,160 @@
                                             </thead>
                                             <tbody>
                                                 <c:if test="${not empty requestScope.listCartItem}">
+                                                    <c:set var="totalAmount" value="0" /> <!-- Khởi tạo totalAmount -->
                                                     <c:forEach var="p" items="${requestScope.listCartItem}">
-                                                        <c:set var="price" value="${p.getProduct().getSalePrice()}" />
+                                                        <c:set var="price" value="${p.getProduct().getSalePrice() > 0 ? p.getProduct().getSalePrice() : p.getProduct().getPrice()}" />
                                                         <c:set var="quantity" value="${p.getQuantity()}" />
                                                         <c:set var="itemTotal" value="${price * quantity}" />
                                                         <c:set var="totalAmount" value="${totalAmount + itemTotal}" />
                                                         <tr>
                                                             <td class="col1">${p.getProduct().getProductName()}</td>
                                                             <td class="col2">${p.getQuantity()}</td>
-                                                            <td class="col3">$${itemTotal}</td>
+                                                            <td class="col3">
+                                                                <fmt:formatNumber value="${itemTotal}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                            </td>
                                                         </tr>
                                                     </c:forEach>
                                                 </c:if>
                                                 <c:if test="${empty requestScope.listCartItem}">
                                                     <tr>
-                                                        <td colspan="3">No items in cart.</td>
-                                                    </tr>
+                                                        <td colspan="3">Không có sản phẩm trong giỏ hàng
+                                                            <div style="margin-top: 15px;">
+                                                                <a href="./product" class="primary-btn go-shopping-btn">Đi mua hàng</a>
+                                                            </div></td>
+
+                                                    </tr>   
                                                 </c:if>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                                 <div class="order-col">
-                                    <div>Shipping</div>
-                                    <div><strong>FREE</strong></div>
-                                </div>
-                                <div class="order-col">
                                     <div><strong>TOTAL</strong></div>
-                                    <div><strong class="order-total">${totalAmount}</strong></div>
+                                    <div>
+                                        <strong class="order-total">
+                                            <fmt:formatNumber value="${totalAmount}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                        </strong>
+                                    </div>
                                 </div>
                             </div>
                             <div class="payment-method">
                                 <label class="form-label">Phương Thức Thanh Toán</label>
                                 <div class="input-radio">
-                                    <input type="radio" name="payment" value="BankTransfer" id="payment-1">
+                                    <input type="radio" name="payment" value="Chuyển Khoản Ngân Hàng" id="payment-1">
                                     <label for="payment-1">
                                         <span></span>
                                         Chuyển Khoản Ngân Hàng
                                     </label>
-                                    <div class="caption">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                    </div>
+                                    <div class="caption"></div>
                                 </div>
                                 <div class="input-radio">
-                                    <input type="radio" name="payment" value="Cash" id="payment-3">
+                                    <input type="radio" name="payment" value="Tiền Mặt Khi Nhận Hàng" id="payment-3">
                                     <label for="payment-3">
                                         <span></span>
                                         Tiền Mặt Khi Nhận Hàng
                                     </label>
-                                    <div class="caption">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                                    </div>
+                                    <div class="caption"></div>
                                 </div>
                                 <div class="error-message" id="payment-error">Vui lòng chọn một phương thức thanh toán.</div>
                             </div>
                             <!-- Thêm trường ẩn để gửi totalAmount -->
                             <input type="hidden" name="totalAmount" value="${totalAmount != null ? totalAmount : 0}">
                             <button type="submit" class="primary-btn order-submit submit-btn" 
-                                    <c:if test="${empty requestScope.listCartItem}">disabled</c:if>>Submit</button>
-                        </div>
-                        <!-- /Order Details -->
-                        <!-- /row -->
+                                    <c:if test="${empty requestScope.listCartItem}">disabled</c:if>>Đặt Hàng</button>
+                            </div>
+                            <!-- /Order Details -->
+                            <!-- /row -->
+                        </form>
+                    </div>
+                    <!-- /container -->
                 </div>
-                <!-- /container -->
             </div>
             <!-- /SECTION -->
 
-            <!-- NEWSLETTER -->
-            <div id="newsletter" class="section">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="newsletter">
-                                <p>Sign Up for the <strong>NEWSLETTER</strong></p>
-                                <form>
-                                    <input class="input" type="email" placeholder="Enter Your Email">
-                                    <button class="newsletter-btn"><i class="fa fa-envelope"></i> Subscribe</button>
-                                </form>
-                                <ul class="newsletter-follow">
-                                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-instagram"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-pinterest"></i></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /NEWSLETTER -->
-
             <!-- FOOTER -->
-            <footer id="footer">
-                <div class="section">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-3 col-xs-6">
-                                <div class="footer">
-                                    <h3 class="footer-title">About Us</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
-                                    <ul class="footer-links">
-                                        <li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
-                                        <li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
-                                        <li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
-                                    </ul>
-                                </div>
-                            </div>
+        <jsp:include page="footer.jsp" />
+        <!-- /FOOTER -->
 
-                            <div class="col-md-3 col-xs-6">
-                                <div class="footer">
-                                    <h3 class="footer-title">Categories</h3>
-                                    <ul class="footer-links">
-                                        <li><a href="#">Hot deals</a></li>
-                                        <li><a href="#">Laptops</a></li>
-                                        <li><a href="#">Smartphones</a></li>
-                                        <li><a href="#">Cameras</a></li>
-                                        <li><a href="#">Accessories</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="clearfix visible-xs"></div>
-
-                            <div class="col-md-3 col-xs-6">
-                                <div class="footer">
-                                    <h3 class="footer-title">Information</h3>
-                                    <ul class="footer-links">
-                                        <li><a href="#">About Us</a></li>
-                                        <li><a href="#">Contact Us</a></li>
-                                        <li><a href="#">Privacy Policy</a></li>
-                                        <li><a href="#">Orders and Returns</a></li>
-                                        <li><a href="#">Terms & Conditions</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3 col-xs-6">
-                                <div class="footer">
-                                    <h3 class="footer-title">Service</h3>
-                                    <ul class="footer-links">
-                                        <li><a href="#">My Account</a></li>
-                                        <li><a href="#">View Cart</a></li>
-                                        <li><a href="#">Wishlist</a></li>
-                                        <li><a href="#">Track My Order</a></li>
-                                        <li><a href="#">Help</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="bottom-footer" class="section">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-12 text-center">
-                                <ul class="footer-payments">
-                                    <li><a href="#"><i class="fa fa-cc-visa"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-credit-card"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-cc-paypal"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-cc-mastercard"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-cc-discover"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-cc-amex"></i></a></li>
-                                </ul>
-                                <span class="copyright">
-                                    Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-            <!-- /FOOTER -->
-
-            <!-- jQuery Plugins -->
-            <script src="js/jquery.min.js"></script>
-            <script src="js/bootstrap.min.js"></script>
-            <script src="js/slick.min.js"></script>
-            <script src="js/nouislider.min.js"></script>
-            <script src="js/jquery.zoom.min.js"></script>
-            <script src="js/main.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-            <script>
-                                        var citis = document.getElementById("city");
-                                        var districts = document.getElementById("district");
-                                        var wards = document.getElementById("ward");
-                                        var Parameter = {
-                                            url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
-                                            method: "GET",
-                                            responseType: "application/json",
-                                        };
-                                        var promise = axios(Parameter);
-                                        promise.then(function (result) {
-                                            renderCity(result.data);
-                                        });
-                                        function renderCity(data) {
-                                            for (const x of data) {
-                                                // Đặt value thành tên thay vì ID
-                                                citis.options[citis.options.length] = new Option(x.Name, x.Name);
-                                            }
-                                            citis.onchange = function () {
-                                                districts.length = 1;
-                                                wards.length = 1;
-                                                if (this.value != "") {
-                                                    const result = data.filter(n => n.Name === this.value);
-                                                    for (const k of result[0].Districts) {
-                                                        // Đặt value thành tên thay vì ID
-                                                        districts.options[districts.options.length] = new Option(k.Name, k.Name);
-                                                    }
-                                                }
-                                            };
-                                            districts.onchange = function () {
-                                                wards.length = 1;
-                                                const dataCity = data.filter((n) => n.Name === citis.value);
-                                                if (this.value != "") {
-                                                    const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
-                                                    for (const w of dataWards) {
-                                                        // Đặt value thành tên thay vì ID
-                                                        wards.options[wards.options.length] = new Option(w.Name, w.Name);
-                                                    }
-                                                }
-                                            };
-                                        }
-            </script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    var checkoutForm = document.getElementById('checkoutForm');
-                    var paymentRadios = document.querySelectorAll('input[name="payment"]');
-                    var paymentError = document.getElementById('payment-error');
-
-                    // Thay đổi action dựa trên phương thức thanh toán
-                    paymentRadios.forEach(function (radio) {
-                        radio.addEventListener('change', function () {
-                            if (this.value === 'Cash') {
-                                checkoutForm.action = 'checkout';
-                            } else if (this.value === 'BankTransfer') {
-                                checkoutForm.action = 'payment';
-                            }
-                            paymentError.style.display = 'none'; // Ẩn thông báo lỗi khi chọn
-                        });
-                    });
-
-                    // Xử lý submit form
-                    checkoutForm.addEventListener('submit', function (e) {
-                        var selectedPayment = document.querySelector('input[name="payment"]:checked');
-                        if (!selectedPayment) {
-                            e.preventDefault(); // Ngăn submit nếu chưa chọn
-                            paymentError.style.display = 'block'; // Hiển thị thông báo lỗi
-                        } else {
-                            paymentError.style.display = 'none'; // Ẩn thông báo lỗi nếu đã chọn
+        <!-- jQuery Plugins -->
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/slick.min.js"></script>
+        <script src="js/nouislider.min.js"></script>
+        <script src="js/jquery.zoom.min.js"></script>
+        <script src="js/main.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+        <script>
+            var citis = document.getElementById("city");
+            var districts = document.getElementById("district");
+            var wards = document.getElementById("ward");
+            var Parameter = {
+                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+                method: "GET",
+                responseType: "application/json",
+            };
+            var promise = axios(Parameter);
+            promise.then(function (result) {
+                renderCity(result.data);
+            });
+            function renderCity(data) {
+                for (const x of data) {
+                    // Đặt value thành tên thay vì ID
+                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
+                }
+                citis.onchange = function () {
+                    districts.length = 1;
+                    wards.length = 1;
+                    if (this.value != "") {
+                        const result = data.filter(n => n.Name === this.value);
+                        for (const k of result[0].Districts) {
+                            // Đặt value thành tên thay vì ID
+                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
                         }
+                    }
+                };
+                districts.onchange = function () {
+                    wards.length = 1;
+                    const dataCity = data.filter((n) => n.Name === citis.value);
+                    if (this.value != "") {
+                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+                        for (const w of dataWards) {
+                            // Đặt value thành tên thay vì ID
+                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
+                        }
+                    }
+                };
+            }
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var checkoutForm = document.getElementById('checkoutForm');
+                var paymentRadios = document.querySelectorAll('input[name="payment"]');
+                var paymentError = document.getElementById('payment-error');
+
+                // Thay đổi action dựa trên phương thức thanh toán
+                paymentRadios.forEach(function (radio) {
+                    radio.addEventListener('change', function () {
+                        if (this.value === 'Tiền Mặt Khi Nhận Hàng') {
+                            checkoutForm.action = 'checkout';
+                        } else if (this.value === 'Chuyển Khoản Ngân Hàng') {
+                            checkoutForm.action = 'payment';
+                        }
+                        paymentError.style.display = 'none'; // Ẩn thông báo lỗi khi chọn
                     });
                 });
-            </script>
+
+                // Xử lý submit form
+                checkoutForm.addEventListener('submit', function (e) {
+                    var selectedPayment = document.querySelector('input[name="payment"]:checked');
+                    if (!selectedPayment) {
+                        e.preventDefault(); // Ngăn submit nếu chưa chọn
+                        paymentError.style.display = 'block'; // Hiển thị thông báo lỗi
+                    } else {
+                        paymentError.style.display = 'none'; // Ẩn thông báo lỗi nếu đã chọn
+                    }
+                });
+            });
+        </script>
     </body>
 </html>
