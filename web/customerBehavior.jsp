@@ -158,7 +158,7 @@
             min-height: 80vh;
             background: #ffffff;
             transition: 0.5s;
-            width: 1600px;
+            width: 1236px;
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -229,7 +229,7 @@
         int currentYear = calendar.get(Calendar.YEAR);
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
     %>  
-<body>
+    <body style="overflow-x: hidden">
     <div style="margin-left: -24px;margin-top: -30px; width: 1838px" class="container-fluid position-relative d-flex p-0">   
         <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
@@ -503,31 +503,25 @@
         
         function filterCartTable() {
             const productName = $("#cartProductName").val().toLowerCase();
-            const brand = $("#cartBrand").val().toLowerCase();
             
             $(".cart-row").each(function() {
                 const rowProductName = $(this).find("td:eq(0)").text().toLowerCase();
-                const rowBrand = $(this).find("td:eq(2)").text().toLowerCase();
                 
                 const nameMatch = productName === "" || rowProductName.includes(productName);
-                const brandMatch = brand === "" || rowBrand.includes(brand);
                 
-                $(this).toggle(nameMatch && brandMatch);
+                $(this).toggle(nameMatch);
             });
         }
         
         function filterWishlistTable() {
             const productName = $("#wishlistProductName").val().toLowerCase();
-            const category = $("#wishlistCategory").val().toLowerCase();
             
             $(".wishlist-row").each(function() {
                 const rowProductName = $(this).find("td:eq(0)").text().toLowerCase();
-                const rowCategory = $(this).find("td:eq(2)").text().toLowerCase();
                 
                 const nameMatch = productName === "" || rowProductName.includes(productName);
-                const categoryMatch = category === "" || rowCategory.includes(category);
                 
-                $(this).toggle(nameMatch && categoryMatch);
+                $(this).toggle(nameMatch);
             });
         }
         
@@ -557,16 +551,10 @@
             if(urlParams.has('cartProductName')) {
                 $("#cartProductName").val(urlParams.get('cartProductName'));
             }
-            if(urlParams.has('cartBrand')) {
-                $("#cartBrand").val(urlParams.get('cartBrand'));
-            }
             
             // Khôi phục giá trị cho bảng yêu thích
             if(urlParams.has('wishlistProductName')) {
                 $("#wishlistProductName").val(urlParams.get('wishlistProductName'));
-            }
-            if(urlParams.has('wishlistCategory')) {
-                $("#wishlistCategory").val(urlParams.get('wishlistCategory'));
             }
             
             // Khôi phục giá trị cho bảng đánh giá

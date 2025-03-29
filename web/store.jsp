@@ -333,7 +333,7 @@
                                     <div class="product">
                                         <a href="productDetail?id=${i.productID}&category=${i.categoryName}" class="product-img">
                                             <div class="product-img">
-                                                <img src="${i.imageURL}" alt="">
+                                                <img src="${i.imageURL}" alt="" style="height: 262.5px">
                                                 <c:choose>
                                                     <c:when test="${i.salePrice > 0}">
                                                         <div class="product-label">
@@ -358,7 +358,7 @@
                                                     </h4>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <h4 class="product-price">
+                                                    <h4 class="product-price" style="height: 39.6px">
                                                         <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
                                                     </h4>
                                                 </c:otherwise>

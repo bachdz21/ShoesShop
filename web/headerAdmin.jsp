@@ -38,14 +38,14 @@
         position: fixed;
         height: 100vh;
     }
-    
+
     .fw-normal {
         color: #afd9ee
     }
 </style>
 <!-- Navbar Start -->
 <nav style="border-radius: 0 0 0 0" class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
-    <a href="home" class="navbar-brand d-flex d-lg-none me-4">
+    <a class="navbar-brand d-flex d-lg-none me-4">
         <h2 class="text-primary mb-0">ShoeShop</h2>
     </a>
 
@@ -119,11 +119,14 @@
                 <span class="d-none d-lg-inline-flex"><%= user.getUsername() %></span>
             </a>
             <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                <a href="userProfile" class="dropdown-item">My Profile</a>
-                <a href="#" class="dropdown-item">Settings</a>
-                <a href="login.jsp" class="dropdown-item">Log Out</a>
+                <a href="userProfile" class="dropdown-item">Hồ Sơ</a>
+                <a href="login.jsp" class="dropdown-item">Đăng Xuất</a>
             </div>
         </div>
     </div>
 </nav>
 <!-- Navbar End -->
+
+<% if (user != null && "Staff".equals(user.getRole())) { %>
+<jsp:include page="staff_chat.jsp"/>
+<% } %>

@@ -2,6 +2,7 @@
 <html lang="vi">
     <head>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -29,14 +30,14 @@
 
         <!-- Template Stylesheet -->
         <link href="css/style_1.css" rel="stylesheet">
-        
+
         <!-- Bootstrap -->
         <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
 
-        
+
         <!-- Custom styles -->
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
-        
+
         <!-- Google font -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
 
@@ -180,11 +181,11 @@
                 border-radius: 0 30px 30px 0;
                 outline: none;
             }
-            
+
             .sidebar .navbar-nav {
                 background-color: #191c24;
             }
-            
+
 
 
             .sidebar .navbar .dropdown-item {
@@ -192,16 +193,16 @@
                 border-radius: 0 30px 30px 0;
                 color: var(--light);
             }
-            
+
             .form-check-input {
                 background-color: white;
             }
-            
+
             .form-group {
                 margin-left: 100px;
                 margin-right: 110px;
             }
-            
+
             body {
                 background-color: #191c24;
                 overflow-x: hidden;
@@ -233,9 +234,9 @@
             }
 
             .align-self-end .btn:hover {
-                color: #ff3333;  
-            }            
-            
+                color: #ff3333;
+            }
+
         </style>
     </head>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -272,7 +273,7 @@
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
     %> 
     <body>
-    <div class="container-fluid position-relative d-flex p-0">   
+        <div class="container-fluid position-relative d-flex p-0">   
             <!-- Sidebar Start -->
             <div class="sidebar pe-4 pb-3">
                 <nav class="navbar bg-secondary navbar-dark">
@@ -313,7 +314,7 @@
                                 <a href="customerBehavior" class="dropdown-item">Sản Phẩm Ưa Chuộng</a>
                             </div>
                         </div>
-                        
+
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Đơn Hàng</a>
                             <div class="dropdown-menu bg-transparent border-0">
@@ -324,125 +325,91 @@
                     </div>
                 </nav>
             </div>
-           <!-- Sidebar End --> 
+            <!-- Sidebar End --> 
 
-    <div class="content"> 
-        <jsp:include page="headerAdmin.jsp"/> 
-            <!-- Filter Form -->
-            <div class="filter-container" style="margin: 20px 30px;">
-                <form action="trash" method="get" class="d-flex">
-                    <div class="me-3" style="margin-right: 100px">
-                        <label for="category" class="form-label">Danh Mục:</label>
-                        <select style="background-color: white;font-size: 13px" name="category" id="category" class="form-select">
-                                <option value="">Tất Cả</option>
-                                <c:forEach var="category" items="${categories}">
-                                    <option value="${category}" ${param.category eq category ? 'selected' : ''}>${category}</option>
-                                </c:forEach>
-                            </select>
-                    </div>
-                    <div class="me-3">
-                        <label for="brand" class="form-label">Thương Hiệu:</label>
-                            <select style="background-color: white;font-size: 13px" name="brand" id="brand" class="form-select">
-                                <option value="">Tất Cả</option>
-                                <c:forEach var="brand" items="${brands}">
-                                    <option value="${brand}" ${param.brand eq brand ? 'selected' : ''}>${brand}</option>
-                                </c:forEach>
-                            </select>
-                    </div>
-                    <div class="me-3">
-                        <label for="search" class="form-label">Tìm Kiếm:</label>
-                        <input style="background-color: white;" type="text" name="search" id="search" class="form-control" value="${param.search}" placeholder="Tên sản phẩm...">
-                    </div>
-                    <div class="align-self-end">
-                        <button style="background-color: #d10024;" type="submit" class="btn btn-primary">Lọc</button>
-                    </div>
-                </form>
-            </div>        
-        <div class="list-product">
-            <h2 class="product-title">Danh Sách Sản Phẩm Đã Xoá</h2>
-            <a href="list" class="product-add-link">Danh Sách Sản Phẩm</a>
-                <form action="productAction" method="post">
-                    <table border="1">
-                        <tr>    
-                            <th>Chọn</th>
-                            <th>ID</th>
-                            <th>Tên Sản Phẩm</th>
-                            <th>Mô Tả</th>
-                            <th>Giá</th>
-                            <th>Kho</th>
-                            <th>Hình Ảnh</th>
-                            <th>Danh Mục</th>
-                            <th>Thương Hiệu</th>
-                            <th>Sale</th>
-                            <th>Ngày Tạo</th>
-                            <th>Chỉnh Sửa</th>
-                        </tr>
-                        <c:forEach var="p" items="${requestScope.listDeletedProducts}">
-                            <tr>
-                                <td><input type="checkbox" name="selectedProducts" value="${p.productID}" /></td>
-                                <td>${p.productID}</td>
-                                <td>${p.productName}</td>
-                                <td>${p.description}</td>
-                                <td>${p.price}</td>
-                                <td>${p.stock}</td>
-                                <td><img src="${p.imageURL}" alt="Product Image" width="50"/></td>
-                                <td>${p.categoryName}</td>
-                                <td>${p.brand}</td>
-                                <td>${p.sale}</td>
-                                <td>${p.createdDate}</td>
-                                <td>
-                                    <a href="restore?id=${p.productID}" class="action-link btn-edit">Khôi Phục</a>
-                                    <span class="divider">|</span>
-                                    <a href="deleteTrash?id=${p.productID}" class="action-link btn-delete">Xóa</a>
-                                </td>
+            <div class="content"> 
+                <jsp:include page="headerAdmin.jsp"/> 
+                       
+                <div class="list-product">
+                    <h2 class="product-title">Danh Sách Sản Phẩm Đã Xoá</h2>
+                    <a href="list" class="product-add-link">Danh Sách Sản Phẩm</a>
+                    <form action="productAction" method="post">
+                        <table border="1">
+                            <tr>    
+                                <th>Chọn</th>
+                                <th>ID</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th>Mô Tả</th>
+                                <th>Giá</th>
+                                <th>Kho</th>
+                                <th>Hình Ảnh</th>
+                                <th>Danh Mục</th>
+                                <th>Thương Hiệu</th>
+                                <th>Sale</th>
+                                <th>Ngày Tạo</th>
+                                <th>Chỉnh Sửa</th>
                             </tr>
+                            <c:forEach var="p" items="${requestScope.listDeletedProducts}">
+                                <tr>
+                                    <td><input type="checkbox" name="selectedProducts" value="${p.productID}" /></td>
+                                    <td>${p.productID}</td>
+                                    <td>${p.productName}</td>
+                                    <td>${p.description}</td>
+                                    <td><fmt:formatNumber value="${p.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</td>
+                                    <td>${p.stock}</td>
+                                    <td><img src="${p.imageURL}" alt="Product Image" width="50"/></td>
+                                    <td>${p.categoryName}</td>
+                                    <td>${p.brand}</td>
+                                    <td>${p.sale}</td>
+                                    <td>${p.createdDate}</td>
+                                    <td>
+                                        <a href="restore?id=${p.productID}" class="action-link btn-edit">Khôi Phục</a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </table>
+                        <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
+                        <button type="submit" class="btn-delete-all action-link btn-delete" style="border: none;
+                                margin-top: 15px;" name="action" value="restoreMultiple">Khôi Phục Nhiều</button> 
+                    </form>
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <c:if test="${currentPage > 1}">
+                            <a href="trash?page=${currentPage - 1}&category=${param.category}&brand=${param.brand}&search=${param.search}">Previous</a>
+                        </c:if>
+                        <c:forEach begin="1" end="${totalPages}" var="i">
+                            <c:choose>
+                                <c:when test="${i == currentPage}">
+                                    <span class="active">${i}</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="trash?page=${i}&category=${param.category}&brand=${param.brand}&search=${param.search}">${i}</a>
+                                </c:otherwise>
+                            </c:choose>
                         </c:forEach>
-                    </table>
-                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
-                    <button type="submit" class="btn-delete-all action-link btn-delete" style="margin-right: 50px;margin-bottom: 50px;border: none;
-                            margin-top: 15px;" name="action" value="deleteMultiple">Xóa Tất Cả Đã Chọn</button>
-                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
-                    <button type="submit" class="btn-delete-all action-link btn-delete" style="border: none;
-                            margin-top: 15px;" name="action" value="restoreMultiple">Khôi Phục Nhiều</button> 
-                </form>
-<!-- Pagination -->
-                <div class="pagination">
-                    <c:if test="${currentPage > 1}">
-                        <a href="trash?page=${currentPage - 1}&category=${param.category}&brand=${param.brand}&search=${param.search}">Previous</a>
-                    </c:if>
-                    <c:forEach begin="1" end="${totalPages}" var="i">
-                        <c:choose>
-                            <c:when test="${i == currentPage}">
-                                <span class="active">${i}</span>
-                            </c:when>
-                            <c:otherwise>
-                                <a href="trash?page=${i}&category=${param.category}&brand=${param.brand}&search=${param.search}">${i}</a>
-                            </c:otherwise>
-                        </c:choose>
-                    </c:forEach>
-                    <c:if test="${currentPage < totalPages}">
-                        <a href="trash?page=${currentPage + 1}&category=${param.category}&brand=${param.brand}&search=${param.search}">Next</a>
-                    </c:if>
-                </div>            
+                        <c:if test="${currentPage < totalPages}">
+                            <a href="trash?page=${currentPage + 1}&category=${param.category}&brand=${param.brand}&search=${param.search}">Next</a>
+                        </c:if>
+                    </div>            
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- jQuery Plugins -->
-    <script>
-        function toggleSelectAll(selectAllCheckbox) {
-            const checkboxes = document.getElementsByName('selectedProducts');
-            checkboxes.forEach((checkbox) => {
-                checkbox.checked = selectAllCheckbox.checked;
-            });
-        }
-    </script>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/slick.min.js"></script>
-    <script src="js/nouislider.min.js"></script>
-    <script src="js/jquery.zoom.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        <!-- jQuery Plugins -->
+        <script>
+            function toggleSelectAll(selectAllCheckbox) {
+                const checkboxes = document.getElementsByName('selectedProducts');
+                checkboxes.forEach((checkbox) => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+            }
+        </script>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/slick.min.js"></script>
+        <script src="js/nouislider.min.js"></script>
+        <script src="js/jquery.zoom.min.js"></script>
+        <script src="js/main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

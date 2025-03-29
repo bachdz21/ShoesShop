@@ -44,172 +44,173 @@
                 <li><a href="#"><i class="fa fa-map-marker"></i> 26 Cụm 1, Thôn 3, Thạch Thất, Hà Nội</a></li>
             </ul>
             <ul class="header-links pull-right">
-                <% if (user == null) { %>
-                <li><a href="login"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
-                    <% } else { %>
-                    <% if ("Admin".equals(user.getRole())) { %>
-                <li><a href="/ShoesStoreWed/revenue?year=<%= currentYear %>&month=<%= currentMonth %>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                    <% } %>
-                <li><a href="userProfile"><i class="fa fa-user"></i> Chào mừng, <%= user.getUsername() %></a></li>
-                <li><a href="userOrder"><i class="fa fa-file-text"></i> Đơn hàng của tôi</a></li>
-                <li><a href="logout"><i class="fa fa-sign-out"></i> Đăng xuất</a></li>
-                    <% } %>
+                <c:if test="${sessionScope.user == null}">
+                    <li><a href="login"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
+                    </c:if>
+                    <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Staff'}">
+                    <li><a href="./revenue?year=<%= currentYear %>&month=<%= currentMonth %>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                    </c:if>
+
+                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
+                    <li><a href="userProfile"><i class="fa fa-user"></i> Chào mừng, <%= user.getUsername() %></a></li>
+                    <li><a href="userOrder"><i class="fa fa-file-text"></i> Đơn hàng của tôi</a></li>
+                    <li><a href="logout"><i class="fa fa-sign-out"></i> Đăng xuất</a></li>
+                </c:if>
+
             </ul>
         </div>
     </div>
     <!-- /TOP HEADER -->
-
-    <!-- MAIN HEADER -->
-    <div id="header">
-        <div class="container">
-            <div class="row" style="display: flex; align-items: center">
-                <!-- LOGO -->
-                <div class="col-md-3">
-                    <div class="header-logo">
-                        <a href="./home" class="logo">
-                            <img src="./img/logo2.png" alt="">
-                        </a>
-                    </div>
-                </div>
-                <!-- /LOGO -->
-
-                <!-- Search Bar -->
-                <div class="col-md-6">
-                    <div class="header-search">
-                        <form action="search" method="get">
-                            <select class="input-select" name="category">
-                                <option value="">Tất Cả</option>
-                                <option value="Sneaker">Giày Thể Thao</option>
-                                <option value="Oxford">Oxford</option>
-                                <option value="Boot">Boot</option>
-                                <option value="Sandal">Sandal</option>
-                            </select>
-                            <input class="input" name="query" placeholder="Search here">
-                            <button type="submit" class="search-btn">Search</button>
-                        </form>
-                    </div>
-                </div>
-                <!-- /Search Bar -->
-
-                <!-- ACCOUNT -->
-                <div class="col-md-3 clearfix">
-                    <div class="header-ctn">
-                        <!-- Wishlist -->
-                        <div class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                                <i class="fa fa-heart-o"></i>
-                                <span>Your Wishlist</span>
-                                <div class="qty"><%= total %></div>
+    <c:if test="${sessionScope.user == null || sessionScope.user.role == 'Customer'}">
+        <!-- MAIN HEADER -->
+        <div id="header">
+            <div class="container">
+                <div class="row" style="display: flex; align-items: center">
+                    <!-- LOGO -->
+                    <div class="col-md-3">
+                        <div class="header-logo">
+                            <a href="./home" class="logo">
+                                <img src="./img/logo2.png" alt="">
                             </a>
-                            <div class="cart-dropdown">
-                                <div class="cart-list">
-                                    <% if (wishlistItems != null && !wishlistItems.isEmpty()) { %>
-                                    <% for (WishlistItem item : wishlistItems) { %>
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="<%= item.getProduct().getImageURL() %>" alt="">
-                                        </div>
-                                        <div class="product-body">
-                                            <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                            <h4 class="product-price">
-                                                <% if (item.getProduct().getSale() > 0) { %>
-                                                <fmt:formatNumber value="<%= item.getProduct().getSalePrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
-                                                <del class="product-old-price">
+                        </div>
+                    </div>
+                    <!-- /LOGO -->
+
+                    <!-- Search Bar -->
+                    <div class="col-md-6">
+                        <div class="header-search">
+                            <form action="search" method="get">
+                                <select class="input-select" name="category">
+                                    <option value="">Tất Cả</option>
+                                    <option value="Sneaker">Giày Thể Thao</option>
+                                    <option value="Oxford">Oxford</option>
+                                    <option value="Boot">Boot</option>
+                                    <option value="Sandal">Sandal</option>
+                                </select>
+                                <input class="input" name="query" placeholder="Search here">
+                                <button type="submit" class="search-btn">Search</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /Search Bar -->
+
+                    <!-- ACCOUNT -->
+                    <div class="col-md-3 clearfix">
+                        <div class="header-ctn">
+                            <!-- Wishlist -->
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                    <i class="fa fa-heart-o"></i>
+                                    <span>Your Wishlist</span>
+                                    <div class="qty"><%= total %></div>
+                                </a>
+                                <div class="cart-dropdown">
+                                    <div class="cart-list">
+                                        <% if (wishlistItems != null && !wishlistItems.isEmpty()) { %>
+                                        <% for (WishlistItem item : wishlistItems) { %>
+                                        <div class="product-widget">
+                                            <div class="product-img">
+                                                <img src="<%= item.getProduct().getImageURL() %>" alt="">
+                                            </div>
+                                            <div class="product-body">
+                                                <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
+                                                <h4 class="product-price">
+                                                    <% if (item.getProduct().getSale() > 0) { %>
+                                                    <fmt:formatNumber value="<%= item.getProduct().getSalePrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                    <del class="product-old-price">
+                                                        <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                    </del>
+                                                    <% } else { %>
                                                     <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
-                                                </del>
-                                                <% } else { %>
-                                                <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
-                                                <% } %>
-                                            </h4>
+                                                    <% } %>
+                                                </h4>
+                                            </div>
+                                            <form action="deleteWishlistItem" method="POST">
+                                                <input type="hidden" name="productId" value="<%= item.getProduct().getProductID() %>">
+                                                <button class="delete"><i class="fa fa-close"></i></button>
+                                            </form>
                                         </div>
-                                        <form action="deleteWishlistItem" method="POST">
-                                            <input type="hidden" name="productId" value="<%= item.getProduct().getProductID() %>">
-                                            <button class="delete"><i class="fa fa-close"></i></button>
-                                        </form>
+                                        <% } %>
+                                        <% } else { %>
+                                        <p>Danh sách yêu thích của bạn đang trống</p>
+                                        <% } %>
                                     </div>
-                                    <% } %>
-                                    <% } else { %>
-                                    <p>Danh sách yêu thích của bạn đang trống</p>
-                                    <% } %>
-                                </div>
-                                <div class="cart-btns">
-                                    <a style="width: 100%" href="getWishlist">Xem Danh Sách Yêu Thích</a>
+                                    <div class="cart-btns">
+                                        <a style="width: 100%" href="getWishlist">Xem Danh Sách Yêu Thích</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- /Wishlist -->
+                            <!-- /Wishlist -->
 
-                        <!-- Cart -->
-                        <div class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                                <i class="fa fa-shopping-cart"></i>
-                                <span>Giỏ Hàng</span>
-                                <div class="qty"><%= totalQuantity %></div>
-                            </a>
-                            <div class="cart-dropdown">
-                                <div class="cart-list">
-                                    <% if (cartItems != null && !cartItems.isEmpty()) { %>
-                                    <% for (CartItem item : cartItems) { %>
-                                    <div class="product-widget">
-                                        <div class="product-img">
-                                            <img src="<%= item.getProduct().getImageURL() %>" alt="">
-                                        </div>
-                                        <div class="product-body">
-                                            <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
-                                            <h4 class="product-price">
-                                                <span class="qty"><%= item.getQuantity() %>x</span>
-                                                <% if (item.getProduct().getSale() > 0) { %>
-                                                <fmt:formatNumber value="<%= item.getProduct().getSalePrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
-                                                <del class="product-old-price">
+                            <!-- Cart -->
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <span>Giỏ Hàng</span>
+                                    <div class="qty"><%= totalQuantity %></div>
+                                </a>
+                                <div class="cart-dropdown">
+                                    <div class="cart-list">
+                                        <% if (cartItems != null && !cartItems.isEmpty()) { %>
+                                        <% for (CartItem item : cartItems) { %>
+                                        <div class="product-widget">
+                                            <div class="product-img">
+                                                <img src="<%= item.getProduct().getImageURL() %>" alt="">
+                                            </div>
+                                            <div class="product-body">
+                                                <h3 class="product-name"><a href="#"><%= item.getProduct().getProductName() %></a></h3>
+                                                <h4 class="product-price">
+                                                    <span class="qty"><%= item.getQuantity() %>x</span>
+                                                    <% if (item.getProduct().getSale() > 0) { %>
+                                                    <fmt:formatNumber value="<%= item.getProduct().getSalePrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                    <del class="product-old-price">
+                                                        <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                    </del>
+                                                    <% } else { %>
                                                     <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
-                                                </del>
-                                                <% } else { %>
-                                                <fmt:formatNumber value="<%= item.getProduct().getPrice() %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
-                                                <% } %>
-                                            </h4>
+                                                    <% } %>
+                                                </h4>
+                                            </div>
+                                            <form action="deleteCartItem" method="POST">
+                                                <input type="hidden" name="productId" value="<%= item.getProduct().getProductID() %>">
+                                                <button class="delete"><i class="fa fa-close"></i></button>
+                                            </form>
                                         </div>
-                                        <form action="deleteCartItem" method="POST">
-                                            <input type="hidden" name="productId" value="<%= item.getProduct().getProductID() %>">
-                                            <button class="delete"><i class="fa fa-close"></i></button>
-                                        </form>
+                                        <% } %>
+                                        <% } else { %>
+                                        <p>Giỏ hàng của bạn đang trống</p>
+                                        <% } %>
                                     </div>
-                                    <% } %>
-                                    <% } else { %>
-                                    <p>Giỏ hàng của bạn đang trống</p>
-                                    <% } %>
-                                </div>
-                                <div class="cart-summary">
-                                    <small><%= totalQuantity %> sản phẩm</small>
-                                    <h5>Tổng: <fmt:formatNumber value="<%= subtotal %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</h5>
-                                </div>
-                                <div class="cart-btns">
-                                    <a href="cartItem">Xem Giỏ Hàng</a>
-                                    <a href="getOrderItem">Thanh Toán <i class="fa fa-arrow-circle-right"></i></a>
+                                    <div class="cart-summary">
+                                        <small><%= totalQuantity %> sản phẩm</small>
+                                        <h5>Tổng: <fmt:formatNumber value="<%= subtotal %>" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</h5>
+                                    </div>
+                                    <div class="cart-btns">
+                                        <a href="cartItem">Xem Giỏ Hàng</a>
+                                        <a href="getOrderItem">Thanh Toán <i class="fa fa-arrow-circle-right"></i></a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- /Cart -->
+                            <!-- /Cart -->
 
-                        <!-- Menu Toggle -->
-                        <div class="menu-toggle">
-                            <a href="#">
-                                <i class="fa fa-bars"></i>
-                                <span>Menu</span>
-                            </a>
+                            <!-- Menu Toggle -->
+                            <div class="menu-toggle">
+                                <a href="#">
+                                    <i class="fa fa-bars"></i>
+                                    <span>Menu</span>
+                                </a>
+                            </div>
+                            <!-- /Menu Toggle -->
                         </div>
-                        <!-- /Menu Toggle -->
                     </div>
+                    <!-- /ACCOUNT -->
                 </div>
-                <!-- /ACCOUNT -->
             </div>
         </div>
-    </div>
-    <!-- /MAIN HEADER -->
-
+        <!-- /MAIN HEADER -->
+    </c:if>
     <!-- Thêm box chat ở cuối header -->
-    <% if (user != null && "Staff".equals(user.getRole())) { %>
-    <jsp:include page="staff_chat.jsp"/>
-    <% } else if (user != null && "Customer".equals(user.getRole())) { %>
+    <% if (user != null && "Customer".equals(user.getRole())) { %>
     <jsp:include page="customer_chat.jsp"/>
     <% } %>
 

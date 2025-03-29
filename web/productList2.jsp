@@ -2,6 +2,7 @@
 <html lang="vi">
     <head>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -380,7 +381,7 @@
                                     <td>${p.productID}</td>
                                     <td>${p.productName}</td>
                                     <td>${p.description}</td>
-                                    <td>${p.price}</td>
+                                    <td><fmt:formatNumber value="${p.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</td>
                                     <td>${p.stock}</td>
                                     <td><img src="${p.imageURL}" alt="Product Image" width="50"/></td>
                                     <td>${p.categoryName}</td>

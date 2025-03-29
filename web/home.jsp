@@ -44,8 +44,8 @@
 
             .settings-btn {
                 position: absolute;
-                top: 1760px;
-                left: 56px;
+                top: 500px;
+                left: 51px;
                 background: none;
                 border: none;
                 font-size: 24px;
@@ -217,198 +217,195 @@
 
     <body>
         <!-- HEADER -->
-        <jsp:include page="header.jsp" />
+            <jsp:include page="header.jsp" />
         <!-- /HEADER -->
-
-        <!-- NAVIGATION -->
-        <nav id="navigation">
-            <!-- container -->
-            <div class="container">
-                <!-- responsive-nav -->
-                <div id="responsive-nav">
-                    <!-- NAV -->
-                    <ul class="main-nav nav navbar-nav">
-                        <li  class="active"><a href="./home">Trang Chủ</a></li>
-                        <li><a href="./product">Danh Mục</a></li>
-                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                            </c:if>
-                    </ul>
-                    <!-- /NAV -->
+        <c:if test="${sessionScope.user == null || sessionScope.user.role == 'Customer'}">
+            
+            <!-- NAVIGATION -->
+            <nav id="navigation">
+                <!-- container -->
+                <div class="container">
+                    <!-- responsive-nav -->
+                    <div id="responsive-nav">
+                        <!-- NAV -->
+                        <ul class="main-nav nav navbar-nav">
+                            <li  class="active"><a href="./home">Trang Chủ</a></li>
+                            <li><a href="./product">Danh Mục</a></li>
+                        </ul>
+                        <!-- /NAV -->
+                    </div>
+                    <!-- /responsive-nav -->
                 </div>
-                <!-- /responsive-nav -->
-            </div>
-            <!-- /container -->
-        </nav>
-        <!-- /NAVIGATION -->
+                <!-- /container -->
+            </nav>
+            <!-- /NAVIGATION -->
 
-        <!-- SECTION -->
-        <div class="section">
-            <!-- container -->
-            <div class="container">
-                <!-- row -->
-                <div class="row">
-                    <!-- shop -->
-                    <div class="col-md-4 col-xs-6">
-                        <div class="shop">
-                            <div class="shop-img">
-                                <img src="./img/SneakerHotSale.jpg" alt="">
-                            </div>
-                            <div class="shop-body">
-                                <h3>Giày Thể Thao<br>Hot Sale</h3>
-                                <a href="./search?category=Sneaker&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+            <!-- SECTION -->
+            <div class="section">
+                <!-- container -->
+                <div class="container">
+                    <!-- row -->
+                    <div class="row">
+                        <!-- shop -->
+                        <div class="col-md-4 col-xs-6">
+                            <div class="shop">
+                                <div class="shop-img">
+                                    <img src="./img/SneakerHotSale.jpg" alt="">
+                                </div>
+                                <div class="shop-body">
+                                    <h3>Giày Thể Thao<br>Hot Sale</h3>
+                                    <a href="./search?category=Sneaker&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- /shop -->
+                        <!-- /shop -->
 
-                    <!-- shop -->
-                    <div class="col-md-4 col-xs-6">
-                        <div class="shop">
-                            <div class="shop-img">
-                                <img src="./img/BootsHotSale.jpg" alt="">
-                            </div>
-                            <div class="shop-body">
-                                <h3>Boots<br>Hot Sale</h3>
-                                <a href="./search?category=Boot&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                        <!-- shop -->
+                        <div class="col-md-4 col-xs-6">
+                            <div class="shop">
+                                <div class="shop-img">
+                                    <img src="./img/BootsHotSale.jpg" alt="">
+                                </div>
+                                <div class="shop-body">
+                                    <h3>Boots<br>Hot Sale</h3>
+                                    <a href="./search?category=Boot&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- /shop -->
+                        <!-- /shop -->
 
-                    <!-- shop -->
-                    <div class="col-md-4 col-xs-6">
-                        <div class="shop">
-                            <div class="shop-img">
-                                <img src="./img/SandalHotSale.jpg" alt="">
-                            </div>
-                            <div class="shop-body">
-                                <h3>Sandal<br>Hot Sale</h3>
-                                <a href="./search?category=Sandal&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                        <!-- shop -->
+                        <div class="col-md-4 col-xs-6">
+                            <div class="shop">
+                                <div class="shop-img">
+                                    <img src="./img/SandalHotSale.jpg" alt="">
+                                </div>
+                                <div class="shop-body">
+                                    <h3>Sandal<br>Hot Sale</h3>
+                                    <a href="./search?category=Sandal&query=" class="cta-btn">Mua Ngay <i class="fa fa-arrow-circle-right"></i></a>
+                                </div>
                             </div>
                         </div>
+                        <!-- /shop -->
                     </div>
-                    <!-- /shop -->
+                    <!-- /row -->
                 </div>
-                <!-- /row -->
+                <!-- /container -->
             </div>
-            <!-- /container -->
-        </div>
-        <!-- /SECTION -->
+            <!-- /SECTION -->
 
-        <!-- SECTION -->
-        <div class="section">
-            <!-- container -->
-            <div class="container">
-                <!-- row -->
-                <div class="row">
+            <!-- SECTION -->
+            <div class="section">
+                <!-- container -->
+                <div class="container">
+                    <!-- row -->
+                    <div class="row">
 
-                    <!-- section title -->
-                    <div class="col-md-12">
-                        <div class="section-title">
-                            <h3 class="title">SẢN PHẨM MỚI</h3>
+                        <!-- section title -->
+                        <div class="col-md-12">
+                            <div class="section-title">
+                                <h3 class="title">SẢN PHẨM MỚI</h3>
+                            </div>
                         </div>
-                    </div>
-                    <!-- /section title -->
+                        <!-- /section title -->
 
-                    <!-- Products tab & slick -->
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="products-tabs">
-                                <!-- tab -->
-                                <div id="tab1" class="tab-pane active">
+                        <!-- Products tab & slick -->
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="products-tabs">
+                                    <!-- tab -->
+                                    <div id="tab1" class="tab-pane active">
 
-                                    <div class="products-slick" data-nav="#slick-nav-sale">
-                                        <!-- product -->
-                                        <c:forEach var="product" items="${requestScope.listSaleProducts}">
-                                            <div class="product">
-                                                <a href="productDetail?id=${product.productID}&category=${product.categoryName}" class="product-img">
-                                                    <img src="${product.imageURL}" alt="">
-                                                    <div class="product-label">
-                                                        <span class="sale">-${product.sale}%</span>
-                                                        <span class="new">Mới</span>
-                                                    </div>
-                                                </a>
+                                        <div class="products-slick" data-nav="#slick-nav-sale">
+                                            <!-- product -->
+                                            <c:forEach var="product" items="${requestScope.listSaleProducts}">
+                                                <div class="product">
+                                                    <a href="productDetail?id=${product.productID}&category=${product.categoryName}" class="product-img">
+                                                        <img src="${product.imageURL}" alt="" style="height: 262.5px">
+                                                        <div class="product-label">
+                                                            <span class="sale">-${product.sale}%</span>
+                                                            <span class="new">Mới</span>
+                                                        </div>
+                                                    </a>
 
-                                                <div class="product-body">
-                                                    <p class="product-category">${product.categoryName}</p>
-                                                    <h3 class="product-name"><a href="productDetail?id=${product.productID}">${product.productName}</a></h3>
-                                                    <h4 class="product-price">
-                                                        <fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
-                                                        <br>
-                                                        <del class="product-old-price">
-                                                            <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
-                                                        </del>
-                                                    </h4>
-                                                    <div class="rating-avg">
-                                                        <div class="rating-stars">
-                                                            <c:set var="rating" value="${product.averageRating}" />
-                                                            <c:set var="fullStars" value="${rating.intValue()}" /> <!-- Phần nguyên -->
-                                                            <c:set var="fraction" value="${rating - fullStars}" /> <!-- Phần thập phân -->
-                                                            <!-- Hiển thị sao đầy -->
-                                                            <c:forEach var="i" begin="1" end="${fullStars}">
-                                                                <i class="fa fa-star"></i>
-                                                            </c:forEach>
-                                                            <!-- Hiển thị sao phân số (nếu có) -->
-                                                            <c:if test="${fraction > 0}">
-                                                                <div class="star-wrapper">
-                                                                    <i class="fa fa-star star-empty"></i>
-                                                                    <div class="star-fill" style="width: ${fraction * 100}%;">
-                                                                        <i class="fa fa-star"></i>
+                                                    <div class="product-body">
+                                                        <p class="product-category">${product.categoryName}</p>
+                                                        <h3 class="product-name"><a href="productDetail?id=${product.productID}">${product.productName}</a></h3>
+                                                        <h4 class="product-price">
+                                                            <fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                            <br>
+                                                            <del class="product-old-price">
+                                                                <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                            </del>
+                                                        </h4>
+                                                        <div class="rating-avg">
+                                                            <div class="rating-stars">
+                                                                <c:set var="rating" value="${product.averageRating}" />
+                                                                <c:set var="fullStars" value="${rating.intValue()}" /> <!-- Phần nguyên -->
+                                                                <c:set var="fraction" value="${rating - fullStars}" /> <!-- Phần thập phân -->
+                                                                <!-- Hiển thị sao đầy -->
+                                                                <c:forEach var="i" begin="1" end="${fullStars}">
+                                                                    <i class="fa fa-star"></i>
+                                                                </c:forEach>
+                                                                <!-- Hiển thị sao phân số (nếu có) -->
+                                                                <c:if test="${fraction > 0}">
+                                                                    <div class="star-wrapper">
+                                                                        <i class="fa fa-star star-empty"></i>
+                                                                        <div class="star-fill" style="width: ${fraction * 100}%;">
+                                                                            <i class="fa fa-star"></i>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            </c:if>
+                                                                </c:if>
 
-                                                            <!-- Hiển thị sao rỗng cho phần còn lại -->
-                                                            <c:forEach var="i" begin="${fullStars + (fraction > 0 ? 1 : 0) + 1}" end="5">
-                                                                <i class="fa fa-star-o"></i>
-                                                            </c:forEach>
+                                                                <!-- Hiển thị sao rỗng cho phần còn lại -->
+                                                                <c:forEach var="i" begin="${fullStars + (fraction > 0 ? 1 : 0) + 1}" end="5">
+                                                                    <i class="fa fa-star-o"></i>
+                                                                </c:forEach>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Kiểm tra nếu sản phẩm đã có trong wishlist -->
+                                                        <c:set var="isInWishlist" value="false" />
+                                                        <c:forEach var="item" items="${sessionScope.wishlist}">
+                                                            <c:if test="${item.product.productID == product.productID}">
+                                                                <c:set var="isInWishlist" value="true" />
+                                                            </c:if>
+                                                        </c:forEach>
+
+                                                        <!-- Thay thế form action="addWishlist" -->
+                                                        <div class="product-btns">
+                                                            <button class="add-to-wishlist" onclick="addToWishlist(${product.productID}, this)">
+                                                                <i class="${isInWishlist ? 'fa fa-heart text-danger' : 'far fa-heart'}"></i>
+                                                                <span class="tooltipp">${isInWishlist ? 'Đã có trong wishlist' : 'Thêm vào wishlist'}</span>
+                                                            </button>
                                                         </div>
                                                     </div>
 
-                                                    <!-- Kiểm tra nếu sản phẩm đã có trong wishlist -->
-                                                    <c:set var="isInWishlist" value="false" />
-                                                    <c:forEach var="item" items="${sessionScope.wishlist}">
-                                                        <c:if test="${item.product.productID == product.productID}">
-                                                            <c:set var="isInWishlist" value="true" />
-                                                        </c:if>
-                                                    </c:forEach>
-
-                                                    <!-- Thay thế form action="addWishlist" -->
-                                                    <div class="product-btns">
-                                                        <button class="add-to-wishlist" onclick="addToWishlist(${product.productID}, this)">
-                                                            <i class="${isInWishlist ? 'fa fa-heart text-danger' : 'far fa-heart'}"></i>
-                                                            <span class="tooltipp">${isInWishlist ? 'Đã có trong wishlist' : 'Thêm vào wishlist'}</span>
+                                                    <!-- Thay thế form action="addCartQuick" -->
+                                                    <div class="add-to-cart">
+                                                        <button class="add-to-cart-btn" onclick="addToCartQuick(${product.productID})">
+                                                            <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
                                                         </button>
                                                     </div>
-                                                </div>
 
-                                                <!-- Thay thế form action="addCartQuick" -->
-                                                <div class="add-to-cart">
-                                                    <button class="add-to-cart-btn" onclick="addToCartQuick(${product.productID})">
-                                                        <i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng
-                                                    </button>
                                                 </div>
-
-                                            </div>
-                                        </c:forEach>
-                                        <!-- product -->
+                                            </c:forEach>
+                                            <!-- product -->
+                                        </div>
+                                        <div id="slick-nav-sale" class="products-slick-nav"></div>
                                     </div>
-                                    <div id="slick-nav-sale" class="products-slick-nav"></div>
+                                    <!-- /tab -->
                                 </div>
-                                <!-- /tab -->
                             </div>
                         </div>
+                        <!-- Products tab & slick -->
                     </div>
-                    <!-- Products tab & slick -->
+                    <!-- /row -->
                 </div>
-                <!-- /row -->
+                <!-- /container -->
             </div>
-            <!-- /container -->
-        </div>
-        <!-- /SECTION -->
-
+            <!-- /SECTION -->
+        </c:if>
         <!-- HOT DEAL SECTION -->
 
         <div id="hot-deal" class="section">
@@ -593,11 +590,11 @@
             </c:if>
         </div>
         <!-- /SECTION -->
-
+        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
         <!-- FOOTER -->
         <jsp:include page="footer.jsp" />
         <!-- /FOOTER -->
-
+        </c:if>
         <!-- jQuery Plugins -->
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>

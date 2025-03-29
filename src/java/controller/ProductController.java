@@ -45,7 +45,7 @@ public class ProductController extends HttpServlet {
     IProductDAO productDAO = new ProductDAO();
     ICategoryDAO categoryDAO = new CategoryDAO();
     
-    private static final String IMAGE_UPLOAD_DIR = "C:\\Users\\nvhoa\\OneDrive\\Documents\\GitHub\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
+    private static final String IMAGE_UPLOAD_DIR = "D:\\Materials\\Kì 5 - Spring25\\SWP291\\ShoesShop\\web\\img"; // Đường dẫn thư mục lưu ảnh
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -745,7 +745,7 @@ public class ProductController extends HttpServlet {
         } else if (request.getServletPath().equals("/updateDisplayedCategories")) {
             updateDisplayedCategories(request, response);
         } else if (request.getServletPath().equals("/list")) {
-            filterProductList(request, response);  
+            filterProductList(request, response);      
         } else {
             request.getRequestDispatcher("/home").forward(request, response);
         }

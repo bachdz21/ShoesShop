@@ -304,7 +304,7 @@
 
                     <div class="form-group">
                         <label for="images" class="form-label">Tải Lên Ảnh:</label>
-                        <input type="file" id="imagesFormFileMultiple" name="images" class="form-control-file form-control bg-white" accept="image/*" multiple>
+                        <input type="file" id="imagesFormFileMultiple" name="images" class="form-control-file form-control bg-white" accept="image/*" multiple required>
                     </div>
 
                     <div class="form-group">

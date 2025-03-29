@@ -508,9 +508,11 @@
     </head>
 
     <body>
-        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+        <c:if test="${sessionScope.user != null && (sessionScope.user.role == 'Admin' || sessionScope.user.role == 'Staff')}">
             <div class="nav-buttons" >
-                <a href="./revenue?year=2025&month=3" class="back-btn" style="background-color: red ">
+                <a href="./revenue?year=2025&month=3" class="back-btn" style="background-color: red; position: fixed;
+    background-color: red;
+    margin-left: 20px;">
                     <i class="fas fa-arrow-left"></i> Quay lại
                 </a>
                 
@@ -548,7 +550,7 @@
 
 
         <div class="container user-profile">
-
+            
             <div class="main-body">
                 <div class="row" style="margin-top: 30px; margin-bottom: 30px">
                     <div class="col-lg-4">
