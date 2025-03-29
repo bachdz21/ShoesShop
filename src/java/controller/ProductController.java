@@ -613,13 +613,37 @@ public class ProductController extends HttpServlet {
         List<ProductVariant> productVariants = productDAO.getProductVariantsByProductId(productId); // Thêm phương thức này vào IProductDAO
         request.setAttribute("productVariants", productVariants);
         
+        // Lấy số trang hiện tại từ request, mặc định là trang 1
+        int page = 1;
+        int pageSize = 5; // Số lượng review mỗi trang
+
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (NumberFormatException e) {
+                page = 1; // Nếu có lỗi, quay về trang 1
+            }
+        }
+
+        // Tính số trang tổng cộng
+        int totalReviews = reviews.size();
+        int totalPages = (int) Math.ceil((double) totalReviews / pageSize);
+
+        // Cắt danh sách review theo trang
+        int start = (page - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalReviews);
+        List<Review> paginatedReviews = reviews.subList(start, end);
+
         // Gửi dữ liệu về JSP
         request.setAttribute("product", product);
         request.setAttribute("totalSold", totalSold);
         request.setAttribute("productRelative", productRelative);
         request.setAttribute("ratings", ratings);
         request.setAttribute("ratingLevels", ratingLevels);
-        request.setAttribute("reviews", reviews);
+        request.setAttribute("totalReviews", totalReviews);
+        request.setAttribute("reviews", reviews); // Gửi danh sách đã cắt
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("currentPage", page);
 
         request.getRequestDispatcher("productDetail.jsp").forward(request, response);
     }

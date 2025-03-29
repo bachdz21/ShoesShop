@@ -5,6 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <title>Thông tin đơn hàng</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
         <!-- Thêm Bootstrap CSS để hỗ trợ modal -->
@@ -429,9 +430,9 @@
                             <td>
                                 <img src="${orderDetail.product.imageURL}" alt="${orderDetail.product.productName}" class="product-img" />
                             </td>
-                            <td class="price">${orderDetail.price} $</td>
+                            <td><fmt:formatNumber value="${orderDetail.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</td>
                             <td>${orderDetail.quantity}</td>
-                            <td class="total-price">${orderDetail.price * orderDetail.quantity} $</td>
+                            <td><fmt:formatNumber value="${orderDetail.price * orderDetail.quantity}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</td>
                             <!-- Chỉ hiển thị ô Đánh giá nếu role là Customer -->
                             <c:if test="${sessionScope.user.role == 'Customer'}">
                                 <td>
@@ -515,7 +516,7 @@
                 </div>
                 <div class="summary-item">
                     <span class="summary-label">Tổng tiền hàng</span>
-                    <span class="summary-value">${order.totalAmount} đ</span>
+                    <span class="summary-value"><fmt:formatNumber value="${order.totalAmount}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</span>
                 </div>
             </div>
 
