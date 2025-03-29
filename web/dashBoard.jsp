@@ -63,8 +63,7 @@
         <style>
         .sidebar {
             position: fix;
-            margin-top: 10px;
-            width: 250px;
+ 
             height: 100vh;
             overflow-y: auto;
             background: var(--secondary);
@@ -73,11 +72,13 @@
         }
 
         .content {
-            margin-left: 278px;
-            margin-top: 60px;
+            margin-left: 125px;
+            margin-right: 20px;
+            margin-top: 0px;
             min-height: 100vh;
             background: #ffffff;
             transition: 0.5s;
+            width: 1590px;
         }
         
 
@@ -99,7 +100,6 @@
         }
         body{
             overflow-x: hidden;
-            background-color: #191c24
         }
 
         .bg-secondary {
@@ -120,6 +120,7 @@
                 border-radius: 0 30px 30px 0;
                 color: var(--light);
             }   
+            
         </style>
     </head>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -174,48 +175,95 @@
             <!-- Sidebar Start -->
             <div class="sidebar pe-4 pb-3">
                 <nav class="navbar bg-secondary navbar-dark">
-                    
+
                     <div class="navbar-nav w-100">
-                    <a href="home" class="navbar-brand mx-5 mb-3">
-                        <h3 class="text-primary"><i class=""></i>ShoeShop</h3>
-                    </a>
-                    <div class="d-flex align-items-center ms-4 mb-4">
-                        <div class="position-relative">
-                            <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
-                        </div>
-                        <div class="ms-3">
-                            <h6 style="color: red" class="mb-0"><%= user.getUsername() %></h6>
-                            <span style="color: red">Admin</span>
-                        </div>
-                    </div>
-                        <a href="/ShoesStoreWeb/revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
+                        <a href="home" class="navbar-brand mx-5 mb-3">
+                            <h3 class="text-primary"><i class=""></i>ShoeShop</h3>
+                        </a>
+                        <div class="d-flex align-items-center ms-4 mb-4">
+                            <div class="position-relative">
+                                <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                                <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+                            </div>
+                            <div class="ms-3">
+                                <h6 style="color: red" class="mb-0"><%= user.getUsername() %></h6>
+                                <span style="color: red">Admin</span>
+                            </div>
+                        </div>                        
+                        <a href="./revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Danh Sách</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Sản Phẩm</a>
                             <div class="dropdown-menu bg-transparent border-0">
-                                <a href="getAllOrders" class="dropdown-item">Danh Sách Đơn Hàng</a>
                                 <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
-                                <a href="activeCustomers" class="dropdown-item">Khác</a>
+                                <a href="#" class="dropdown-item">Khác</a>
+                            </div>
+                        </div>    
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Tài Khoản</a>
+                            <div class="dropdown-menu bg-transparent border-0">
+                                <a href="filterUser" class="dropdown-item">Danh Sách Người Dùng</a>
+                                <a href="filterBanUser" class="dropdown-item">Tài Khoản Bị Khóa</a>
                             </div>
                         </div>
-                        <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Biểu Đồ</a>
-                        <a href="activeCustomers" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Hoạt Động</a>
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Trang</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Hoạt Động</a>
                             <div class="dropdown-menu bg-transparent border-0">
-                                <a href="#" class="dropdown-item">Sign In</a>
-                                <a href="#" class="dropdown-item">Sign Up</a>
+                                <a href="activeCustomers" class="dropdown-item">Hoạt Động Khách Hàng</a>
+                                <a href="customerBehavior" class="dropdown-item">Sản Phẩm Ưa Chuộng</a>
+                            </div>
+                        </div>
+                        
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Đơn Hàng</a>
+                            <div class="dropdown-menu bg-transparent border-0">
+                                <a href="allUserOrder" class="dropdown-item">Đơn Hàng Chờ Xác Nhân</a>
+                                <a href="userOrder" class="dropdown-item">Đơn Hàng Đã Duyệt</a>
                             </div>
                         </div>
                     </div>
                 </nav>
             </div>
-            <!-- Sidebar End -->
+           <!-- Sidebar End --> 
             
 
             <!-- Content Start -->
             <div class="content">
-              
+        <div style="background-color: white" class="content"> 
+            <div>
+                <nav style="border-radius: 0 0 0 0" class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
+                    <a href="home" class="navbar-brand d-flex d-lg-none me-4">
+                        <h2 class="text-primary mb-0">ShoeShop</h2>
+                    </a>
+
+                    <div class="navbar-nav align-items-center ms-auto">
+                        <div style="margin-left: 1100px" class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fa fa-envelope me-lg-2"></i>
+                                <span class="d-none d-lg-inline-flex">Message</span>
+                            </a>
+                            <div class="dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+                            </div>
+                        </div>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fa fa-bell me-lg-2"></i>
+                                <span class="d-none d-lg-inline-flex">Notification</span>
+                            </a>
+                            <div class="dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+                            </div>
+                        </div>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <img class="rounded-circle me-lg-2" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                                <span class="d-none d-lg-inline-flex"><%= user.getUsername() %></span>
+                            </a>
+                            <div class=" dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
                 <!-- Sale & Revenue Start -->
                 <div class="container-fluid pt-4 px-4">
                     <div class="row g-4">
@@ -282,13 +330,13 @@
                                     </c:choose>
                             </div>
                         </div>
-                        <div style="margin-bottom: 120px" class="col-sm-6 col-xl-3">
-                            <div style="border-style: solid; border-width: 2px" class="bg-gradient text-center rounded p-4">
+                        <div class="col-sm-6 col-xl-3">
+                            <div style="border-style: solid; border-width: 2px;" class="bg-gradient text-center rounded p-4">
                                 <div class="d-flex align-items-center justify-content-between mb-4">
                                     <h6 class="mb-0">Doanh thu các mặt hàng</h6>
 <!--                                    <a href="getRevenueLastNDays?numberOfDays=7">Xem tất cả</a>-->
                                 </div>
-                                <canvas id="worldwide-sales"></canvas>
+                                <canvas style="margin-bottom: 7px" id="worldwide-sales"></canvas>
                             </div>
                         </div>
                     </div>
@@ -298,7 +346,9 @@
       
             </div>
             <!-- Content End -->
+        </div>                  
         </div>
+        <jsp:include page="footerAdmin.jsp"/>
 
         <!-- JavaScript Libraries -->
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -433,6 +483,7 @@
         </script>
         <!-- Template Javascript -->
         <script src="js/main_1.js"></script>
+        
     </body>
 
 </html>

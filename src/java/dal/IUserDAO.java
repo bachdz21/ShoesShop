@@ -43,6 +43,7 @@ public interface IUserDAO {
     List<User> filterBanUsers(String username, String fullName, String email, String phone, 
         String minRegistrationDate, String maxRegistrationDate, Integer minDelivered, Integer maxDelivered, 
         Integer minCancelled, Integer maxCancelled) ;
+    List<CartStat> getCartStats(String startDate, String endDate);
     List<WishlistStat> getWishlistStats(String startDate, String endDate);
     List<ReviewStat> getReviewStats(String startDate, String endDate);
     List<User> getNewCustomers(int limit);

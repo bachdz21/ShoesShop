@@ -8,8 +8,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Revenue;
+import model.User;
 
 @WebServlet(name = "RevenueController", urlPatterns = {"/revenue", "/getMonthlyRevenue", "/getYearlyRevenue", "/getYearlyRevenueByCategories",
     "/getRevenueLastNDays", "/getRevenueByMonthAndYear"})
@@ -32,6 +34,14 @@ public class RevenueController extends HttpServlet {
     }
 
     protected void getRevenue(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || !admin.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+
         // Lấy năm từ tham số yêu cầu
         List<Revenue> revenueList = null;
         int year = Integer.parseInt(request.getParameter("year"));
@@ -68,6 +78,14 @@ public class RevenueController extends HttpServlet {
     
     protected void getRevenueLastNDays(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        HttpSession session = request.getSession();
+        User admin = (User) session.getAttribute("user");
+        if (admin == null || !admin.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+        
+        
         int numberOfDays = Integer.parseInt(request.getParameter("numberOfDays"));
         List<Revenue> revenueLastNDays = r.getRevenueLastNDays(numberOfDays);
         request.setAttribute("revenueLastNDays", revenueLastNDays);

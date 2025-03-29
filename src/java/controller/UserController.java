@@ -41,7 +41,6 @@ import model.OrderContact;
 import model.OrderDetail;
 import model.Shipping;
 import model.WishlistItem;
-//import org.json.JSONObject;
 import utils.Encryption;
 import model.ReviewStat;
 import model.WishlistStat;
@@ -130,6 +129,9 @@ public class UserController extends HttpServlet {
             case "/activeCustomers":
                 getActiveCustomers(request, response);
                 break;
+            case "/customerBehavior":
+                getCustomerBehavior(request, response);
+                break;
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -176,6 +178,9 @@ public class UserController extends HttpServlet {
             case "/addShippingInformation":
                 addShippingInformation(request, response);// get confirmOrder
                 break;
+            case "/customerBehavior":
+                getCustomerBehavior(request, response);
+                break;
             default:
                 request.getRequestDispatcher("/home").forward(request, response);
                 break;
@@ -187,7 +192,8 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        if (user != null) {
+        if ((user != null)){
+                
             response.sendRedirect("home"); // Nếu đã đăng nhập, chuyển hướng về home
             return;
         }
@@ -1475,6 +1481,33 @@ public class UserController extends HttpServlet {
         boolean success = shippingDAO.addStatusShippingByOrderID(orderId, shippingStatus, userId, orderStatus);
         response.sendRedirect("shippingInformation?orderId=" + orderId);
 
+    }
+    
+    protected void getCustomerBehavior(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null || !user.getRole().equals("Admin")) {
+            response.sendRedirect("home");
+            return;
+        }
+
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
+
+        List<CartStat> cartStats = userDAO.getCartStats(startDate, endDate);
+        List<WishlistStat> wishlistStats = userDAO.getWishlistStats(startDate, endDate);
+        List<ReviewStat> reviewStats = userDAO.getReviewStats(startDate, endDate);
+
+        request.setAttribute("cartStats", cartStats);
+        request.setAttribute("wishlistStats", wishlistStats);
+        request.setAttribute("reviewStats", reviewStats);
+        
+    // Gắn giá trị startDate và endDate để giữ lại trong form lọc
+        request.setAttribute("startDate", startDate);
+        request.setAttribute("endDate", endDate);
+
+        request.getRequestDispatcher("customerBehavior.jsp").forward(request, response);
     }
 
     public static void main(String[] args) {

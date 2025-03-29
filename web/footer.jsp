@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!-- FOOTER -->
         <footer id="footer">
             <!-- top footer -->
@@ -9,7 +10,7 @@
                         <div class="col-md-3 col-xs-6">
                             <div class="footer">
                                 <h3 class="footer-title">Về Chúng Tôi</h3>
-                                <p> ShoesShop - Cửa Hàng Giày Uy Tín Chất Lượng Cao</p>
+                                <p> ShoesShop - Cửa Hàng Giày Uy Tín Chất Lương Cao</p>
                                 <ul class="footer-links">
                                     <li><a href="#"><i class="fa fa-map-marker"></i>Hà Nội - Thạch Thất</a></li>
                                     <li><a href="#"><i class="fa fa-phone"></i>0399823683</a></li>
@@ -38,9 +39,9 @@
                                 <h3 class="footer-title">Thông Tin</h3>
                                 <ul class="footer-links">
                                     <li><a href="#">ShoesShop</a></li>
-                                    <li><a href="#">Liên hệ</a></li>
+                                    <li><a href="#">Liên Hệ</a></li>
                                     <li><a href="#">Chính Sách Bảo Mật</a></li>
-                                    <li><a href="#">Đơn Hàng và Trả Hàng</a></li>
+                                    <li><a href="#">Mua Hàng và Trả Hàng</a></li>
                                     <li><a href="#">Chính Sách và Điều Khoản</a></li>
                                 </ul>
                             </div>
