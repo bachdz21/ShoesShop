@@ -484,7 +484,7 @@
             div.mt-4 {
                 margin-top: 30px;
             }
-             /* Style cho nút Trở về */
+            /* Style cho nút Trở về */
             .back-btn {
                 display: inline-block;
                 padding: 10px 20px;
@@ -508,31 +508,47 @@
     </head>
 
     <body>
-        <%@ include file="header.jsp" %>
-        <!-- NAVIGATION -->
-        <nav id="navigation">
-            <!-- container -->
-            <div class="container">
-                <!-- responsive-nav -->
-                <div id="responsive-nav">
-                    <!-- NAV -->
-                    <ul class="main-nav nav navbar-nav">
-                        <li><a href="home">Trang Chủ</a></li>
-                        <li><a href="product">Danh Mục</a></li>
-                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                            </c:if>
-                    </ul>
-                    <!-- /NAV -->
-                </div>
-                <!-- /responsive-nav -->
+        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+            <div class="nav-buttons" >
+                <a href="./revenue?year=2025&month=3" class="back-btn" style="background-color: red ">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+                
             </div>
-            <!-- /container -->
-        </nav>
-        <!-- /NAVIGATION -->
+               
+        </c:if>
+
+        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
+
+            <%@ include file="header.jsp" %>
+            <!-- NAVIGATION -->
+            <nav id="navigation">
+                <!-- container -->
+                <div class="container">
+                    <!-- responsive-nav -->
+                    <div id="responsive-nav">
+                        <!-- NAV -->
+                        <ul class="main-nav nav navbar-nav">
+                            <li><a href="home">Trang Chủ</a></li>
+                            <li><a href="product">Danh Mục</a></li>
+                                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                                <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
+                                </c:if>
+                        </ul>
+                        <!-- /NAV -->
+                    </div>
+                    <!-- /responsive-nav -->
+                </div>
+                <!-- /container -->
+            </nav>
+            <!-- /NAVIGATION -->
+
+        </c:if>
+
 
         <div class="container user-profile">
+
             <div class="main-body">
                 <div class="row" style="margin-top: 30px; margin-bottom: 30px">
                     <div class="col-lg-4">
@@ -706,10 +722,15 @@
 
 
 
+        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
 
-        <!-- FOOTER -->
-        <jsp:include page="footer.jsp"/>
-        <!-- /FOOTER -->
+            <!-- FOOTER -->
+            <jsp:include page="footer.jsp"/>
+            <!-- /FOOTER -->
+
+        </c:if>                                    
+
+
 
 
 
@@ -717,46 +738,46 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
         <script>
-                var citis = document.getElementById("city");
-                var districts = document.getElementById("district");
-                var wards = document.getElementById("ward");
-                var Parameter = {
-                    url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
-                    method: "GET",
-                    responseType: "application/json",
-                };
-                var promise = axios(Parameter);
-                promise.then(function (result) {
-                    renderCity(result.data);
-                });
-                function renderCity(data) {
-                    for (const x of data) {
-                        // Đặt value thành tên thay vì ID
-                        citis.options[citis.options.length] = new Option(x.Name, x.Name);
-                    }
-                    citis.onchange = function () {
-                        districts.length = 1;
-                        wards.length = 1;
-                        if (this.value != "") {
-                            const result = data.filter(n => n.Name === this.value);
-                            for (const k of result[0].Districts) {
-                                // Đặt value thành tên thay vì ID
-                                districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                            var citis = document.getElementById("city");
+                            var districts = document.getElementById("district");
+                            var wards = document.getElementById("ward");
+                            var Parameter = {
+                                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+                                method: "GET",
+                                responseType: "application/json",
+                            };
+                            var promise = axios(Parameter);
+                            promise.then(function (result) {
+                                renderCity(result.data);
+                            });
+                            function renderCity(data) {
+                                for (const x of data) {
+                                    // Đặt value thành tên thay vì ID
+                                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
+                                }
+                                citis.onchange = function () {
+                                    districts.length = 1;
+                                    wards.length = 1;
+                                    if (this.value != "") {
+                                        const result = data.filter(n => n.Name === this.value);
+                                        for (const k of result[0].Districts) {
+                                            // Đặt value thành tên thay vì ID
+                                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                                        }
+                                    }
+                                };
+                                districts.onchange = function () {
+                                    wards.length = 1;
+                                    const dataCity = data.filter((n) => n.Name === citis.value);
+                                    if (this.value != "") {
+                                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+                                        for (const w of dataWards) {
+                                            // Đặt value thành tên thay vì ID
+                                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
+                                        }
+                                    }
+                                };
                             }
-                        }
-                    };
-                    districts.onchange = function () {
-                        wards.length = 1;
-                        const dataCity = data.filter((n) => n.Name === citis.value);
-                        if (this.value != "") {
-                            const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
-                            for (const w of dataWards) {
-                                // Đặt value thành tên thay vì ID
-                                wards.options[wards.options.length] = new Option(w.Name, w.Name);
-                            }
-                        }
-                    };
-                }
         </script>
         <script>
             document.getElementById('profileImage').addEventListener('change', function () {
@@ -798,17 +819,39 @@
 
         <script>
             function validateProfileForm() {
-                // Lấy giá trị số điện thoại từ ô nhập liệu
-                var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
+                // Lấy các giá trị từ ô nhập liệu và loại bỏ khoảng trắng 2 bên
+                var fullName = document.getElementsByName("fullName")[0];
+                var phoneNumber = document.getElementsByName("phoneNumber")[0];
+                var addressDetail = document.getElementsByName("addressDetail")[0];
+
+                fullName.value = fullName.value.trim();
+                phoneNumber.value = phoneNumber.value.trim();
+                addressDetail.value = addressDetail.value.trim();
+
+                // Kiểm tra các trường không được để trống
+                if (fullName.value === "") {
+                    alert("Tên không được để trống.");
+                    return false;
+                }
+                if (phoneNumber.value === "") {
+                    alert("Số điện thoại không được để trống.");
+                    return false;
+                }
+                if (addressDetail.value === "") {
+                    alert("Địa chỉ cụ thể không được để trống.");
+                    return false;
+                }
+
                 // Kiểm tra số điện thoại có đúng 10 chữ số
                 var phonePattern = /^\d{10}$/;
-                if (!phonePattern.test(phoneNumber)) {
+                if (!phonePattern.test(phoneNumber.value)) {
                     alert("Số điện thoại phải gồm 10 chữ số.");
-                    return false; // Không cho phép gửi form nếu không đúng định dạng
+                    return false;
                 }
-                // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
+
                 return true;
             }
+
         </script>
 
 
