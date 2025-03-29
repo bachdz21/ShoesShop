@@ -590,7 +590,7 @@
             </c:if>
         </div>
         <!-- /SECTION -->
-        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
+        <c:if test="${sessionScope.user == null || sessionScope.user.role == 'Customer'}">
         <!-- FOOTER -->
         <jsp:include page="footer.jsp" />
         <!-- /FOOTER -->
