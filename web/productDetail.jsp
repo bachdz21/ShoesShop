@@ -482,7 +482,7 @@
                                             <ul class="reviews" id="reviewsBody">
                                                 <c:forEach var="review" items="${reviews}">
                                                     <c:if test="${not empty review.comment || not empty review.reviewMedia}">
-                                                        <li>
+                                                        <li id="review-${review.reviewId}" style="position: relative">
                                                             <div class="review-heading">
                                                                 <h5 class="name">${review.userName}</h5>
                                                                 <p class="date">
@@ -528,16 +528,14 @@
                                                             </div>
                                                             <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Staff'}">
                                                                 <div class="review-actions">
-                                                                    <form action="deleteReview" method="POST" style="position: absolute; top: 5px; right: 5px;">
-                                                                        <input type="hidden" name="reviewId" value="${review.reviewId}">
-                                                                        <input type="hidden" name="productId" value="${product.productID}">
-                                                                        <button type="submit" class="btn btn-link p-0" style="color: red;" onclick="return confirm('Bạn có chắc muốn xóa review này?');">
-                                                                            <i class="fa fa-times"></i>
-                                                                        </button>
-                                                                    </form>
+
+                                                                    <button class="btn btn-link p-0" style="position: absolute; top: 5px; right: 5px; color: red;"
+                                                                            onclick="deleteReview(${review.reviewId}, ${product.productID})">
+                                                                        <i class="fa fa-times"></i>
+                                                                    </button>
                                                                     <button class="btn btn-primary btn-sm" style="margin-top: 10px;" onclick="showReplyForm(${review.reviewId})">Trả lời</button>
                                                                     <div id="reply-form-${review.reviewId}" style="display: none; margin-top: 10px;">
-                                                                        <form action="replyReview" method="POST">
+                                                                        <form onsubmit="submitReply(event, ${review.reviewId}, ${product.productID}); return false;">
                                                                             <input type="hidden" name="reviewId" value="${review.reviewId}">
                                                                             <input type="hidden" name="productId" value="${product.productID}">
                                                                             <textarea name="replyText" class="form-control" rows="3" placeholder="Nhập phản hồi của bạn..." required></textarea>
@@ -702,74 +700,75 @@
         <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-                                                                        function deleteReview(reviewId, productId) {
-                                                                            if (confirm('Bạn có chắc muốn xóa review này?')) {
+                                                                            function deleteReview(reviewId, productId) {
+                                                                                if (confirm('Bạn có chắc muốn xóa review này?')) {
+                                                                                    $.ajax({
+                                                                                        url: 'deleteReview',
+                                                                                        type: 'POST',
+                                                                                        data: {
+                                                                                            reviewId: reviewId,
+                                                                                            productId: productId
+                                                                                        },
+                                                                                        success: function (response) {
+                                                                                            if (response === 'Success') {
+                                                                                                $('#review-' + reviewId).remove(); // Xóa phần tử
+                                                                                                alert('Review đã được xóa thành công!');
+                                                                                                updatePagination(); // Cập nhật lại phân trang
+                                                                                            } else {
+                                                                                                alert('Đã xảy ra lỗi: ' + response);
+                                                                                            }
+                                                                                        },
+                                                                                        error: function (xhr, status, error) {
+                                                                                            alert('Đã xảy ra lỗi khi xóa review: ' + error);
+                                                                                        }
+                                                                                    });
+                                                                                }
+                                                                            }
+
+
+                                                                            function submitReply(event, reviewId, productId) {
+                                                                                event.preventDefault(); // Ngăn submit mặc định
+                                                                                var replyText = $('#reply-form-' + reviewId + ' textarea[name="replyText"]').val();
+
                                                                                 $.ajax({
-                                                                                    url: 'deleteReview',
+                                                                                    url: 'replyReview',
                                                                                     type: 'POST',
                                                                                     data: {
                                                                                         reviewId: reviewId,
-                                                                                        productId: productId
+                                                                                        productId: productId,
+                                                                                        replyText: replyText
                                                                                     },
                                                                                     success: function (response) {
-                                                                                        if (response === 'Success') {
-                                                                                            $('#review-' + reviewId).remove();
-                                                                                            alert('Review đã được xóa thành công!');
+                                                                                        if (response.startsWith('Success')) {
+                                                                                            var replyDate = response.split('|')[1] || new Date().toLocaleString();
+                                                                                            var replyHtml = '<h6 class="shop-reply-title">Shop Reply</h6>' +
+                                                                                                    '<p class="shop-reply-text">' + replyText + '</p>' +
+                                                                                                    '<p class="shop-reply-date">' + replyDate + '</p>';
+
+                                                                                            // Tìm container shop-reply trong review hiện tại
+                                                                                            var shopReplyContainer = $('#review-' + reviewId + ' .shop-reply');
+                                                                                            if (shopReplyContainer.length) {
+                                                                                                // Nếu đã có shop-reply, thêm reply mới vào cuối
+                                                                                                shopReplyContainer.append(replyHtml);
+                                                                                            } else {
+                                                                                                // Nếu chưa có shop-reply, tạo mới và chèn trước review-actions
+                                                                                                var newShopReply = $('<div class="shop-reply"></div>').html(replyHtml);
+                                                                                                $('#review-' + reviewId + ' .review-actions').before(newShopReply);
+                                                                                            }
+
+                                                                                            // Ẩn form và xóa nội dung textarea
+                                                                                            $('#reply-form-' + reviewId).hide();
+                                                                                            $('#reply-form-' + reviewId + ' textarea[name="replyText"]').val('');
+                                                                                            
                                                                                         } else {
                                                                                             alert('Đã xảy ra lỗi: ' + response);
                                                                                         }
                                                                                     },
                                                                                     error: function (xhr, status, error) {
-                                                                                        alert('Đã xảy ra lỗi khi xóa review: ' + error);
+                                                                                        alert('Đã xảy ra lỗi khi gửi phản hồi: ' + error);
                                                                                     }
                                                                                 });
                                                                             }
-                                                                        }
-
-                                                                        function showReplyForm(reviewId) {
-                                                                            var form = document.getElementById('reply-form-' + reviewId);
-                                                                            if (form.style.display === 'none' || form.style.display === '') {
-                                                                                form.style.display = 'block';
-                                                                            } else {
-                                                                                form.style.display = 'none';
-                                                                            }
-                                                                        }
-
-                                                                        function submitReply(event, reviewId, productId) {
-                                                                            event.preventDefault(); // Ngăn form submit mặc định
-                                                                            var form = $('#reply-form-submit-' + reviewId);
-                                                                            var replyText = form.find('textarea[name="replyText"]').val();
-
-                                                                            $.ajax({
-                                                                                url: 'replyReview',
-                                                                                type: 'POST',
-                                                                                data: {
-                                                                                    reviewId: reviewId,
-                                                                                    productId: productId,
-                                                                                    replyText: replyText
-                                                                                },
-                                                                                success: function (response) {
-                                                                                    if (response.startsWith('Success')) {
-                                                                                        var replyDate = response.split('|')[1] || new Date().toLocaleString();
-                                                                                        var replyHtml = '<h6 class="shop-reply-title">Shop Reply</h6>' +
-                                                                                                '<p class="shop-reply-text">' + replyText + '</p>' +
-                                                                                                '<p class="shop-reply-date">' + replyDate + '</p>';
-
-                                                                                        // Nối thêm reply mới vào danh sách thay vì ghi đè
-                                                                                        $('#shop-reply-' + reviewId).append(replyHtml);
-
-                                                                                        // Ẩn form và xóa nội dung textarea
-                                                                                        $('#reply-form-' + reviewId).hide();
-                                                                                        form.find('textarea[name="replyText"]').val('');
-                                                                                    } else {
-                                                                                        alert('Đã xảy ra lỗi: ' + response);
-                                                                                    }
-                                                                                },
-                                                                                error: function (xhr, status, error) {
-                                                                                    alert('Đã xảy ra lỗi khi gửi phản hồi: ' + error);
-                                                                                }
-                                                                            });
-                                                                        }
         </script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -779,7 +778,6 @@
                 const totalItems = rows.length;
                 const totalPages = Math.ceil(totalItems / itemsPerPage);
                 let currentPage = 1;
-
                 function showPage(page) {
                     rows.forEach(row => row.style.display = 'none');
                     const startIndex = (page - 1) * itemsPerPage;

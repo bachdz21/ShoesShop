@@ -309,7 +309,10 @@ public class ReviewDAO extends DBConnect implements IReviewDAO {
 
     public static void main(String[] args) {
         ReviewDAO d = new ReviewDAO();
-        Review r = d.getReviewByUserAndProduct(20, 94);
-        System.out.println(r.toString());
+        List<Review> list = d.getReviewsByProductID(1);
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+            
+        }
     }
 }
