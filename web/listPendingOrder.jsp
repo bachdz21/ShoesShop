@@ -2,6 +2,7 @@
 <html lang="vi">
     <head>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -399,7 +400,7 @@
                                         <div class="card-header">
                                             <h3 style="color: white" class="mb-0">
                                                 <c:choose>
-                                                    <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                    <c:when test="${sessionScope.user != null && (sessionScope.user.role == 'Admin' || sessionScope.user.role == 'Staff')}">
                                                         <i class="fas fa-clipboard-list mr-2"></i> Quản Lý Đơn Hàng
                                                     </c:when>
                                                     <c:otherwise>
@@ -481,7 +482,7 @@
                                                 <!-- Tiêu đề danh sách đơn hàng -->
                                                 <h4 class="product-title">
                                                     <c:choose>
-                                                        <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                        <c:when test="${sessionScope.user != null && (sessionScope.user.role == 'Admin' || sessionScope.user.role == 'Staff')}">
                                                             <i class="fas fa-clipboard-check mr-2"></i> Danh Sách Đơn Hàng Chờ Xác Nhận
                                                         </c:when>
                                                         <c:otherwise>
@@ -503,7 +504,7 @@
                                                     <li class="nav-item">
                                                         <a class="nav-link active" data-toggle="tab" href="#pending">
                                                             <c:choose>
-                                                                <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                                <c:when test="${sessionScope.user != null && (sessionScope.user.role == 'Admin' || sessionScope.user.role == 'Staff')}">
                                                                     <i class="fas fa-hourglass-half mr-1"></i> Chờ xác nhận
                                                                 </c:when>
                                                                 <c:otherwise>
@@ -515,7 +516,7 @@
                                                     <li class="nav-item ml-auto">
                                                         <a href="./userOrder" class="back-btn">
                                                             <c:choose>
-                                                                <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                                <c:when test="${sessionScope.user != null && (sessionScope.user.role == 'Admin' || sessionScope.user.role == 'Staff')}">
                                                                     <i class="fas fa-list mr-1"></i> Danh sách đơn đã duyệt
                                                                 </c:when>
                                                                 <c:otherwise>
@@ -536,7 +537,7 @@
                                                                onclick="return confirm('Bạn có chắc chắn muốn xác nhận tất cả đơn hàng đang chờ không?')" 
                                                                class="btn btn-primary confirm-all-btn">
                                                                 <c:choose>
-                                                                    <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                                    <c:when test="${sessionScope.user != null && (sessionScope.user.role == 'Admin' || sessionScope.user.role == 'Staff')}">
                                                                         <i class="fas fa-check-double mr-1"></i> Xác nhận tất cả
                                                                     </c:when>
                                                                     <c:otherwise>
@@ -564,7 +565,7 @@
                                                                         <tr>
                                                                             <td>${order.orderCode}</td>
                                                                             <td>${order.orderDate}</td>
-                                                                            <td><strong>${order.totalAmount}</strong></td>
+                                                                            <td><strong><fmt:formatNumber value="${order.totalAmount}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</strong></td>
                                                                             <td>${order.paymentMethod}</td>
                                                                             <td>${order.shippingAddress}</td>
                                                                             <td>
@@ -576,7 +577,7 @@
                                                                                 <a href="confirmOrder?orderId=${order.orderId}&pageStr=${currentPage}&orderCode=${orderCode}&shippingAddress=${shippingAddress}&paymentMethod=${paymentMethod}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}&minPrice=${minPrice}&maxPrice=${maxPrice}" 
                                                                                    class="action-link">
                                                                                     <c:choose>
-                                                                                        <c:when test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                                                                        <c:when test="${sessionScope.user != null && (sessionScope.user.role == 'Admin' || sessionScope.user.role == 'Staff')}">
                                                                                             <i class="fas fa-check mr-1"></i> Xác nhận
                                                                                         </c:when>
                                                                                         <c:otherwise>

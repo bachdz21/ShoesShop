@@ -403,55 +403,7 @@
     %> 
     <body>
     <div class="container-fluid position-relative d-flex p-0">   
-            <!-- Sidebar Start -->
-            <div class="sidebar pe-4 pb-3">
-                <nav class="navbar bg-secondary navbar-dark">
-                    <a href="home" class="navbar-brand mx-5 mb-3">
-                        <h3 class="text-primary"><i class=""></i>ShoeShop</h3>
-                    </a>
-                    <div class="d-flex align-items-center ms-4 mb-4">
-                        <div class="position-relative">
-                            <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
-                        </div>
-                        <div class="ms-3">
-                            <h6 style="color: red; margin-top: 20px" class="mb-0"><%= user.getUsername() %></h6>
-                            <span style="color: red">Admin</span>
-                        </div>
-                    </div>
-                    <div class="navbar-nav w-100">
-                        <a href="./revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Danh Sách</a>
-                            <div class="dropdown-menu bg-transparent border-0">
-                                <a href="getAllOrders" class="dropdown-item">Danh Sách Đơn Hàng</a>
-                                <a href="list" class="dropdown-item">Danh Sách Sản Phẩm</a>
-                                <a href="#" class="dropdown-item">Khác</a>
-                            </div>
-                        </div>
-                        <a href="getRevenueLastNDays?numberOfDays=7" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Biểu Đồ</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Hoạt Động</a>
-                            <div class="dropdown-menu bg-transparent border-0">
-                                <a href="activeCustomers" class="dropdown-item">Hoạt Động Khách Hàng</a>
-                                <a href="customerBehavior" class="dropdown-item">Sản Phẩm Ưa Chuộng</a>
-                            </div>
-                        </div>
-                        
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Quản Lý Đơn Hàng</a>
-                            <div class="dropdown-menu bg-transparent border-0">
-                                <a href="allUserOrder" class="dropdown-item">Đơn Hàng Chờ Xác Nhân</a>
-                                <a href="userOrder" class="dropdown-item active">Đơn Hàng Đã Duyệt</a>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-           <!-- Sidebar End --> 
-           
-        <div style="background-color: white;width: 100%; margin-left: 230px; margin-top: -20px" class="content"> 
-            <jsp:include page="headerAdmin.jsp"/>  
+            
             <div class="container-fluid pt-4 px-4">
                 <div class="container">
                     <header>
@@ -558,7 +510,6 @@
                 </div>
             </div>
         </div>
-    </div>
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/slick.min.js"></script>
