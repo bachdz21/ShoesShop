@@ -484,7 +484,7 @@
             div.mt-4 {
                 margin-top: 30px;
             }
-             /* Style cho nút Trở về */
+            /* Style cho nút Trở về */
             .back-btn {
                 display: inline-block;
                 padding: 10px 20px;
@@ -508,31 +508,40 @@
     </head>
 
     <body>
-        <%@ include file="header.jsp" %>
-        <!-- NAVIGATION -->
-        <nav id="navigation">
-            <!-- container -->
-            <div class="container">
-                <!-- responsive-nav -->
-                <div id="responsive-nav">
-                    <!-- NAV -->
-                    <ul class="main-nav nav navbar-nav">
-                        <li><a href="home">Trang Chủ</a></li>
-                        <li><a href="product">Danh Mục</a></li>
-                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
-                            <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
-                            <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
-                            </c:if>
-                    </ul>
-                    <!-- /NAV -->
+
+                    <a href="/">Quay lại Trang chủ</a>
+
+        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
+
+            <%@ include file="header.jsp" %>
+            <!-- NAVIGATION -->
+            <nav id="navigation">
+                <!-- container -->
+                <div class="container">
+                    <!-- responsive-nav -->
+                    <div id="responsive-nav">
+                        <!-- NAV -->
+                        <ul class="main-nav nav navbar-nav">
+                            <li><a href="home">Trang Chủ</a></li>
+                            <li><a href="product">Danh Mục</a></li>
+                                <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+                                <li><a href="list" class="admin-link">Danh Sách Sản Phẩm</a></li>
+                                <li><a href="getAllOrders" class="admin-link">Danh Sách Tất Cả Đơn Hàng</a></li>
+                                </c:if>
+                        </ul>
+                        <!-- /NAV -->
+                    </div>
+                    <!-- /responsive-nav -->
                 </div>
-                <!-- /responsive-nav -->
-            </div>
-            <!-- /container -->
-        </nav>
-        <!-- /NAVIGATION -->
+                <!-- /container -->
+            </nav>
+            <!-- /NAVIGATION -->
+
+        </c:if>
+        
 
         <div class="container user-profile">
+            
             <div class="main-body">
                 <div class="row" style="margin-top: 30px; margin-bottom: 30px">
                     <div class="col-lg-4">
@@ -706,10 +715,15 @@
 
 
 
+        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
 
-        <!-- FOOTER -->
+            <!-- FOOTER -->
         <jsp:include page="footer.jsp"/>
         <!-- /FOOTER -->
+
+        </c:if>                                    
+
+
 
 
 
@@ -717,46 +731,46 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
         <script>
-                var citis = document.getElementById("city");
-                var districts = document.getElementById("district");
-                var wards = document.getElementById("ward");
-                var Parameter = {
-                    url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
-                    method: "GET",
-                    responseType: "application/json",
-                };
-                var promise = axios(Parameter);
-                promise.then(function (result) {
-                    renderCity(result.data);
-                });
-                function renderCity(data) {
-                    for (const x of data) {
-                        // Đặt value thành tên thay vì ID
-                        citis.options[citis.options.length] = new Option(x.Name, x.Name);
-                    }
-                    citis.onchange = function () {
-                        districts.length = 1;
-                        wards.length = 1;
-                        if (this.value != "") {
-                            const result = data.filter(n => n.Name === this.value);
-                            for (const k of result[0].Districts) {
-                                // Đặt value thành tên thay vì ID
-                                districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                            var citis = document.getElementById("city");
+                            var districts = document.getElementById("district");
+                            var wards = document.getElementById("ward");
+                            var Parameter = {
+                                url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+                                method: "GET",
+                                responseType: "application/json",
+                            };
+                            var promise = axios(Parameter);
+                            promise.then(function (result) {
+                                renderCity(result.data);
+                            });
+                            function renderCity(data) {
+                                for (const x of data) {
+                                    // Đặt value thành tên thay vì ID
+                                    citis.options[citis.options.length] = new Option(x.Name, x.Name);
+                                }
+                                citis.onchange = function () {
+                                    districts.length = 1;
+                                    wards.length = 1;
+                                    if (this.value != "") {
+                                        const result = data.filter(n => n.Name === this.value);
+                                        for (const k of result[0].Districts) {
+                                            // Đặt value thành tên thay vì ID
+                                            districts.options[districts.options.length] = new Option(k.Name, k.Name);
+                                        }
+                                    }
+                                };
+                                districts.onchange = function () {
+                                    wards.length = 1;
+                                    const dataCity = data.filter((n) => n.Name === citis.value);
+                                    if (this.value != "") {
+                                        const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
+                                        for (const w of dataWards) {
+                                            // Đặt value thành tên thay vì ID
+                                            wards.options[wards.options.length] = new Option(w.Name, w.Name);
+                                        }
+                                    }
+                                };
                             }
-                        }
-                    };
-                    districts.onchange = function () {
-                        wards.length = 1;
-                        const dataCity = data.filter((n) => n.Name === citis.value);
-                        if (this.value != "") {
-                            const dataWards = dataCity[0].Districts.filter(n => n.Name === this.value)[0].Wards;
-                            for (const w of dataWards) {
-                                // Đặt value thành tên thay vì ID
-                                wards.options[wards.options.length] = new Option(w.Name, w.Name);
-                            }
-                        }
-                    };
-                }
         </script>
         <script>
             document.getElementById('profileImage').addEventListener('change', function () {
