@@ -48,7 +48,7 @@
                 <li><a href="login"><i class="fa fa-user-o"></i> Đăng Nhập</a></li>
                     <% } else { %>
                     <% if ("Admin".equals(user.getRole())) { %>
-                <li><a href="list"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                <li><a href="/ShoesStoreWed/revenue?year=<%= currentYear %>&month=<%= currentMonth %>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
                     <% } %>
                 <li><a href="userProfile"><i class="fa fa-user"></i> Chào mừng, <%= user.getUsername() %></a></li>
                 <li><a href="userOrder"><i class="fa fa-file-text"></i> Đơn hàng của tôi</a></li>

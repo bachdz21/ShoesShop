@@ -43,8 +43,9 @@ public interface IUserDAO {
     List<User> filterBanUsers(String username, String fullName, String email, String phone, 
         String minRegistrationDate, String maxRegistrationDate, Integer minDelivered, Integer maxDelivered, 
         Integer minCancelled, Integer maxCancelled) ;
-    List<WishlistStat> getWishlistStats(String startDate, String endDate);
-    List<ReviewStat> getReviewStats(String startDate, String endDate);
+    List<CartStat> getCartStats(String searchTerm, int page, int pageSize);
+    List<WishlistStat> getWishlistStats(String searchTerm, int page, int pageSize);
+    List<ReviewStat> getReviewStats(String searchTerm, double minAvgRating, int minReviewCount, double minSatisfactionRate, int page, int pageSize);
     List<User> getNewCustomers(int limit);
     List<User> getActiveCustomers(String search, String startDate, String endDate, String sortBy);
 }

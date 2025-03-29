@@ -704,50 +704,53 @@ public List<User> filterBanUsers(String username, String fullName, String email,
         }
         return newCustomers;
     }
-    
-public List<CartStat> getCartStats(String startDate, String endDate) {
-    List<CartStat> cartStats = new ArrayList<>();
-    String sql = "SELECT p.ProductName, p.brand AS Brand, COUNT(ci.CartItemID) AS AddToCartCount, " +
-                 "SUM(ci.Quantity) AS TotalQuantity " +
-                 "FROM CartItems ci " +
-                 "JOIN Products p ON ci.ProductID = p.ProductID " +
-                 "WHERE ci.AddedDate BETWEEN ISNULL(?, '1900-01-01') AND ISNULL(?, GETDATE()) " +
-                 "GROUP BY p.ProductName, p.brand " +
-                 "ORDER BY AddToCartCount DESC";
-
-    try (PreparedStatement ps = c.prepareStatement(sql)) {
-        ps.setString(1, startDate);
-        ps.setString(2, endDate);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            CartStat stat = new CartStat(
-                rs.getString("ProductName"),
-                rs.getString("Brand"),
-                rs.getInt("AddToCartCount"),
-                rs.getDouble("TotalQuantity") // Thay vì AvgQuantity, dùng TotalQuantity
-            );
-            cartStats.add(stat);
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return cartStats;
-}
 
     @Override
-    public List<WishlistStat> getWishlistStats(String startDate, String endDate) {
+    public List<CartStat> getCartStats(String searchTerm, int page, int pageSize) {
+        List<CartStat> cartStats = new ArrayList<>();
+        String sql = "SELECT p.ProductName, p.brand AS Brand, COUNT(DISTINCT ci.CartID) AS AddToCartCount, " +
+                     "SUM(ci.Quantity) AS TotalQuantity " +
+                     "FROM Products p " +
+                     "LEFT JOIN CartItems ci ON p.ProductID = ci.ProductID " +
+                     "WHERE p.ProductName LIKE ? " +
+                     "GROUP BY p.ProductID, p.ProductName, p.brand " +
+                     "ORDER BY TotalQuantity DESC, AddToCartCount DESC, p.brand ASC " +
+                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "%" + (searchTerm != null ? searchTerm : "") + "%");
+            ps.setInt(2, (page - 1) * pageSize);
+            ps.setInt(3, pageSize);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                CartStat stat = new CartStat(
+                    rs.getString("ProductName"),
+                    rs.getString("Brand"),
+                    rs.getInt("AddToCartCount"),
+                    rs.getDouble("TotalQuantity")
+                );
+                cartStats.add(stat);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cartStats;
+    }
+
+    @Override
+    public List<WishlistStat> getWishlistStats(String searchTerm, int page, int pageSize) {
         List<WishlistStat> wishlistStats = new ArrayList<>();
         String sql = "SELECT p.ProductName, c.CategoryName, COUNT(wi.WishlistItemID) AS WishlistCount " +
-                     "FROM WishlistItems wi " +
-                     "JOIN Products p ON wi.ProductID = p.ProductID " +
-                     "JOIN Categories c ON p.CategoryID = c.CategoryID " +
-                     "WHERE (wi.AddedDate BETWEEN ISNULL(?, '1900-01-01') AND ISNULL(?, GETDATE()) OR wi.AddedDate IS NULL) " +
-                     "GROUP BY p.ProductName, c.CategoryName " +
-                     "ORDER BY WishlistCount DESC";
-
+                     "FROM Products p " +
+                     "LEFT JOIN WishlistItems wi ON p.ProductID = wi.ProductID " +
+                     "LEFT JOIN Categories c ON p.CategoryID = c.CategoryID " +
+                     "WHERE p.ProductName LIKE ? " +
+                     "GROUP BY p.ProductID, p.ProductName, c.CategoryName " +
+                     "ORDER BY WishlistCount DESC, p.ProductName ASC " +
+                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, startDate);
-            ps.setString(2, endDate);
+            ps.setString(1, "%" + (searchTerm != null ? searchTerm : "") + "%");
+            ps.setInt(2, (page - 1) * pageSize);
+            ps.setInt(3, pageSize);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 WishlistStat stat = new WishlistStat(
@@ -764,20 +767,26 @@ public List<CartStat> getCartStats(String startDate, String endDate) {
     }
 
     @Override
-    public List<ReviewStat> getReviewStats(String startDate, String endDate) {
+    public List<ReviewStat> getReviewStats(String searchTerm, double minAvgRating, int minReviewCount, double minSatisfactionRate, int page, int pageSize) {
         List<ReviewStat> reviewStats = new ArrayList<>();
         String sql = "SELECT p.ProductName, AVG(CAST(r.Rating AS FLOAT)) AS AvgRating, " +
                      "COUNT(r.ReviewID) AS ReviewCount, " +
                      "(SUM(CASE WHEN r.Rating >= 4 THEN 1 ELSE 0 END) * 100.0 / COUNT(r.ReviewID)) AS SatisfactionRate " +
-                     "FROM Reviews r " +
-                     "JOIN Products p ON r.ProductID = p.ProductID " +
-                     "WHERE r.ReviewDate BETWEEN ISNULL(?, '1900-01-01') AND ISNULL(?, GETDATE()) " +
-                     "GROUP BY p.ProductName " +
-                     "ORDER BY ReviewCount DESC";
-
+                     "FROM Products p " +
+                     "LEFT JOIN Reviews r ON p.ProductID = r.ProductID " +
+                     "WHERE p.ProductName LIKE ? " +
+                     "GROUP BY p.ProductID, p.ProductName " +
+                     "HAVING AVG(CAST(r.Rating AS FLOAT)) >= ? AND COUNT(r.ReviewID) >= ? " +
+                     "AND (SUM(CASE WHEN r.Rating >= 4 THEN 1 ELSE 0 END) * 100.0 / COUNT(r.ReviewID)) >= ? " +
+                     "ORDER BY AvgRating DESC, ReviewCount DESC, SatisfactionRate DESC " +
+                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, startDate);
-            ps.setString(2, endDate);
+            ps.setString(1, "%" + (searchTerm != null ? searchTerm : "") + "%");
+            ps.setDouble(2, minAvgRating);
+            ps.setInt(3, minReviewCount);
+            ps.setDouble(4, minSatisfactionRate);
+            ps.setInt(5, (page - 1) * pageSize);
+            ps.setInt(6, pageSize);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 ReviewStat stat = new ReviewStat(
@@ -792,5 +801,55 @@ public List<CartStat> getCartStats(String startDate, String endDate) {
             e.printStackTrace();
         }
         return reviewStats;
+    }
+
+    public int getTotalCartStats(String searchTerm) {
+        String sql = "SELECT COUNT(DISTINCT p.ProductID) " +
+                     "FROM Products p LEFT JOIN CartItems ci ON p.ProductID = ci.ProductID " +
+                     "WHERE p.ProductName LIKE ?";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "%" + (searchTerm != null ? searchTerm : "") + "%");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getTotalWishlistStats(String searchTerm) {
+        String sql = "SELECT COUNT(DISTINCT p.ProductID) " +
+                     "FROM Products p LEFT JOIN WishlistItems wi ON p.ProductID = wi.ProductID " +
+                     "WHERE p.ProductName LIKE ?";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "%" + (searchTerm != null ? searchTerm : "") + "%");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getTotalReviewStats(String searchTerm, double minAvgRating, int minReviewCount, double minSatisfactionRate) {
+        String sql = "SELECT COUNT(DISTINCT p.ProductID) " +
+                     "FROM Products p LEFT JOIN Reviews r ON p.ProductID = r.ProductID " +
+                     "WHERE p.ProductName LIKE ? " +
+                     "GROUP BY p.ProductID, p.ProductName " +
+                     "HAVING AVG(CAST(r.Rating AS FLOAT)) >= ? AND COUNT(r.ReviewID) >= ? " +
+                     "AND (SUM(CASE WHEN r.Rating >= 4 THEN 1 ELSE 0 END) * 100.0 / COUNT(r.ReviewID)) >= ?";
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, "%" + (searchTerm != null ? searchTerm : "") + "%");
+            ps.setDouble(2, minAvgRating);
+            ps.setInt(3, minReviewCount);
+            ps.setDouble(4, minSatisfactionRate);
+            ResultSet rs = ps.executeQuery();
+            int count = 0;
+            while (rs.next()) count++;
+            return count;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

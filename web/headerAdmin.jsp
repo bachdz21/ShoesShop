@@ -44,7 +44,7 @@
     }
 </style>
 <!-- Navbar Start -->
-<nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
+<nav style="border-radius: 0 0 0 0" class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
     <a href="home" class="navbar-brand d-flex d-lg-none me-4">
         <h2 class="text-primary mb-0">ShoeShop</h2>
     </a>
