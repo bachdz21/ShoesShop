@@ -335,6 +335,22 @@ public class ProductDAO extends DBConnect implements IProductDAO {
     }
 
     @Override
+    public boolean isProductNameExists(String productName) {
+        String query = "SELECT COUNT(*) AS count FROM Products WHERE ProductName = ?";
+        try {
+            PreparedStatement ps = c.prepareStatement(query);
+            ps.setString(1, productName);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count") > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }    
+    
+    @Override
     public void updateProduct(Product product) {
         String query = "UPDATE Products SET \n"
                 + "    ProductName = ?, \n"

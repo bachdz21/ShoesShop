@@ -35,4 +35,5 @@ public interface IProductDAO {
     List<Product> getMostSoldProducts(String categoryName);
     List<Integer> getProductRatings(int productID);
     List<ProductVariant> getProductVariantsByProductId(int productId);
+    boolean isProductNameExists(String productName);
 }

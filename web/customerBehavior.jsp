@@ -341,7 +341,7 @@
                 
                 <!-- Bảng Sản Phẩm Được Yêu Thích Nhất -->
                 <div class="section-container">
-                    <h2>Sản Phẩm Được Yêu Thích Nhất</h2>
+                    <h2>Sản Phẩm Trong Danh Sách Ưa Thích</h2>
                     
                     <div class="filter-container">
                         <form id="wishlistFilterForm" method="get" action="customerBehavior">

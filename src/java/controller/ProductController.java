@@ -231,6 +231,13 @@ public class ProductController extends HttpServlet {
             request.getRequestDispatcher("/addProduct2.jsp").forward(request, response);
             return;
         }
+        
+        // Kiểm tra tên sản phẩm đã tồn tại chưa
+        if (productDAO.isProductNameExists(productName)) {
+            request.setAttribute("error", "Tên sản phẩm đã tồn tại. Vui lòng chọn tên khác.");
+            request.getRequestDispatcher("/addProduct2.jsp").forward(request, response);
+            return;
+        }        
 
         try {
             double price = Double.parseDouble(priceParam);
