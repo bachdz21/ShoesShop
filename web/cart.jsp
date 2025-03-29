@@ -1,5 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -174,16 +176,20 @@
                                             </div>
                                         </div>
                                         <div class="gJyWia">
-                                            <div>
+                                            <div style="text-align: center">
                                                 <c:choose>
                                                     <c:when test="${p.getProduct().getSale() > 0}">
-                                                        <span class="vjkBXu">${p.getProduct().getSalePrice()} $</span>
+                                                        <span class="vjkBXu">
+                                                            <fmt:formatNumber value="${p.getProduct().getSalePrice()}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        </span>
                                                         <span style="text-decoration: line-through; color: #757575; margin-left: 8px;">
-                                                            ${p.getProduct().getPrice()} $
+                                                            <fmt:formatNumber value="${p.getProduct().getPrice()}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
                                                         </span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span class="vjkBXu">${p.getProduct().getPrice()} $</span>
+                                                        <span class="vjkBXu">
+                                                            <fmt:formatNumber value="${p.getProduct().getPrice()}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        </span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -206,12 +212,15 @@
                                             </div>
                                         </div>
                                         <div class="HRvCAv total-amount">
-                                            <span class="total-price">${p.getProduct().getPrice()}</span>
+                                            <span class="total-price">
+                                                <fmt:formatNumber value="${p.getProduct().getSale() > 0 ? p.getProduct().getSalePrice() * p.quantity : p.getProduct().getPrice() * p.quantity}" 
+                                                                  type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                            </span>
                                         </div>
                                         <div class="bRSn43 TvSDdG">
                                             <a class="lSrQtj" href="deleteCartItem?productId=${p.getProduct().getProductID()}">Xóa</a>
                                             <div class="J8cCGR">
-                                                <a href="./product?categories=${p.getProduct().getCategoryName()}&minPrice=1.00&maxPrice=999.00" class="shopee-button-no-outline slfWNx">
+                                                <a href="./product?categories=${p.getProduct().getCategoryName()}" class="shopee-button-no-outline slfWNx">
                                                     <span class="wZrjgF">Tìm sản phẩm tương tự</span>
                                                 </a>
                                             </div>
@@ -243,9 +252,8 @@
                 </section>
             </form>
         </div>
-        <footer id="footer">
-            <jsp:include page="footer.jsp" />
-        </footer>
+
+        <jsp:include page="footer.jsp" />
 
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
@@ -257,24 +265,30 @@
         <script>
             // Hàm tính tổng số tiền cho một sản phẩm
             const updateTotalPriceForSingleProduct = (item) => {
-                const price = parseFloat(item.querySelector('.vjkBXu').innerText.replace('$', '').trim());
+                // Lấy giá từ .vjkBXu và loại bỏ " VNĐ" và dấu phẩy
+                const priceText = item.querySelector('.vjkBXu').innerText.replace(' VNĐ', '').replace(/\./g, '');
+                const price = parseFloat(priceText); // Parse thành số
                 const amountInput = item.querySelector('input[name^="amount"]');
                 const amount = parseInt(amountInput.value);
-                const totalPrice = (price * amount).toFixed(2);
-                item.querySelector('.total-price').innerText = totalPrice + " $";
-                return totalPrice;
-            }
-
+                const totalPrice = price * amount; // Tính tổng giá
+                // Hiển thị tổng giá với định dạng VNĐ
+                item.querySelector('.total-price').innerText = totalPrice.toLocaleString('vi-VN') + " VNĐ";
+                return totalPrice; // Trả về giá trị số để dùng cho tính tổng
+            };
+            
             // Hàm tính tổng số tiền cho tất cả sản phẩm
             const updateTotalPriceForAllProducts = () => {
                 let grandTotal = 0;
                 const cartItems = document.querySelectorAll('.f1bSN6');
                 cartItems.forEach(item => {
-                    const totalPrice = parseFloat(item.querySelector('.total-price').innerText.replace('$', '').trim());
+                    // Lấy tổng giá của từng sản phẩm, loại bỏ " VNĐ" và dấu phẩy
+                    const totalPriceText = item.querySelector('.total-price').innerText.replace(' VNĐ', '').replace(/\./g, '');
+                    const totalPrice = parseFloat(totalPriceText);
                     grandTotal += totalPrice;
                 });
-                document.getElementById('grand-total').innerText = grandTotal.toFixed(2) + " $";
-            }
+                // Hiển thị tổng thanh toán với định dạng VNĐ
+                document.getElementById('grand-total').innerText = grandTotal.toLocaleString('vi-VN') + " VNĐ";
+            };
 
             // Hàm gửi yêu cầu AJAX để cập nhật số lượng
             const updateQuantityInDatabase = (productId, quantity, stock) => {

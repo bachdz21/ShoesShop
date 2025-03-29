@@ -227,8 +227,8 @@ public class CartController extends HttpServlet {
             System.out.println("No items found in cart for UserID: " + userId);
         } else {
             for (CartItem item : listCartItem) {
-                System.out.println("CartItem: ProductID=" + item.getProduct().getProductID() + 
-                                   ", Size=" + item.getSize() + ", Color=" + item.getColor());
+                System.out.println("CartItem: ProductID=" + item.getProduct().getProductID()
+                        + ", Size=" + item.getSize() + ", Color=" + item.getColor());
             }
         }
         request.setAttribute("listCartItem", listCartItem);
@@ -252,18 +252,23 @@ public class CartController extends HttpServlet {
     protected void addCartQuick(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int productId = Integer.parseInt(request.getParameter("productID"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        response.setContentType("text/plain");
+
         if (user == null) {
-            response.sendRedirect("login.jsp");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+            response.getWriter().write("Please login to add to cart");
             return;
         }
+
         int userId = user.getUserId();
-        cartDAO.addCartItem(userId, productId, quantity);
+        cartDAO.addCartItem(userId, productId, 1);
         List<CartItem> updatedCart = cartDAO.getCartItems(userId);
         updateCartInSession(request, updatedCart);
-        response.sendRedirect("cart");
+
+        response.setStatus(HttpServletResponse.SC_OK); // 200
+        response.getWriter().write("Added to cart successfully");
     }
 
     protected void addCartQuickFromWishlist(HttpServletRequest request, HttpServletResponse response)
@@ -288,7 +293,7 @@ public class CartController extends HttpServlet {
         int productId = Integer.parseInt(request.getParameter("productID"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         String selectedSize = request.getParameter("selectedSize");
-        String selectedColor = request.getParameter("selectedColor");        
+        String selectedColor = request.getParameter("selectedColor");
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {

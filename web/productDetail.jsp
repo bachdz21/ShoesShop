@@ -209,6 +209,9 @@
                     <!-- Product main img -->
                     <div class="col-md-5 col-md-push-2">
                         <div id="product-main-img">
+                            <div class="product-preview">
+                                <img src="${product.imageURL}" alt="Product Image">
+                            </div>
                             <c:forEach var="imageUrl" items="${product.imageURLDetail}">
                                 <div class="product-preview">
                                     <img src="${imageUrl}" alt="Product Image">
@@ -221,7 +224,14 @@
                     <!-- Product thumb imgs -->
                     <div class="col-md-2  col-md-pull-5">
                         <div id="product-imgs">
-
+                            <div class="product-preview">
+                                <img src="${product.imageURL}" alt="Product Image">
+                            </div>
+                            <c:forEach var="imageUrl" items="${product.imageURLDetail}">
+                                <div class="product-preview">
+                                    <img src="${imageUrl}" alt="Product Image">
+                                </div>
+                            </c:forEach>
                         </div>
                     </div>
                     <!-- /Product thumb imgs -->
@@ -330,7 +340,7 @@
                                         </select>
                                     </label>
                                 </div>
-                                
+
                                 <form style="display: flex; align-items: center;" action="addCart" method="POST"> <!-- Đổi sang POST -->
                                     <div class="add-to-cart">
                                         <div class="qty-label">
@@ -461,7 +471,6 @@
                                     <!-- /Rating -->
 
                                     <!-- Reviews -->
-                                    <!-- Reviews -->
                                     <div class="col-md-9">
                                         <div id="reviews">
                                             <ul class="reviews" id="reviewsBody">
@@ -586,29 +595,50 @@
                                         <h3 class="product-name"><a href="productDetail?id=${pr.productID}&category=${pr.categoryName}">${pr.productName}</a></h3>
                                             <c:choose>
                                                 <c:when test="${pr.salePrice > 0}">
-                                                <h4 class="product-price">${pr.salePrice} <del class="product-old-price">${pr.price}</del></h4>
-                                                </c:when>
-                                                <c:otherwise>
-                                                <h4 class="product-price">${pr.price}</h4>
+                                                <h4 class="product-price"><fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</h4>  
+                                                <del class="product-old-price">
+                                                    <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                </del>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <h4 class="product-price"><fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ</h4>
                                             </c:otherwise>
                                         </c:choose>
-                                        <div class="product-rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
+                                        <div class="rating-avg">
+                                            <div class="rating-stars" style="margin-left: 0px">
+                                                <c:set var="rating" value="${pr.averageRating}" />
+                                                <c:set var="fullStars" value="${rating.intValue()}" /> <!-- Phần nguyên -->
+                                                <c:set var="fraction" value="${rating - fullStars}" /> <!-- Phần thập phân -->
+                                                <!-- Hiển thị sao đầy -->
+                                                <c:forEach var="i" begin="1" end="${fullStars}">
+                                                    <i class="fa fa-star"></i>
+                                                </c:forEach>
+                                                <!-- Hiển thị sao phân số (nếu có) -->
+                                                <c:if test="${fraction > 0}">
+                                                    <div class="star-wrapper">
+                                                        <i class="fa fa-star star-empty"></i>
+                                                        <div class="star-fill" style="width: ${fraction * 100}%;">
+                                                            <i class="fa fa-star"></i>
+                                                        </div>
+                                                    </div>
+                                                </c:if>
+
+                                                <!-- Hiển thị sao rỗng cho phần còn lại -->
+                                                <c:forEach var="i" begin="${fullStars + (fraction > 0 ? 1 : 0) + 1}" end="5">
+                                                    <i class="fa fa-star-o"></i>
+                                                </c:forEach>
+                                            </div>
                                         </div>
                                         <!-- Kiểm tra nếu sản phẩm đã có trong wishlist -->
                                         <c:set var="isInWishlist" value="false" />
                                         <c:forEach var="item" items="${sessionScope.wishlist}">
-                                            <c:if test="${item.product.productID == i.productID}">
+                                            <c:if test="${item.product.productID == pr.productID}">
                                                 <c:set var="isInWishlist" value="true" />
                                             </c:if>
                                         </c:forEach>
 
                                         <form action="addWishlist" method="GET" style="display: inline-block">
-                                            <input type="hidden" name="productID" value="${i.productID}">
+                                            <input type="hidden" name="productID" value="${pr.productID}">
                                             <div class="product-btns">
                                                 <!-- Hiển thị icon trái tim đỏ nếu đã có trong wishlist, nếu không thì hiển thị trái tim trắng -->
                                                 <button class="add-to-wishlist">
@@ -880,19 +910,19 @@
             }
 
             function handleMinus() {
-                let amount = document.getElementById("amount");
-                let value = parseInt(amount.value);
-                if (value > 1) {
-                    amount.value = value - 1;
-                }
-        
-        <script>
-            function updateHiddenFields() {
-                var size = document.getElementById("sizeSelect").value;
-                var color = document.getElementById("colorSelect").value;
-                document.getElementById("selectedSize").value = size;
-                document.getElementById("selectedColor").value = color;
+            let amount = document.getElementById("amount");
+                    let value = parseInt(amount.value);
+                    if (value > 1) {
+            amount.value = value - 1;
             }
-        </script>
+
+            <script>
+            function updateHiddenFields() {
+                    var size = document.getElementById("sizeSelect").value;
+                    var color = document.getElementById("colorSelect").value;
+                    document.getElementById("selectedSize").value = size;
+                    document.getElementById("selectedColor").value = color;
+                                    }
+                                            </script>
     </body>
 </html>

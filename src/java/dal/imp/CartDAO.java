@@ -76,31 +76,23 @@ public class CartDAO extends DBConnect implements ICartDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Product product = new Product(
-                    rs.getInt("ProductID"),
-                    rs.getString("ProductName"),
-                    rs.getString("Description"),
-                    rs.getDouble("Price"),
-                    rs.getInt("Stock"),
-                    null, // categoryName không cần thiết ở đây
-                    rs.getString("ImageURL"),
-                    rs.getInt("Sale"),
-                    rs.getDate("CreatedDate"),
-                    rs.getString("brand")
-                );
-                CartItem item = new CartItem(
-                    rs.getInt("CartItemID"),
-                    rs.getInt("CartID"),
-                    rs.getInt("Quantity"),
-                    rs.getDate("AddedDate"),
-                    product,
-                    rs.getString("Color"),
-                    rs.getString("Size")
-                );
+                int cartItemId = rs.getInt("CartItemID");
+                int productId = rs.getInt("ProductID");
+                int quantity = rs.getInt("Quantity");
+                Date addedDate = rs.getDate("AddedDate");
+                Product product = new Product(rs.getInt("ProductID"), rs.getString("ProductName"), rs.getString("Description"),
+                        rs.getDouble("Price"), rs.getInt("Stock"), rs.getString("CategoryName"),
+                        rs.getString("imageURL"), rs.getInt("Sale"), rs.getString("brand"));
+                if (product.getSale() > 0) {
+                    product.setSalePrice((double) product.getPrice() * ((100 - product.getSale()) / 100.0));
+                    DecimalFormat df = new DecimalFormat("0.##");
+                    String formattedPrice = df.format(product.getSalePrice());
+                    product.setSalePrice(Double.parseDouble(formattedPrice));
+                }
+                CartItem item = new CartItem(cartItemId, cartItemId, quantity, addedDate, product);
                 cartItems.add(item);
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi lấy giỏ hàng: " + e.getMessage());
             e.printStackTrace();
         }
         return cartItems;
@@ -328,5 +320,14 @@ public class CartDAO extends DBConnect implements ICartDAO {
     @Override
     public void addCartItemWithVariant(int userId, int productId, int quantity, String size, String color) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
+    public static void main(String[] args) {
+        CartDAO c = new CartDAO();
+        List<CartItem> list = c.getCartItems(20);
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+            
+        }
     }
 }

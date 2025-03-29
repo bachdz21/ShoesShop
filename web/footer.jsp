@@ -62,27 +62,24 @@
                     </div>
                 </div>
 
-            <!-- bottom footer -->
-            <div id="bottom-footer" class="section">
-                <div class="container">
-                    <!-- row -->
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            <ul class="footer-payments">
-                                <li><a href="#"><i class="fa fa-cc-visa"></i></a></li>
-                                <li><a href="#"><i class="fa fa-credit-card"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-paypal"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-mastercard"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-discover"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-amex"></i></a></li>
-                            </ul>
-                            <span class="copyright">
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            </span>
+                <div class="col-md-4 col-xs-6">
+                    <div class="footer">
+                        <h3 class="footer-title">Danh Mục</h3>
+                        <ul class="footer-links">
+                            <li><a href="#">Hot deals</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                            <li><a href="#">Oxford</a></li>
+                            <li><a href="#">Boot</a></li>
+                            <li><a href="#">Sandal</a></li>
+                        </ul>
+                    </div>
+                </div>
 
-
+                <div class="col-md-4 col-xs-12">
+                    <div class="footer">
+                        <h3 class="footer-title">Tìm Chúng Tôi</h3>
+                        <div class="google-map">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.657295305586!2d105.52972731476362!3d21.013240986000067!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31345b465a4e65b7%3A0x4e14e8f5e84d1e6f!2sFPT%20University%20Hanoi!5e0!3m2!1sen!2s!4v1617171712345!5m2!1sen!2s" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                         </div>
                     </div>
                 </div>
@@ -92,7 +89,6 @@
         <!-- /container -->
     </div>
     <!-- /top footer -->
-
 
 </footer>
 <!-- /FOOTER -->

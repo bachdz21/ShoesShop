@@ -61,7 +61,6 @@ public class ajaxServlet extends HttpServlet {
         String phoneNumber = req.getParameter("tel");
         String note = req.getParameter("note");
         int orderId = orderDAO.checkout(userId, fullName, email, phoneNumber, shippingAddress, paymentMethod, note);
-        String orderCode = orderDAO.getOrderCodeByOrderID(orderId);
         List<CartItem> cartItems = cartDAO.getCartItems(user.getUserId());
         session.setAttribute("cart", cartItems);
         // Lấy totalAmount từ request parameter

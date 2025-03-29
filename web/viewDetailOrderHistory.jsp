@@ -525,6 +525,102 @@
                 </nav>
             </div>
            <!-- Sidebar End --> 
+        <div class="container">
+            <header>
+                <h1><i class="fas fa-receipt"></i> Chi tiết đơn hàng</h1>
+                <div class="order-status ${order.orderStatus == 'Delivered' ? 'order-delivered' : ''}">
+                    <i class="fas fa-${order.orderStatus == 'Delivered' ? 'check-circle' : 'clock'}"></i>
+                    ${order.orderStatus}
+                </div>
+            </header>
+
+            <div class="nav-buttons">
+                <a href="./userOrder" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Trở về danh sách đơn hàng
+                </a>
+                <a href="./shippingInformation?orderId=${order.orderId}" class="back-btn">
+                    <i class="fas fa-shipping-fast"></i> Thông tin vận chuyển
+                </a>
+            </div>
+
+            <!-- Thông tin người nhận -->
+            <div class="info-card">
+                <h3><i class="fas fa-user-circle"></i> Thông tin người nhận</h3>
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <span><strong>Tên người nhận:</strong> ${orderContact.recipientName}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span><strong>Địa chỉ:</strong> ${order.shippingAddress}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <span><strong>Số điện thoại:</strong> ${orderContact.recipientPhone}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-sticky-note"></i>
+                    <span><strong>Ghi chú:</strong> ${orderContact.note != null && !orderContact.note.isEmpty() ? orderContact.note : 'Không có ghi chú'}</span>
+                </div>
+            </div>
+
+            <!-- Chi tiết sản phẩm -->
+            <h3><i class="fas fa-box-open"></i> Chi tiết sản phẩm</h3>
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Ảnh</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Tổng tiền</th>
+                        <!-- Chỉ hiển thị cột Đánh giá nếu role là Customer -->
+                        <c:if test="${sessionScope.user.role == 'Customer'}">
+                            <th>Đánh giá</th>
+                            </c:if>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="orderDetail" items="${orderDetails}">
+                        <tr>
+                            <td>${orderDetail.product.productName}</td>
+                            <td>
+                                <img src="${orderDetail.product.imageURL}" alt="${orderDetail.product.productName}" class="product-img" />
+                            </td>
+                            <td class="price">${orderDetail.price} $</td>
+                            <td>${orderDetail.quantity}</td>
+                            <td class="total-price">${orderDetail.price * orderDetail.quantity} $</td>
+                            <!-- Chỉ hiển thị ô Đánh giá nếu role là Customer -->
+                            <c:if test="${sessionScope.user.role == 'Customer'}">
+                                <td>
+                                    <!-- Kiểm tra xem đã có đánh giá hay chưa -->
+                                    <c:set var="existingReview" value="${reviewDAO.getReviewByUserAndProduct(sessionScope.user.userId, orderDetail.product.productID)}" />
+                                    <button type="button" class="button" data-toggle="modal" data-target="#reviewModal" 
+                                            data-orderid="${order.orderId}" 
+                                            data-productid="${orderDetail.product.productID}" 
+                                            data-productname="<c:out value='${orderDetail.product.productName}'/>" 
+                                            data-imageurl="${orderDetail.product.imageURL}"
+                                            data-rating="${existingReview != null ? existingReview.rating : ''}"
+                                            data-comment="${existingReview != null ? existingReview.comment : ''}"
+                                            ${order.orderStatus != 'Delivered' ? 'disabled' : ''}>
+                                        <i class="fas fa-star"></i> ${existingReview != null ? 'Sửa Đánh Giá' : 'Đánh Giá'}
+                                    </button>
+                                </td>
+                            </c:if>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+
+            <!-- Review Modal -->
+            <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header border-bottom-0">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+
            
         <div style="background-color: white;width: 100%; margin-left: 230px; margin-top: -20px" class="content"> 
             <jsp:include page="headerAdmin.jsp"/>  

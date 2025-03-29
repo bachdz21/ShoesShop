@@ -321,7 +321,7 @@
                 appearance: none; /* Ẩn mũi tên mặc định của select */
                 -webkit-appearance: none; /* Ẩn mũi tên cho trình duyệt Webkit */
                 -moz-appearance: none; /* Ẩn mũi tên cho trình duyệt Firefox */
-                margin-left: 15px;
+                margin-left: 1px;
             }
 
             .form-select-sm {
@@ -618,7 +618,7 @@
                                 <h2 class="product-title">Hồ sơ của tôi</h2>
                                 <div class="card-body">
                                     <div class="row mb-3">
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-2">
                                             <h6 class="mb-0">Tên</h6>
                                         </div>
                                         <div class="col-sm-9 text-secondary">
@@ -626,7 +626,7 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-2">
                                             <h6 class="mb-0">Email</h6>
                                         </div>
                                         <div class="col-sm-9 text-secondary">
@@ -634,7 +634,7 @@
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-2">
                                             <h6 class="mb-0">Số điện thoại</h6>
                                         </div>
                                         <div class="col-sm-9 text-secondary">
@@ -643,7 +643,7 @@
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-2">
                                             <h6 class="mb-0">Địa chỉ</h6>
                                         </div>
                                         <select name="city" class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm" required>
@@ -666,7 +666,7 @@
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-2">
                                             <h6 class="mb-0">Địa chỉ cụ thể</h6>
                                         </div>
                                         <div class="col-sm-9 text-secondary">

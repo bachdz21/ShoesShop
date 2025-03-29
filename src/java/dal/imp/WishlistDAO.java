@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,7 +128,7 @@ public class WishlistDAO extends DBConnect implements IWishlistDAO {
 
     public static void main(String[] args) {
         WishlistDAO w = new WishlistDAO();
-        w.deleteWishlistItem(2, 99);
+        w.addWishlistItem(20, 1);
         List<WishlistItem> list = w.getWishlistItems(2);
         System.out.println(list);
     }

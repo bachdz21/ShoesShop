@@ -2,6 +2,7 @@
 <html lang="vi">
     <head>
         <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%@ page contentType="text/html; charset=UTF-8" %>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -96,8 +97,8 @@
             .lSrQtj:hover {
                 background-color: #f0f0f0;
             }
-            
-            
+
+
         </style>
     </head>
     <%@page import="model.User"%>
@@ -129,11 +130,10 @@
             <!-- /container -->
         </nav>
         <!-- /NAVIGATION -->
-        <a href="trashCart" class="product-add-link">Sản Phẩm Đã Xoá</a>
         <!-- CART -->
         <div class="container shopee-fake">
             <form action="getCartItemUpdateQuantity" method="POST">
-                <main class="GO0LDV" style="margin-bottom: 0px;">
+                <main class="GO0LDV" style="margin-bottom: 10px;">
                     <h2 class="a11y-hidden">Product List Section</h2>
                     <div class="Za1N64">
                         <div class="SQGY8I">
@@ -193,16 +193,20 @@
                                             </div>
                                         </div>
                                         <div class="gJyWia">
-                                            <div>
+                                            <div style="text-align: center">
                                                 <c:choose>
                                                     <c:when test="${p.getProduct().getSale() > 0}">
-                                                        <span class="vjkBXu">${p.getProduct().getSalePrice()} $</span>
+                                                        <span class="vjkBXu">
+                                                            <fmt:formatNumber value="${p.getProduct().getSalePrice()}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        </span>
                                                         <span style="text-decoration: line-through; color: #757575">
-                                                            ${p.getProduct().getPrice()} $
+                                                            <fmt:formatNumber value="${p.getProduct().getPrice()}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
                                                         </span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span class="vjkBXu">${p.getProduct().getPrice()} $</span>
+                                                        <span class="vjkBXu">
+                                                            <fmt:formatNumber value="${p.getProduct().getPrice()}" type="number" groupingUsed="true" pattern="#,###" /> VNĐ
+                                                        </span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -226,204 +230,15 @@
 
                     </section>
                 </main>
-                <section class="yn6AIc dhqg2H">
-                    <div class="WhvsrO Kk1Mak">
-                        <button class="v5CBXg clear-btn-style"></button>
-                        <button class="clear-btn-style GQ7Hga"></button>
-                        <div class="BV92a3" role="region">
-                            <div class="total-and-buy">
-                                <div class="DScaTh">
-                                    <div class="znJ7TE">
-                                        <div class="CoYXUV">Tổng thanh toán:</div>
-                                        <div class="mketV9 grand-total">
-                                            <span id="grand-total">0 $</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button type="submit" class="shopee-button-solid shopee-button-solid--primary SHq91i">Mua hàng</button>
-
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </form>
         </div>
         <!-- /CART -->
 
         <!-- FOOTER -->
-        <footer id="footer">
-            <!-- top footer -->
-            <div class="section">
-                <!-- container -->
-                <div class="container">
-                    <!-- row -->
-                    <div class="row">
-                        <div class="col-md-3 col-xs-6">
-                            <div class="footer">
-                                <h3 class="footer-title">About Us</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
-                                <ul class="footer-links">
-                                    <li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
-                                    <li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
-                                    <li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-xs-6">
-                            <div class="footer">
-                                <h3 class="footer-title">Categories</h3>
-                                <ul class="footer-links">
-                                    <li><a href="#">Hot deals</a></li>
-                                    <li><a href="#">Laptops</a></li>
-                                    <li><a href="#">Smartphones</a></li>
-                                    <li><a href="#">Cameras</a></li>
-                                    <li><a href="#">Accessories</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="clearfix visible-xs"></div>
-
-                        <div class="col-md-3 col-xs-6">
-                            <div class="footer">
-                                <h3 class="footer-title">Information</h3>
-                                <ul class="footer-links">
-                                    <li><a href="#">About Us</a></li>
-                                    <li><a href="#">Contact Us</a></li>
-                                    <li><a href="#">Privacy Policy</a></li>
-                                    <li><a href="#">Orders and Returns</a></li>
-                                    <li><a href="#">Terms & Conditions</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-xs-6">
-                            <div class="footer">
-                                <h3 class="footer-title">Service</h3>
-                                <ul class="footer-links">
-                                    <li><a href="#">My Account</a></li>
-                                    <li><a href="#">View Cart</a></li>
-                                    <li><a href="#">Wishlist</a></li>
-                                    <li><a href="#">Track My Order</a></li>
-                                    <li><a href="#">Help</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /row -->
-                </div>
-                <!-- /container -->
-            </div>
-            <!-- /top footer -->
-
-            <!-- bottom footer -->
-            <div id="bottom-footer" class="section">
-                <div class="container">
-                    <!-- row -->
-                    <div class="row">
-                        <div class="col-md-12 text-center">
-                            <ul class="footer-payments">
-                                <li><a href="#"><i class="fa fa-cc-visa"></i></a></li>
-                                <li><a href="#"><i class="fa fa-credit-card"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-paypal"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-mastercard"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-discover"></i></a></li>
-                                <li><a href="#"><i class="fa fa-cc-amex"></i></a></li>
-                            </ul>
-                            <span class="copyright">
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            </span>
-
-
-                        </div>
-                    </div>
-                    <!-- /row -->
-                </div>
-                <!-- /container -->
-            </div>
-            <!-- /bottom footer -->
-        </footer>
+        <jsp:include page="footer.jsp" />
         <!-- /FOOTER -->
 
         <!-- jQuery Plugins -->
-        <script>
-            // Hàm tính tổng số tiền cho một sản phẩm
-            const updateTotalPriceForSingleProduct = (item) => {
-                const price = parseFloat(item.querySelector('.vjkBXu').innerText.replace('$', '').trim()); // Lấy giá sản phẩm
-                const amountInput = item.querySelector('input[name^="amount"]'); // Tìm input có name bắt đầu bằng "amount"
-                const amount = parseInt(amountInput.value); // Lấy số lượng sản phẩm
-                const totalPrice = (price * amount).toFixed(2); // Tính tổng số tiền cho sản phẩm
-                item.querySelector('.total-price').innerText = totalPrice + " $"; // Cập nhật tổng tiền cho sản phẩm
-                return totalPrice; // Trả về tổng tiền cho sản phẩm
-            }
-
-            // Hàm tính tổng số tiền cho tất cả sản phẩm
-            const updateTotalPriceForAllProducts = () => {
-                let grandTotal = 0;
-                const cartItems = document.querySelectorAll('.f1bSN6'); // Lấy tất cả sản phẩm trong giỏ hàng
-
-                cartItems.forEach(item => {
-                    const totalPrice = parseFloat(item.querySelector('.total-price').innerText.replace('$', '').trim()); // Lấy tổng số tiền cho sản phẩm
-                    grandTotal += totalPrice; // Cộng dồn vào tổng
-                });
-
-                document.getElementById('grand-total').innerText = grandTotal.toFixed(2) + " $"; // Cập nhật tổng tiền cho tất cả sản phẩm
-            }
-
-            // Lắng nghe sự kiện cho các nút "+" và "-" cho từng sản phẩm
-            document.querySelectorAll('.plus-btn').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const item = event.target.closest('.f1bSN6'); // Lấy sản phẩm cha
-                    const amountInput = item.querySelector('input[name^="amount"]'); // Tìm input có name bắt đầu bằng "amount"
-                    let amount = parseInt(amountInput.value);
-                    amount++;
-                    amountInput.value = amount; // Cập nhật giá trị input
-                    updateTotalPriceForSingleProduct(item); // Cập nhật tổng số tiền cho sản phẩm
-                    updateTotalPriceForAllProducts(); // Cập nhật tổng số tiền cho tất cả sản phẩm
-                });
-            });
-
-            document.querySelectorAll('.minus-btn').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const item = event.target.closest('.f1bSN6'); // Lấy sản phẩm cha
-                    const amountInput = item.querySelector('input[name^="amount"]'); // Tìm input có name bắt đầu bằng "amount"
-                    let amount = parseInt(amountInput.value);
-                    if (amount > 1) {
-                        amount--;
-                        amountInput.value = amount; // Cập nhật giá trị input
-                        updateTotalPriceForSingleProduct(item); // Cập nhật tổng số tiền cho sản phẩm
-                        updateTotalPriceForAllProducts(); // Cập nhật tổng số tiền cho tất cả sản phẩm
-                    }
-                });
-            });
-
-            // Lắng nghe sự kiện cho input số lượng
-            document.querySelectorAll('input[name^="amount"]').forEach(amountInput => {
-                amountInput.addEventListener('input', (event) => {
-                    const item = event.target.closest('.f1bSN6'); // Lấy sản phẩm cha
-                    let amount = parseInt(event.target.value);
-                    if (isNaN(amount) || amount <= 0) {
-                        amount = 1; // Đảm bảo giá trị tối thiểu là 1
-                    }
-                    event.target.value = amount; // Cập nhật giá trị input
-                    updateTotalPriceForSingleProduct(item); // Cập nhật tổng số tiền cho sản phẩm
-                    updateTotalPriceForAllProducts(); // Cập nhật tổng số tiền cho tất cả sản phẩm
-                });
-            });
-
-            // Gọi hàm để tính tổng khi trang được tải cho từng sản phẩm
-            document.addEventListener("DOMContentLoaded", () => {
-                document.querySelectorAll('.f1bSN6').forEach(item => {
-                    updateTotalPriceForSingleProduct(item); // Cập nhật tổng tiền cho từng sản phẩm
-                });
-                updateTotalPriceForAllProducts(); // Cập nhật tổng tiền cho tất cả sản phẩm
-            });
-        </script>
-
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/slick.min.js"></script>
