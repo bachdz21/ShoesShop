@@ -23,7 +23,7 @@ public class ChatDAO extends DBConnect {
     }
 
     public int getOrCreateChatSession(int customerId, int staffId) throws SQLException {
-        String selectSql = "SELECT SessionId FROM ChatSessions WHERE CustomerId = ? AND StaffId = ?";
+        String selectSql = "SELECT SessionId FROM ChatSessions WHERE CustomerId = ? AND EmployeeId = ?";
         try (PreparedStatement stmt = c.prepareStatement(selectSql)) {
             stmt.setInt(1, customerId);
             stmt.setInt(2, staffId);
@@ -32,7 +32,7 @@ public class ChatDAO extends DBConnect {
             if (rs.next()) {
                 return rs.getInt("SessionId");
             } else {
-                String insertSql = "INSERT INTO ChatSessions (CustomerId, StaffId) VALUES (?, ?); "
+                String insertSql = "INSERT INTO ChatSessions (CustomerId, EmployeeId) VALUES (?, ?); "
                         + "SELECT SCOPE_IDENTITY() AS SessionId;";
                 try (PreparedStatement insertStmt = c.prepareStatement(insertSql)) {
                     insertStmt.setInt(1, customerId);
