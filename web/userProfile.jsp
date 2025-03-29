@@ -510,7 +510,7 @@
     <body>
         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
             <div class="nav-buttons" >
-                <a href="./userOrder" class="back-btn" style="background-color: red ">
+                <a href="./revenue?year=2025&month=3" class="back-btn" style="background-color: red ">
                     <i class="fas fa-arrow-left"></i> Quay lại
                 </a>
                 
