@@ -187,7 +187,7 @@
                             </div>
                             <div class="ms-3">
                                 <h6 style="color: red" class="mb-0"><%= user.getUsername() %></h6>
-                                <span style="color: red">Admin</span>
+                                <span style="color: red"><%= user.getRole() %></span>
                             </div>
                         </div>                        
                         <a href="./revenue?year=<%= currentYear %>&month=<%= currentMonth %>" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Doanh Thu</a>

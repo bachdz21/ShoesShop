@@ -421,6 +421,7 @@
                             <!-- tab3  -->
                             <div id="tab3" class="tab-pane fade in">
                                 <div class="row">
+                                    
                                     <!-- Rating -->
                                     <div class="col-md-3">
                                         <div id="rating">

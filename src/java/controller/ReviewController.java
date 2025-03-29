@@ -57,6 +57,7 @@ public class ReviewController extends HttpServlet {
             int productId = Integer.parseInt(request.getParameter("productID"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("review");
+            int orderId = Integer.parseInt(request.getParameter("orderId"));
 
             // Tạo đối tượng Review
             Review review = new Review(productId, userId, rating, comment);
@@ -97,7 +98,7 @@ public class ReviewController extends HttpServlet {
                 }
 
                 // Thành công thì chuyển hướng về userProfile
-                response.sendRedirect("userProfile");
+                response.sendRedirect("orderDetail?orderId="+orderId);
             }
         } catch (Exception e) {
             // Xử lý các lỗi bất ngờ

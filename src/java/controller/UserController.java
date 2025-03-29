@@ -265,8 +265,8 @@ public class UserController extends HttpServlet {
             String role = user.getRole();
             if ("Customer".equalsIgnoreCase(role)) {
                 response.sendRedirect("home");
-            } else if ("Admin".equalsIgnoreCase(role)) {
-                response.sendRedirect("list");
+            } else if ("Admin".equalsIgnoreCase(role)|| "Staff".equalsIgnoreCase(role) ) {
+                response.sendRedirect("revenue?year=2025&month=3");
             } else if ("Shipper".equalsIgnoreCase(role)) {
                 response.sendRedirect("userOrder");
             } else {
