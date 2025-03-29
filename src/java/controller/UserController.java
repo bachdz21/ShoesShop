@@ -49,14 +49,14 @@ import model.WishlistStat;
  *
  * @author nguye
  */
-@WebServlet(name = "UserController", urlPatterns = { "/login", "/register", "/confirmEmail",
-        "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
-        "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar",
-        "/userOrder", "/orderDetail", "/allUserOrder", "/confirmOrder",
-        "/filterBanUser", "/emailReminder", "/banUser", "/registerEmployee",
-        "/filterUser", "/restoreUser", "/userDetail",
-        "/shippingInformation", "/addShippingInformation",
-        "/activeCustomers", "/customerBehavior" })
+@WebServlet(name = "UserController", urlPatterns = {"/login", "/register", "/confirmEmail",
+    "/forgotPassword", "/resetPassword", "/confirmLink", "/logout",
+    "/userProfile", "/updateProfile", "/changePassword", "/updateAvatar",
+    "/userOrder", "/orderDetail", "/allUserOrder", "/confirmOrder",
+    "/filterBanUser", "/emailReminder", "/banUser", "/registerEmployee",
+    "/filterUser", "/restoreUser", "/userDetail",
+    "/shippingInformation", "/addShippingInformation",
+    "/activeCustomers", "/customerBehavior"})
 @MultipartConfig
 
 public class UserController extends HttpServlet {
@@ -150,7 +150,7 @@ public class UserController extends HttpServlet {
                 break;
             case "/register":
                 postRegister(request, response);// post(cần thêm get để check xem trùng email hay tên chưa, xác thực
-                                                // email)
+                // email)
                 break;
             case "/registerEmployee":
                 registerEmployee(request, response);// get
@@ -192,8 +192,8 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        if ((user != null)){
-                
+        if ((user != null)) {
+
             response.sendRedirect("home"); // Nếu đã đăng nhập, chuyển hướng về home
             return;
         }
@@ -236,23 +236,22 @@ public class UserController extends HttpServlet {
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("role", user.getRole());
-            // Lấy thông tin giỏ hàng của người dùng từ database và lưu vào session
+
+            // Lấy thông tin giỏ hàng và danh sách yêu thích
             List<CartItem> cartItems = cartDAO.getCartItems(user.getUserId());
             session.setAttribute("cart", cartItems);
-            // Lấy thông tin danh sách yêu thích của người dùng từ database và lưu vào
-            // session
             List<WishlistItem> wishlistItems = wishlistDAO.getWishlistItems(user.getUserId());
             session.setAttribute("wishlist", wishlistItems);
-            // Nếu người dùng chọn "Ghi nhớ đăng nhập"
+
+            // Xử lý cookie "Ghi nhớ đăng nhập"
             if ("on".equals(remember)) {
                 Cookie usernameCookie = new Cookie("username", username);
-                Cookie passwordCookie = new Cookie("password", password); // Lưu ý: Không nên lưu mật khẩu thô
-                usernameCookie.setMaxAge(60 * 60 * 24 * 7); // Lưu trong 7 ngày
+                Cookie passwordCookie = new Cookie("password", password); // Không nên lưu mật khẩu thô
+                usernameCookie.setMaxAge(60 * 60 * 24 * 7); // 7 ngày
                 passwordCookie.setMaxAge(60 * 60 * 24 * 7);
                 response.addCookie(usernameCookie);
                 response.addCookie(passwordCookie);
             } else {
-                // Xóa cookie nếu không chọn ghi nhớ
                 Cookie usernameCookie = new Cookie("username", null);
                 Cookie passwordCookie = new Cookie("password", null);
                 usernameCookie.setMaxAge(0);
@@ -260,8 +259,18 @@ public class UserController extends HttpServlet {
                 response.addCookie(usernameCookie);
                 response.addCookie(passwordCookie);
             }
-            response.sendRedirect("home");
 
+            // Điều hướng dựa theo role
+            String role = user.getRole();
+            if ("Customer".equalsIgnoreCase(role)) {
+                response.sendRedirect("home");
+            } else if ("Admin".equalsIgnoreCase(role)) {
+                response.sendRedirect("list");
+            } else if ("Shipper".equalsIgnoreCase(role)) {
+                response.sendRedirect("userOrder");
+            } else {
+                response.sendRedirect("home"); // Role không xác định thì về home
+            }
         } else {
             request.setAttribute("error", "Tài khoản hoặc mật khẩu không đúng");
             request.getRequestDispatcher("login.jsp").forward(request, response);
@@ -963,7 +972,7 @@ public class UserController extends HttpServlet {
         // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
         response.sendRedirect(
                 "filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName="
-                        + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
+                + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
     }
 
     protected void emailReminder(HttpServletRequest request, HttpServletResponse response)
@@ -1028,7 +1037,7 @@ public class UserController extends HttpServlet {
         // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
         response.sendRedirect(
                 "filterUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName="
-                        + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
+                + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
 
     }
 
@@ -1067,7 +1076,7 @@ public class UserController extends HttpServlet {
         // Chuyển hướng về trang filterUser và giữ lại các tham số tìm kiếm trong URL
         response.sendRedirect(
                 "filterBanUser?pageStr1=" + pageStr1 + "&pageStr2=" + pageStr2 + "&username=" + username + "&fullName="
-                        + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
+                + fullName + "&email=" + email + "&phone=" + phone + "&registrationDate=" + registrationDate);
 
     }
 
@@ -1482,7 +1491,7 @@ public class UserController extends HttpServlet {
         response.sendRedirect("shippingInformation?orderId=" + orderId);
 
     }
-    
+
     protected void getCustomerBehavior(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -1518,35 +1527,41 @@ public class UserController extends HttpServlet {
             for (int i = 0; i < cartStats.size(); i++) {
                 CartStat stat = cartStats.get(i);
                 json.append("{")
-                    .append("\"productName\":\"").append(escapeJson(stat.getProductName())).append("\",")
-                    .append("\"brand\":\"").append(escapeJson(stat.getBrand())).append("\",")
-                    .append("\"addToCartCount\":").append(stat.getAddToCartCount()).append(",")
-                    .append("\"totalQuantity\":").append(stat.getTotalQuantity())
-                    .append("}");
-                if (i < cartStats.size() - 1) json.append(",");
+                        .append("\"productName\":\"").append(escapeJson(stat.getProductName())).append("\",")
+                        .append("\"brand\":\"").append(escapeJson(stat.getBrand())).append("\",")
+                        .append("\"addToCartCount\":").append(stat.getAddToCartCount()).append(",")
+                        .append("\"totalQuantity\":").append(stat.getTotalQuantity())
+                        .append("}");
+                if (i < cartStats.size() - 1) {
+                    json.append(",");
+                }
             }
             json.append("],");
             json.append("\"wishlistStats\":[");
             for (int i = 0; i < wishlistStats.size(); i++) {
                 WishlistStat stat = wishlistStats.get(i);
                 json.append("{")
-                    .append("\"productName\":\"").append(escapeJson(stat.getProductName())).append("\",")
-                    .append("\"categoryName\":\"").append(escapeJson(stat.getCategoryName())).append("\",")
-                    .append("\"wishlistCount\":").append(stat.getWishlistCount())
-                    .append("}");
-                if (i < wishlistStats.size() - 1) json.append(",");
+                        .append("\"productName\":\"").append(escapeJson(stat.getProductName())).append("\",")
+                        .append("\"categoryName\":\"").append(escapeJson(stat.getCategoryName())).append("\",")
+                        .append("\"wishlistCount\":").append(stat.getWishlistCount())
+                        .append("}");
+                if (i < wishlistStats.size() - 1) {
+                    json.append(",");
+                }
             }
             json.append("],");
             json.append("\"reviewStats\":[");
             for (int i = 0; i < reviewStats.size(); i++) {
                 ReviewStat stat = reviewStats.get(i);
                 json.append("{")
-                    .append("\"productName\":\"").append(escapeJson(stat.getProductName())).append("\",")
-                    .append("\"avgRating\":").append(stat.getAvgRating()).append(",")
-                    .append("\"reviewCount\":").append(stat.getReviewCount()).append(",")
-                    .append("\"satisfactionRate\":").append(stat.getSatisfactionRate())
-                    .append("}");
-                if (i < reviewStats.size() - 1) json.append(",");
+                        .append("\"productName\":\"").append(escapeJson(stat.getProductName())).append("\",")
+                        .append("\"avgRating\":").append(stat.getAvgRating()).append(",")
+                        .append("\"reviewCount\":").append(stat.getReviewCount()).append(",")
+                        .append("\"satisfactionRate\":").append(stat.getSatisfactionRate())
+                        .append("}");
+                if (i < reviewStats.size() - 1) {
+                    json.append(",");
+                }
             }
             json.append("],");
             json.append("\"totalCartStats\":").append(totalCartStats).append(",");
@@ -1563,7 +1578,9 @@ public class UserController extends HttpServlet {
 
     // Hàm hỗ trợ thoát chuỗi JSON
     private String escapeJson(String str) {
-        if (str == null) return "";
+        if (str == null) {
+            return "";
+        }
         return str.replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
     }
 
