@@ -508,8 +508,15 @@
     </head>
 
     <body>
-
-                    <a href="/">Quay lại Trang chủ</a>
+        <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Admin'}">
+            <div class="nav-buttons" >
+                <a href="./userOrder" class="back-btn" style="background-color: red ">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+                
+            </div>
+               
+        </c:if>
 
         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
 
@@ -538,10 +545,10 @@
             <!-- /NAVIGATION -->
 
         </c:if>
-        
+
 
         <div class="container user-profile">
-            
+
             <div class="main-body">
                 <div class="row" style="margin-top: 30px; margin-bottom: 30px">
                     <div class="col-lg-4">
@@ -718,8 +725,8 @@
         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Customer'}">
 
             <!-- FOOTER -->
-        <jsp:include page="footer.jsp"/>
-        <!-- /FOOTER -->
+            <jsp:include page="footer.jsp"/>
+            <!-- /FOOTER -->
 
         </c:if>                                    
 
@@ -812,17 +819,39 @@
 
         <script>
             function validateProfileForm() {
-                // Lấy giá trị số điện thoại từ ô nhập liệu
-                var phoneNumber = document.getElementsByName("phoneNumber")[0].value;
+                // Lấy các giá trị từ ô nhập liệu và loại bỏ khoảng trắng 2 bên
+                var fullName = document.getElementsByName("fullName")[0];
+                var phoneNumber = document.getElementsByName("phoneNumber")[0];
+                var addressDetail = document.getElementsByName("addressDetail")[0];
+
+                fullName.value = fullName.value.trim();
+                phoneNumber.value = phoneNumber.value.trim();
+                addressDetail.value = addressDetail.value.trim();
+
+                // Kiểm tra các trường không được để trống
+                if (fullName.value === "") {
+                    alert("Tên không được để trống.");
+                    return false;
+                }
+                if (phoneNumber.value === "") {
+                    alert("Số điện thoại không được để trống.");
+                    return false;
+                }
+                if (addressDetail.value === "") {
+                    alert("Địa chỉ cụ thể không được để trống.");
+                    return false;
+                }
+
                 // Kiểm tra số điện thoại có đúng 10 chữ số
                 var phonePattern = /^\d{10}$/;
-                if (!phonePattern.test(phoneNumber)) {
+                if (!phonePattern.test(phoneNumber.value)) {
                     alert("Số điện thoại phải gồm 10 chữ số.");
-                    return false; // Không cho phép gửi form nếu không đúng định dạng
+                    return false;
                 }
-                // Nếu tất cả các điều kiện đều đúng, cho phép gửi form
+
                 return true;
             }
+
         </script>
 
 
