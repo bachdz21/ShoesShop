@@ -144,7 +144,7 @@ public class ReviewController extends HttpServlet {
         response.setContentType("text/plain"); // Trả về phản hồi dạng text
         PrintWriter out = response.getWriter();
 
-        if (user == null || !"Employee".equals(user.getRole())) {
+        if (user == null || !"Staff".equals(user.getRole())) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.print("Unauthorized");
             return;
@@ -169,7 +169,7 @@ public class ReviewController extends HttpServlet {
         response.setContentType("text/plain");
         PrintWriter out = response.getWriter();
 
-        if (user == null || !"Employee".equals(user.getRole())) {
+        if (user == null || !"Staff".equals(user.getRole())) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             out.print("Unauthorized");
             return;
@@ -181,18 +181,15 @@ public class ReviewController extends HttpServlet {
             String replyText = request.getParameter("replyText");
             if (reviewIdStr == null || productIdStr == null || replyText == null || replyText.trim().isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("Error: Missing or invalid parameters");
                 return;
             }
 
             int reviewId = Integer.parseInt(reviewIdStr);
             int productId = Integer.parseInt(productIdStr);
-            // Không cần lấy employeeId nữa
+            // Không cần lấy staffId nữa
             String replyDate = reviewDAO.addReviewReply(reviewId, 0, replyText); // Truyền 0 vì không cần userId
-            out.print("Success|" + replyDate);
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("Error: Invalid reviewId or productId format");
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print("Error: " + e.getMessage());

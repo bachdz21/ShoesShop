@@ -275,7 +275,6 @@
                                     <c:when test="${product.stock == 0}">
                                         <span class="product-available">HẾT HÀNG</span>
                                     </div>
-                                    <p>${product.description}</p>
 
                                     <!--                                    <div class="product-options">
                                                                             <label>
@@ -325,7 +324,6 @@
                                 <c:otherwise>
                                     <span class="product-available">CÒN HÀNG</span>
                                 </div>
-                                <p>${product.description}</p>
 
                                 <!--                                <div class="product-options">
                                                                     <label>
@@ -358,6 +356,7 @@
                                         </div>
                                         <div class="add-to-cart">
                                             <input type="hidden" name="productID" value="${product.productID}">
+                                            <input type="hidden" name="category" value="${product.categoryName}">
                                             <input type="hidden" name="selectedSize" id="selectedSize">
                                             <input type="hidden" name="selectedColor" id="selectedColor">
                                             <button type="submit" class="add-to-cart-btn" onclick="updateHiddenFields()">
@@ -401,8 +400,7 @@
                     <div id="product-tab">
                         <!-- product tab nav -->
                         <ul class="tab-nav">
-                            <li class="active"><a data-toggle="tab" href="#tab1">Description</a></li>
-                            <li><a data-toggle="tab" href="#tab2">Details</a></li>
+                            <li class="active"><a data-toggle="tab" href="#tab1">Mô Tả</a></li>
                             <li><a data-toggle="tab" href="#tab3">Reviews (3)</a></li>
                         </ul>
                         <!-- /product tab nav -->
@@ -413,21 +411,12 @@
                             <div id="tab1" class="tab-pane fade in active">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                        <p>${product.description}</p>
                                     </div>
                                 </div>
                             </div>
                             <!-- /tab1  -->
 
-                            <!-- tab2  -->
-                            <div id="tab2" class="tab-pane fade in">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /tab2  -->
 
                             <!-- tab3  -->
                             <div id="tab3" class="tab-pane fade in">
@@ -537,7 +526,7 @@
                                                                     </p>
                                                                 </c:forEach>
                                                             </div>
-                                                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Employee'}">
+                                                            <c:if test="${sessionScope.user != null && sessionScope.user.role == 'Staff'}">
                                                                 <div class="review-actions">
                                                                     <form action="deleteReview" method="POST" style="position: absolute; top: 5px; right: 5px;">
                                                                         <input type="hidden" name="reviewId" value="${review.reviewId}">
@@ -883,24 +872,6 @@
                 } else {
                     form.style.display = 'none';
                 }
-            }
-
-            function handlePlus() {
-                let amount = document.getElementById("amount");
-                let value = parseInt(amount.value);
-                amount.value = value + 1;
-                console.log("handlePlus called, current value:", value);
-                
-            }
-
-            function handleMinus() {
-                let amount = document.getElementById("amount");
-                let value = parseInt(amount.value);
-                if (value > 1) {
-                    amount.value = value - 1;
-                }
-                console.log("handleMinus called, current value:", value);
-                
             }
 
             function updateHiddenFields() {
